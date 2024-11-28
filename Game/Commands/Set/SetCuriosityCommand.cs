@@ -2,9 +2,9 @@ using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands;
+namespace MUS.Game.Commands.Set;
 
-public class NewCuriosityCommand : BaseCommand
+public class SetCuriosityCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -17,12 +17,12 @@ public class NewCuriosityCommand : BaseCommand
 
     private string RoomPoolName => GetParameter(1);
 
-    public NewCuriosityCommand(
+    public SetCuriosityCommand(
         IRoomPoolRepository roomPoolRepository,
         IRoomRepository roomRepository,
         IPlayerState state
     )
-    : base(regex: @"^new (.+) curiosity$")
+    : base(regex: @"^set curiosity (.+)$")
     {
         _roomPoolRepository = roomPoolRepository;
         _roomRepository = roomRepository;
@@ -38,14 +38,12 @@ public class NewCuriosityCommand : BaseCommand
         }
 
         var currentRoom = await _state.Room();
-        if(currentRoom.Curiosity is not null)
-        {
-            return $"{currentRoom.Name} already has a curiosity.";
-        }
-
         currentRoom.Curiosity = roomPool;
         await _roomRepository.UpdateRoom(currentRoom);
 
-        return $"{currentRoom.Name}'s curiosity is now room pool {roomPool.Name}.";
+        return MessageStandard.Set(
+            $"{currentRoom.Name}'s curiosity",
+            roomPool.Name
+        );
     }
 }

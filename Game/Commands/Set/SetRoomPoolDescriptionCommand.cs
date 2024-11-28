@@ -2,9 +2,9 @@
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands.Describe;
+namespace MUS.Game.Commands.Set;
 
-public class DescribeRoomPoolCommand : BaseCommand
+public class SetRoomPoolDescriptionCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn
@@ -14,8 +14,8 @@ public class DescribeRoomPoolCommand : BaseCommand
     private string RoomPoolName => GetParameter(1);
     private string RoomPoolDescription => GetParameter(2);
 
-    public DescribeRoomPoolCommand(IRoomPoolRepository roomPoolRepository)
-    : base(regex: @"^describe roompool (.+):(.+)$")
+    public SetRoomPoolDescriptionCommand(IRoomPoolRepository roomPoolRepository)
+    : base(regex: @"^set roompool (.+) description (.+)$")
     {
         _roomPoolRepository = roomPoolRepository;
     }
@@ -33,6 +33,6 @@ public class DescribeRoomPoolCommand : BaseCommand
         await _roomPoolRepository.UpdateRoomPool(roomPool);
 
         return MessageStandard
-            .Described(RoomPoolName, RoomPoolDescription);
+            .Set($"{RoomPoolName}'s description", RoomPoolDescription);
     }
 }

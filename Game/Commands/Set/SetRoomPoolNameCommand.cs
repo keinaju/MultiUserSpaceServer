@@ -1,9 +1,9 @@
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands.Rename;
+namespace MUS.Game.Commands.Set;
 
-public class RenameRoomPoolCommand : BaseCommand
+public class SetRoomPoolNameCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -13,10 +13,10 @@ public class RenameRoomPoolCommand : BaseCommand
     private string OldRoomPoolName => GetParameter(1);
     private string NewRoomPoolName => GetParameter(2);
 
-    public RenameRoomPoolCommand(
+    public SetRoomPoolNameCommand(
         IRoomPoolRepository roomPoolRepository
     )
-    : base(regex: @"^rename roompool (.+):(.+)$")
+    : base(regex: @"^set roompool (.+) name (.+)$")
     {
         _roomPoolRepository = roomPoolRepository;
     }

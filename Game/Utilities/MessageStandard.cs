@@ -4,9 +4,6 @@ static public class MessageStandard
 {
     static public string Created(string type, string name)
         => $"New {type} (named '{name}') has been created.";
-    
-    static public string Described(string item, string description)
-        => $"{item} is now described as '{description}'.";
 
     static public string DoesNotContain(string container, string item)
         => $"{container} does not contain {item}.";
@@ -25,4 +22,7 @@ static public class MessageStandard
 
     static public string Renamed(string old, string @new)
         => $"{old} is renamed {@new}.";
+
+    static public string Set(string type, string to)
+        => $"{type} is now set to {to}.";
 }

@@ -2,8 +2,7 @@
 using MUS.Game;
 using MUS.Game.Clock;
 using MUS.Game.Commands;
-using MUS.Game.Commands.Describe;
-using MUS.Game.Commands.Rename;
+using MUS.Game.Commands.Set;
 using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
@@ -16,9 +15,9 @@ public static class Extensions
     {
         services.AddScoped<ICommandParser, CommandParser>();
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
-        services.AddScoped<IGameCommand, DescribeItemCommand>();
-        services.AddScoped<IGameCommand, DescribeRoomCommand>();
-        services.AddScoped<IGameCommand, DescribeRoomPoolCommand>();
+        services.AddScoped<IGameCommand, SetItemDescriptionCommand>();
+        services.AddScoped<IGameCommand, SetRoomDescriptionCommand>();
+        services.AddScoped<IGameCommand, SetRoomPoolDescriptionCommand>();
         services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GetCommand>();
@@ -29,15 +28,16 @@ public static class Extensions
         services.AddScoped<IGameCommand, NewItemCommand>();
         services.AddScoped<IGameCommand, NewRoomCommand>();
         services.AddScoped<IGameCommand, NewRoomPoolCommand>();
-        services.AddScoped<IGameCommand, NewCuriosityCommand>();
+        services.AddScoped<IGameCommand, SetCuriosityCommand>();
         services.AddScoped<IGameCommand, LoginCommand>();
         services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
         services.AddScoped<IGameCommand, PickBeingCommand>();
-        services.AddScoped<IGameCommand, RenameBeingCommand>();
-        services.AddScoped<IGameCommand, RenameItemCommand>();
-        services.AddScoped<IGameCommand, RenameRoomCommand>();
-        services.AddScoped<IGameCommand, RenameRoomPoolCommand>();
+        services.AddScoped<IGameCommand, SetBeingNameCommand>();
+        services.AddScoped<IGameCommand, SetItemNameCommand>();
+        services.AddScoped<IGameCommand, SetRoomNameCommand>();
+        services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
+        services.AddScoped<IGameCommand, SetCuriosityCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
         services.AddScoped<IGameCommand, TimeCommand>();
         services.AddScoped<IGameCommand, UserCommand>();

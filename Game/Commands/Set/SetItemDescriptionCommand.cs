@@ -1,9 +1,9 @@
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands.Describe;
+namespace MUS.Game.Commands.Set;
 
-public class DescribeItemCommand : BaseCommand
+public class SetItemDescriptionCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -13,8 +13,8 @@ public class DescribeItemCommand : BaseCommand
     private string ItemName => GetParameter(1);
     private string ItemDescription => GetParameter(2);
 
-    public DescribeItemCommand(IItemRepository itemRepository)
-    : base(regex: @"^describe item (.+):(.+)$")
+    public SetItemDescriptionCommand(IItemRepository itemRepository)
+    : base(regex: @"^set item (.+) description (.+)$")
     {
         _itemRepository = itemRepository;
     }
@@ -30,6 +30,6 @@ public class DescribeItemCommand : BaseCommand
         item.Description = ItemDescription;
         await _itemRepository.UpdateItem(item);
 
-        return MessageStandard.Described(ItemName, ItemDescription);
+        return MessageStandard.Set($"{ItemName}'s description", ItemDescription);
     }
 }
