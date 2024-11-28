@@ -13,4 +13,7 @@ static public class MessageStandard
 
     static public string Quantity(string item, int quantity)
         => $"{item} ({quantity})";
+
+    static public string List(IEnumerable<string?> enumarable) 
+        => string.Join(", ", enumarable);
 }
