@@ -4,7 +4,7 @@ using MUS.Game.Data.Repositories;
 
 namespace MUS.Game.Commands;
 
-public class NewObscurityCommand : BaseCommand
+public class NewCuriosityCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -17,12 +17,12 @@ public class NewObscurityCommand : BaseCommand
 
     private string RoomPoolName => GetParameter(1);
 
-    public NewObscurityCommand(
+    public NewCuriosityCommand(
         IRoomPoolRepository roomPoolRepository,
         IRoomRepository roomRepository,
         IPlayerState state
     )
-    : base(regex: @"^new (.*) obscurity$")
+    : base(regex: @"^new (.*) curiosity$")
     {
         _roomPoolRepository = roomPoolRepository;
         _roomRepository = roomRepository;
@@ -38,16 +38,16 @@ public class NewObscurityCommand : BaseCommand
         }
 
         var currentRoom = await _state.CurrentRoom();
-        if(currentRoom.Obscurity is not null)
+        if(currentRoom.Curiosity is not null)
         {
-            return $"{currentRoom.Name} already has an obscurity.";
+            return $"{currentRoom.Name} already has an curiosity.";
         }
         
-        currentRoom.Obscurity = new Obscurity() {
+        currentRoom.Curiosity = new Curiosity() {
             RoomPool = roomPool
         };
         await _roomRepository.UpdateRoom(currentRoom);
 
-        return $"Obscurity was created in {currentRoom.Name}.";
+        return $"Curiosity was created in {currentRoom.Name}.";
     }
 }

@@ -2,7 +2,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Data.Repositories;
 
-public interface IObscurityRepository
+public interface ICuriosityRepository
 {
-    Task<Obscurity> FindObscurity(int primaryKey);
+    Task<Curiosity> FindCuriosity(int primaryKey);
 }

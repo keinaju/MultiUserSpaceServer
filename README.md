@@ -22,6 +22,7 @@ This is a one-of-a-kind game concept, which was the main motivation for creating
 ## Example commands
 
 Example of first commands would be:
+
 ```
 signup <user> <password>
 login <user> <password>
@@ -39,15 +40,20 @@ This would effectively add a new room to the game world, which would automatical
 
 Room is the basic building block of MUS application.
 Command to create a new room:
+
 ```
 new room
 ```
+
 This command creates a new room, and automatically connects it bi-directionally to the room where user's currently picked being was.
 To move the being into another room:
+
 ```
 go to <roomname>
 ```
+
 To look for details in a room:
+
 ```
 look
 ```
@@ -56,10 +62,13 @@ look
 
 The users can create characters inside the game called 'beings'.
 Command to create a new being:
+
 ```
 new being
 ```
+
 Each user can have at most one selected being. Command to pick a being from all available beings per user:
+
 ```
 pick <beingname>
 ```
@@ -68,32 +77,40 @@ pick <beingname>
 
 Items are generated with item generators.
 Command to create a new item:
+
 ```
 new item
 ```
+
 Command to create a new item generator:
+
 ```
 new <itemname> item generator
 ```
 
-### Room pools and obscurities
+### Room pools and curiosities
 
-In addition to connections to other rooms, rooms can contain 'obscurities', which open connections to more rooms.
-Players are free to explore these obscurities, which will generate more rooms on-demand-basis.
+In addition to connections to other rooms, rooms can contain 'curiosities', which open connections to more rooms.
+Players are free to explore these curiosities, which will generate more rooms on-demand-basis.
 Command to explore a room:
+
 ```
 explore
 ```
 
 The previously created rooms can be registered in user defined room pools.
 Command to create a new room pool:
+
 ```
 new room pool
 ```
+
 Command to add rooms to a room pool:
+
 ```
 add <roomname> in room pool <roompoolname>
 ```
+
 Room pools provide a list of prototype rooms that can be used to generate more of them.
-The obscurity inside the room can refer to any single room pool.
+The curiosity inside the room can refer to any single room pool.
 This allows the game world to extend itself.

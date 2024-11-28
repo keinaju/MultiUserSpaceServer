@@ -11,7 +11,7 @@ namespace MUS.Game.Data
         public DbSet<Inventory> Inventories { get; set; }
         public DbSet<Item> Items { get; set; }
         public DbSet<ItemStack> ItemsStacks { get; set; }
-        public DbSet<Obscurity> Obscurities { get; set; }
+        public DbSet<Curiosity> Curiosities { get; set; }
         public DbSet<Room> Rooms { get; set; }
         public DbSet<RoomPool> RoomPools { get; set; }
         public DbSet<TickCounter> TickCounter { get; set; }

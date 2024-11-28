@@ -25,8 +25,8 @@ public class RoomRepository : IRoomRepository
         return await _context.Rooms
             .Include(room => room.ConnectedToRooms)
             .Include(room => room.Inventory)
-            .Include(room => room.Obscurity)
-            .ThenInclude(obscurity => obscurity.RoomPool)
+            .Include(room => room.Curiosity)
+            .ThenInclude(curiosity => curiosity.RoomPool)
             .SingleAsync(room => room.PrimaryKey == primaryKey);
     }
 
@@ -37,8 +37,8 @@ public class RoomRepository : IRoomRepository
             return await _context.Rooms
                 .Include(room => room.ConnectedToRooms)
                 .Include(room => room.Inventory)
-                .Include(room => room.Obscurity)
-                .ThenInclude(obscurity => obscurity.RoomPool)
+                .Include(room => room.Curiosity)
+                .ThenInclude(curiosity => curiosity.RoomPool)
                 .SingleAsync(room => room.Name == roomName);
         }
         catch (InvalidOperationException)

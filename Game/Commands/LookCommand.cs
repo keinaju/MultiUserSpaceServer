@@ -40,9 +40,9 @@ public class LookCommand : BaseCommand
             outcome += $" This room is connected to: {GetRoomNames(currentRoom.ConnectedToRooms)}.";
         }
 
-        if(currentRoom.Obscurity is not null)
+        if(currentRoom.Curiosity is not null)
         {
-            outcome += " This room has an obscurity.";
+            outcome += " This room has a curiosity.";
         }
 
         return outcome;

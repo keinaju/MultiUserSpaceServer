@@ -11,17 +11,17 @@ public class ExploreCommand : BaseCommand
     ];
 
     private readonly IPlayerState _state;
-    private readonly IObscurityRepository _obscurityRepository;
+    private readonly ICuriosityRepository _curiosityRepository;
     private readonly IRoomRepository _roomRepository;
 
     public ExploreCommand(
         IPlayerState state,
-        IObscurityRepository obscurityRepository,
+        ICuriosityRepository curiosityRepository,
         IRoomRepository roomRepository
     )
     : base(regex: @"^explore$")
     {
-        _obscurityRepository = obscurityRepository;
+        _curiosityRepository = curiosityRepository;
         _roomRepository = roomRepository;
         _state = state;
     }
@@ -30,24 +30,24 @@ public class ExploreCommand : BaseCommand
     {
         var currentRoom = await _state.CurrentRoom();
 
-        var obscurity = currentRoom.Obscurity;
-        if(obscurity is null)
+        var curiosity = currentRoom.Curiosity;
+        if(curiosity is null)
         {
-            return $"{currentRoom.Name} does not have an obscurity to explore.";
+            return $"{currentRoom.Name} does not have a curiosity to explore.";
         }
-        obscurity = await _obscurityRepository
-            .FindObscurity(obscurity.PrimaryKey);
+        curiosity = await _curiosityRepository
+            .FindCuriosity(curiosity.PrimaryKey);
 
-        var roomsInPool = obscurity.RoomPool.RoomsInPool;
+        var roomsInPool = curiosity.RoomPool.RoomsInPool;
         if(roomsInPool.Count == 0)
         {
-            return $"Room pool {obscurity.RoomPool.Name} is empty.";
+            return $"Room pool {curiosity.RoomPool.Name} is empty.";
         }
 
         int random = new Random().Next(0, roomsInPool.Count);
 
         var randomRoom = roomsInPool.ToArray()[random].Room;
-        // Populate obscurity
+        // Populate curiosity
         randomRoom = await _roomRepository.FindRoom(randomRoom.PrimaryKey);
 
         var clone = randomRoom.Clone();
