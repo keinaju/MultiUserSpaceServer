@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
 
@@ -30,6 +31,23 @@ public class Inventory
             return true;
         }
         return false;
+    }
+
+    public string Contents()
+    {
+        var itemQuantities = new List<string>();
+        
+        foreach(var stack in ItemStacks)
+        {
+            itemQuantities.Add(
+                MessageStandard.Quantity(
+                    stack.Item.Name,
+                    stack.Quantity
+                )
+            );
+        }
+
+        return MessageStandard.List(itemQuantities);
     }
 
     public async Task TransferTo(
