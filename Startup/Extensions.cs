@@ -2,6 +2,7 @@
 using MUS.Game;
 using MUS.Game.Clock;
 using MUS.Game.Commands;
+using MUS.Game.Commands.Describe;
 using MUS.Game.Commands.Rename;
 using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
@@ -15,6 +16,8 @@ public static class Extensions
     {
         services.AddScoped<ICommandParser, CommandParser>();
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
+        services.AddScoped<IGameCommand, DescribeItemCommand>();
+        services.AddScoped<IGameCommand, DescribeRoomCommand>();
         services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GetCommand>();
