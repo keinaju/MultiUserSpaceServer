@@ -24,6 +24,7 @@ public class BeingRepository : IBeingRepository
     {
         return await _context.Beings
             .Include(being => being.Room)
+            .Include(being => being.Inventory)
             .SingleAsync(being => being.PrimaryKey == primaryKey);
     }
 
