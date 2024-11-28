@@ -2,7 +2,15 @@ namespace MUS.Game.Utilities;
 
 static public class MessageStandard
 {
-    static public string Invalid(string input) => $"{input} is not valid.";
+    static public string DoesNotContain(string container, string item)
+        => $"{container} does not contain {item}.";
 
-    static public string NotExists(string input) => $"{input} does not exist.";
+    static public string DoesNotExist(string input)
+        => $"'{input}' does not exist.";
+
+    static public string Invalid(string input, string property)
+        => $"'{input}' is not valid {property}.";
+
+    static public string Quantity(string item, int quantity)
+        => $"{item} ({quantity})";
 }
