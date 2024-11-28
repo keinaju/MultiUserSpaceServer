@@ -1,4 +1,3 @@
-using System;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
