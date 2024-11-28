@@ -1,5 +1,6 @@
 ﻿using MUS.Game.Data;
 using MUS.Game.Data.Models;
+using MUS.Game.Data.Repositories;
 
 namespace MUS.Game.Commands;
 
@@ -10,13 +11,16 @@ public class LookCommand : BaseCommand
         Prerequisite.UserHasPickedBeing
     ];
 
+    private readonly IInventoryRepository _inventoryRepository;
     private readonly IPlayerState _playerState;
 
     public LookCommand(
+        IInventoryRepository inventoryRepository,
         IPlayerState playerState
     )
     : base(regex: @"^look$")
     {
+        _inventoryRepository = inventoryRepository;
         _playerState = playerState;
     }
 
@@ -31,31 +35,32 @@ public class LookCommand : BaseCommand
             outcome += $" {currentRoom.Description}";
         }
 
+        outcome += await GetInventoryText(currentRoom);
         outcome += GetConnectionsText(currentRoom);
         outcome += GetCuriosityText(currentRoom);
 
         return outcome;
     }
 
-    private string GetConnectionsText(Room currentRoom)
+    private string GetConnectionsText(Room room)
     {
-        if (currentRoom.ConnectedToRooms.Count == 0)
+        if (room.ConnectedToRooms.Count == 0)
         {
             return " This room has no connected rooms.";
         }
         
         var names = new List<string>();
-        foreach (var room in currentRoom.ConnectedToRooms)
+        foreach (var connectedRoom in room.ConnectedToRooms)
         {
-            names.Add(room.Name);
+            names.Add(connectedRoom.Name);
         }
 
-        return $" This room is connected to: {string.Join(", ", names)}.";
+        return $" {room.Name} is connected to: {string.Join(", ", names)}.";
     }
 
-    private string GetCuriosityText(Room currentRoom)
+    private string GetCuriosityText(Room room)
     {
-        var curiosity = currentRoom.Curiosity;
+        var curiosity = room.Curiosity;
         if(curiosity is null)
         {
             return "";
@@ -66,6 +71,28 @@ public class LookCommand : BaseCommand
             return $" {curiosity.Description}";
         }
 
-        return " This room has a curiosity.";
+        return $" {room.Name} has a curiosity.";
+    }
+
+    private async Task<string> GetInventoryText(Room room)
+    {
+        // Populate with item stacks
+        var inventory = await _inventoryRepository.FindInventory(
+            room.Inventory.PrimaryKey
+        );
+
+        if(inventory.IsEmpty)
+        {
+            return $" {room.Name} has no items.";
+        }
+
+        var itemList = new List<string>();
+        foreach(var stack in inventory.ItemStacks)
+        {
+            itemList.Add($"{stack.Item.Name} ({stack.Quantity})");
+        }
+
+        return $" {room.Name} has {inventory.ItemStacks.Count} stacks of items: "
+            + $"{string.Join(", ", itemList)}.";
     }
 }

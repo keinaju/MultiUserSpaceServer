@@ -15,6 +15,8 @@ public class InventoryRepository : IInventoryRepository
     public async Task<Inventory> FindInventory(int primaryKey)
     {
         return await _context.Inventories
+            .Include(inventory => inventory.ItemStacks)
+            .ThenInclude(itemStack => itemStack.Item)
             .SingleAsync(inventory => inventory.PrimaryKey == primaryKey);
     }
 }
