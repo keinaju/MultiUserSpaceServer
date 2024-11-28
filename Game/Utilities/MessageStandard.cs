@@ -11,9 +11,12 @@ static public class MessageStandard
     static public string Invalid(string input, string property)
         => $"'{input}' is not valid {property}.";
 
+    static public string List(IEnumerable<string?> enumarable) 
+        => string.Join(", ", enumarable);
+
     static public string Quantity(string item, int quantity)
         => $"{item} ({quantity})";
 
-    static public string List(IEnumerable<string?> enumarable) 
-        => string.Join(", ", enumarable);
+    static public string Renamed(string old, string @new)
+        => $"{old} is renamed {@new}.";
 }
