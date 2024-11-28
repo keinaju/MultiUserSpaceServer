@@ -30,8 +30,10 @@ public static class Extensions
         services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
         services.AddScoped<IGameCommand, PickBeingCommand>();
+        services.AddScoped<IGameCommand, RenameBeingCommand>();
         services.AddScoped<IGameCommand, RenameItemCommand>();
         services.AddScoped<IGameCommand, RenameRoomCommand>();
+        services.AddScoped<IGameCommand, RenameRoomPoolCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
         services.AddScoped<IGameCommand, TimeCommand>();
         services.AddScoped<IGameCommand, UserCommand>();

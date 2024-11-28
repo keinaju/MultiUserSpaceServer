@@ -28,6 +28,21 @@ public class BeingRepository : IBeingRepository
             .SingleAsync(being => being.PrimaryKey == primaryKey);
     }
 
+    public async Task<Being?> FindBeing(string beingName)
+    {
+        try
+        {
+            return await _context.Beings
+                .Include(being => being.Room)
+                .Include(being => being.Inventory)
+                .SingleAsync(being => being.Name == beingName);
+        }
+        catch(InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
     public async Task<List<Being>> FindBeingsByUser(User user)
     {
         return await _context.Beings
