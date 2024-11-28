@@ -12,12 +12,13 @@ public static class Extensions
 {
     private static void AddCommands(this IServiceCollection services)
     {
+        services.AddScoped<ICommandParser, CommandParser>();
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
         services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
+        services.AddScoped<IGameCommand, GetCommand>();
         services.AddScoped<IGameCommand, GoToCommand>();
         services.AddScoped<IGameCommand, HelpCommand>();
-        services.AddScoped<IGameCommand, UserCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
         services.AddScoped<IGameCommand, NewItemGeneratorCommand>();
         services.AddScoped<IGameCommand, NewItemCommand>();
@@ -29,7 +30,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, PickBeingCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
         services.AddScoped<IGameCommand, TimeCommand>();
-        services.AddScoped<ICommandParser, CommandParser>();
+        services.AddScoped<IGameCommand, UserCommand>();
         services.AddScoped<IPrerequisiteFilter, PrerequisiteFilter>();
     }
 
