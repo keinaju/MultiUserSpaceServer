@@ -22,7 +22,7 @@ public class NewCuriosityCommand : BaseCommand
         IRoomRepository roomRepository,
         IPlayerState state
     )
-    : base(regex: @"^new (.*) curiosity$")
+    : base(regex: @"^new (.+) curiosity$")
     {
         _roomPoolRepository = roomPoolRepository;
         _roomRepository = roomRepository;

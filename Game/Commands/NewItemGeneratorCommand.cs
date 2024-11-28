@@ -22,7 +22,7 @@ public class NewItemGeneratorCommand : BaseCommand
         IItemRepository itemRepository,
         IPlayerState state
     )
-    : base(regex: @"^new (.*) generator$")
+    : base(regex: @"^new (.+) generator$")
     {
         _itemGeneratorRepository = itemGeneratorRepository;
         _itemRepository = itemRepository;

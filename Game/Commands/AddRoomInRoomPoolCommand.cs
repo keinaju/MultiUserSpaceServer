@@ -19,7 +19,7 @@ public class AddRoomInRoomPoolCommand : BaseCommand
         IRoomRepository roomRepository,
         IRoomPoolRepository roomPoolRepository
     )
-    : base(regex: @"^add (.*) in room pool (.*)$")
+    : base(regex: @"^add (.+) in room pool (.+)$")
     {
         _roomRepository = roomRepository;
         _roomPoolRepository = roomPoolRepository;

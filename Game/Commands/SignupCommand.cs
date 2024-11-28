@@ -13,7 +13,7 @@ public class SignupCommand : BaseCommand
     public SignupCommand(
         IUserRepository userRepository
     )
-    : base(regex: @"^signup (\w+) (\w+)$")
+    : base(regex: @"^signup (.+) (.+)$")
     {
         _userRepository = userRepository;
     }

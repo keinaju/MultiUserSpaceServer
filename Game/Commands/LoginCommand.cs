@@ -22,7 +22,7 @@ public class LoginCommand : BaseCommand
         ITokenService tokenService,
         IHttpContextAccessor contextAccessor
     )
-    : base(regex: @"^login (\w+) (\w+)$")
+    : base(regex: @"^login (.+) (.+)$")
     {
         _userRepository = userRepository;
         _tokenService = tokenService;
