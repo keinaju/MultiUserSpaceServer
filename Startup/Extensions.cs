@@ -2,6 +2,7 @@
 using MUS.Game;
 using MUS.Game.Clock;
 using MUS.Game.Commands;
+using MUS.Game.Commands.Rename;
 using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
@@ -29,6 +30,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
         services.AddScoped<IGameCommand, PickBeingCommand>();
+        services.AddScoped<IGameCommand, RenameItemCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
         services.AddScoped<IGameCommand, TimeCommand>();
         services.AddScoped<IGameCommand, UserCommand>();
