@@ -21,9 +21,14 @@ public class NewRoomPoolCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var rp = new RoomPool() { Name = string.Empty };
+        var rp = new RoomPool() { 
+            Name = string.Empty,
+            Description = string.Empty
+        };
+
         var rpInDb = await _roomPoolRepository.CreateRoomPool(rp);
         rpInDb.Name = $"RP-{rpInDb.PrimaryKey}";
+
         await _roomPoolRepository.UpdateRoomPool(rpInDb);
         return $"Room pool {rpInDb.Name} was created.";
     }

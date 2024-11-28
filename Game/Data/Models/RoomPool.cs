@@ -9,5 +9,7 @@ public class RoomPool
 
     public required string Name { get; set; }
 
+    public required string Description { get; set; }
+
     public ICollection<RoomInPool> RoomsInPool { get; } = new HashSet<RoomInPool>();
 }
