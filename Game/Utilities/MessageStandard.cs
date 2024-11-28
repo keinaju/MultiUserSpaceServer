@@ -2,6 +2,9 @@ namespace MUS.Game.Utilities;
 
 static public class MessageStandard
 {
+    static public string Described(string item, string description)
+        => $"{item} is now described as '{description}'.";
+
     static public string DoesNotContain(string container, string item)
         => $"{container} does not contain {item}.";
 
