@@ -66,11 +66,10 @@ public class LookCommand : BaseCommand
             return "";
         }
 
-        if(curiosity.Description is not null)
+        if(curiosity.Description != "")
         {
             return $" {curiosity.Description}";
         }
-
         return $" {room.Name} has a curiosity.";
     }
 

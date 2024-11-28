@@ -1,6 +1,7 @@
 ﻿using MUS.Game.Session;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -40,6 +41,6 @@ public class NewBeingCommand : BaseCommand
         var savedBeing = await _beingRepository.CreateBeing(newBeing);
         savedBeing.Name = $"B-{savedBeing.PrimaryKey}";
         await _beingRepository.UpdateBeing(savedBeing);
-        return $"Being {savedBeing.Name} created.";
+        return MessageStandard.Created("being", savedBeing.Name);
     }
 }

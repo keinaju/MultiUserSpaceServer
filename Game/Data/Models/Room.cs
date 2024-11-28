@@ -16,7 +16,7 @@ public class Room
 
     public Inventory Inventory { get; set; } = null!;
 
-    public Curiosity? Curiosity { get; set; }
+    public RoomPool? Curiosity { get; set; }
 
     public Room Clone()
     {
@@ -25,7 +25,7 @@ public class Room
             Name = this.Name,
             Description = this.Description,
             Inventory = new Inventory(),
-            Curiosity = this.Curiosity is null ? null : this.Curiosity.Clone()
+            Curiosity = this.Curiosity
         };
 
         return clone;

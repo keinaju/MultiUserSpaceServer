@@ -4,7 +4,7 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Describe;
 
-public class DescribeRoomPool : BaseCommand
+public class DescribeRoomPoolCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn
@@ -14,7 +14,7 @@ public class DescribeRoomPool : BaseCommand
     private string RoomPoolName => GetParameter(1);
     private string RoomPoolDescription => GetParameter(2);
 
-    public DescribeRoomPool(IRoomPoolRepository roomPoolRepository)
+    public DescribeRoomPoolCommand(IRoomPoolRepository roomPoolRepository)
     : base(regex: @"^describe roompool (.+):(.+)$")
     {
         _roomPoolRepository = roomPoolRepository;
@@ -22,7 +22,8 @@ public class DescribeRoomPool : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var roomPool = await _roomPoolRepository.FindRoomPool(RoomPoolName);
+        var roomPool = await _roomPoolRepository
+            .FindRoomPool(RoomPoolName);
         if(roomPool is null)
         {
             return MessageStandard.DoesNotExist(RoomPoolName);
@@ -31,6 +32,7 @@ public class DescribeRoomPool : BaseCommand
         roomPool.Description = RoomPoolDescription;
         await _roomPoolRepository.UpdateRoomPool(roomPool);
 
-        return MessageStandard.Described(RoomPoolName, RoomPoolDescription);
+        return MessageStandard
+            .Described(RoomPoolName, RoomPoolDescription);
     }
 }

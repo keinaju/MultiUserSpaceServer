@@ -1,5 +1,6 @@
 using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -11,17 +12,17 @@ public class ExploreCommand : BaseCommand
     ];
 
     private readonly IPlayerState _state;
-    private readonly ICuriosityRepository _curiosityRepository;
+    private readonly IRoomPoolRepository _roomPoolRepository;
     private readonly IRoomRepository _roomRepository;
 
     public ExploreCommand(
         IPlayerState state,
-        ICuriosityRepository curiosityRepository,
+        IRoomPoolRepository roomPoolRepository,
         IRoomRepository roomRepository
     )
     : base(regex: @"^explore$")
     {
-        _curiosityRepository = curiosityRepository;
+        _roomPoolRepository = roomPoolRepository;
         _roomRepository = roomRepository;
         _state = state;
     }
@@ -33,15 +34,16 @@ public class ExploreCommand : BaseCommand
         var curiosity = currentRoom.Curiosity;
         if(curiosity is null)
         {
-            return $"{currentRoom.Name} does not have a curiosity to explore.";
+            return MessageStandard.DoesNotContain(currentRoom.Name, "a curiosity to explore");
         }
-        curiosity = await _curiosityRepository
-            .FindCuriosity(curiosity.PrimaryKey);
+        // Populate
+        curiosity = await _roomPoolRepository
+            .FindRoomPool(curiosity.PrimaryKey);
 
-        var roomsInPool = curiosity.RoomPool.RoomsInPool;
+        var roomsInPool = curiosity.RoomsInPool;
         if(roomsInPool.Count == 0)
         {
-            return $"Room pool {curiosity.RoomPool.Name} is empty.";
+            return MessageStandard.DoesNotContain(curiosity.Name, "rooms");
         }
 
         int random = new Random().Next(0, roomsInPool.Count);

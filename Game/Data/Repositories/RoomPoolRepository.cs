@@ -26,8 +26,8 @@ public class RoomPoolRepository : IRoomPoolRepository
     public async Task<RoomPool> FindRoomPool(int primaryKey)
     {
         return await _context.RoomPools
-            .Include(rp => rp.RoomsInPool)
-            .ThenInclude(rooms => rooms.Room)
+            .Include(roomPool => roomPool.RoomsInPool)
+            .ThenInclude(roomsInPool => roomsInPool.Room)
             .SingleAsync(rp => rp.PrimaryKey == primaryKey);
     }
 

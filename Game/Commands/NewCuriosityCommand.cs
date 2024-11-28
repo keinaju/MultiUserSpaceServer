@@ -1,6 +1,6 @@
 using MUS.Game.Data;
-using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -34,20 +34,18 @@ public class NewCuriosityCommand : BaseCommand
         var roomPool = await _roomPoolRepository.FindRoomPool(RoomPoolName);
         if(roomPool is null)
         {
-            return $"{RoomPoolName} does not exist.";
+            return MessageStandard.DoesNotExist(RoomPoolName);
         }
 
         var currentRoom = await _state.Room();
         if(currentRoom.Curiosity is not null)
         {
-            return $"{currentRoom.Name} already has an curiosity.";
+            return $"{currentRoom.Name} already has a curiosity.";
         }
-        
-        currentRoom.Curiosity = new Curiosity() {
-            RoomPool = roomPool
-        };
+
+        currentRoom.Curiosity = roomPool;
         await _roomRepository.UpdateRoom(currentRoom);
 
-        return $"Curiosity was created in {currentRoom.Name}.";
+        return $"{currentRoom.Name}'s curiosity is now room pool {roomPool.Name}.";
     }
 }

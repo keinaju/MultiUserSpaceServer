@@ -1,5 +1,6 @@
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -30,6 +31,6 @@ public class NewRoomPoolCommand : BaseCommand
         rpInDb.Name = $"RP-{rpInDb.PrimaryKey}";
 
         await _roomPoolRepository.UpdateRoomPool(rpInDb);
-        return $"Room pool {rpInDb.Name} was created.";
+        return MessageStandard.Created("room pool", rpInDb.Name);
     }
 }

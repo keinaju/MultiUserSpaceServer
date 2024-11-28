@@ -18,6 +18,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
         services.AddScoped<IGameCommand, DescribeItemCommand>();
         services.AddScoped<IGameCommand, DescribeRoomCommand>();
+        services.AddScoped<IGameCommand, DescribeRoomPoolCommand>();
         services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GetCommand>();
@@ -58,7 +59,6 @@ public static class Extensions
         services.AddScoped<IItemGeneratorRepository, ItemGeneratorRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemStackRepository, ItemStackRepository>();
-        services.AddScoped<ICuriosityRepository, CuriosityRepository>();
         services.AddScoped<IPlayerState, PlayerState>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IRoomPoolRepository, RoomPoolRepository>();
