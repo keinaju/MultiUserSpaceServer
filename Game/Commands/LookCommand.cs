@@ -22,41 +22,50 @@ public class LookCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var currentRoom = await _playerState.CurrentRoom();
-
-        string outcome = $"You are in {currentRoom.Name}.";
+        var currentRoom = await _playerState.CurrentRoom(); 
+        var pickedBeing = await _playerState.PickedBeing();
+        string outcome = $"{pickedBeing.Name} is in {currentRoom.Name}.";
 
         if (currentRoom.Description is not null)
         {
             outcome += $" {currentRoom.Description}";
         }
 
-        if (currentRoom.ConnectedToRooms.Count == 0)
-        {
-            outcome += $" This room has no connected rooms.";
-        }
-        else
-        {
-            outcome += $" This room is connected to: {GetRoomNames(currentRoom.ConnectedToRooms)}.";
-        }
-
-        if(currentRoom.Curiosity is not null)
-        {
-            outcome += " This room has a curiosity.";
-        }
+        outcome += GetConnectionsText(currentRoom);
+        outcome += GetCuriosityText(currentRoom);
 
         return outcome;
     }
 
-    private string GetRoomNames(IEnumerable<Room> rooms)
+    private string GetConnectionsText(Room currentRoom)
     {
+        if (currentRoom.ConnectedToRooms.Count == 0)
+        {
+            return " This room has no connected rooms.";
+        }
+        
         var names = new List<string>();
-
-        foreach (var room in rooms)
+        foreach (var room in currentRoom.ConnectedToRooms)
         {
             names.Add(room.Name);
         }
 
-        return string.Join(", ", names);
+        return $" This room is connected to: {string.Join(", ", names)}.";
+    }
+
+    private string GetCuriosityText(Room currentRoom)
+    {
+        var curiosity = currentRoom.Curiosity;
+        if(curiosity is null)
+        {
+            return "";
+        }
+
+        if(curiosity.Description is not null)
+        {
+            return $" {curiosity.Description}";
+        }
+
+        return " This room has a curiosity.";
     }
 }
