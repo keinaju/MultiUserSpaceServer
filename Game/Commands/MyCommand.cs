@@ -20,7 +20,7 @@ public class MyCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var being = await _state.PickedBeing();
+        var being = await _state.Being();
 
         var inventory = await _state.Inventory();
 

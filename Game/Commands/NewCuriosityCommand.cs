@@ -37,7 +37,7 @@ public class NewCuriosityCommand : BaseCommand
             return $"{RoomPoolName} does not exist.";
         }
 
-        var currentRoom = await _state.CurrentRoom();
+        var currentRoom = await _state.Room();
         if(currentRoom.Curiosity is not null)
         {
             return $"{currentRoom.Name} already has an curiosity.";

@@ -28,7 +28,7 @@ public class ExploreCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var currentRoom = await _state.CurrentRoom();
+        var currentRoom = await _state.Room();
 
         var curiosity = currentRoom.Curiosity;
         if(curiosity is null)

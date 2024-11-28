@@ -36,7 +36,7 @@ public class GoToCommand : BaseCommand
             return $"'{RoomNameInUserInput}' was not found.";
         }
 
-        var pickedBeing = await _state.PickedBeing();
+        var pickedBeing = await _state.Being();
         if (pickedBeing.Room == destinationRoom)
         {
             return $"{pickedBeing.Name} is in {destinationRoom.Name}.";

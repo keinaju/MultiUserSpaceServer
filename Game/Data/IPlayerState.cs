@@ -4,7 +4,7 @@ namespace MUS.Game.Data;
 
 public interface IPlayerState
 {
-    Task<Room> CurrentRoom();
-    Task<Being> PickedBeing();
+    Task<Being> Being();
+    Task<Room> Room();
     Task<Inventory> Inventory();
 }

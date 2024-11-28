@@ -38,7 +38,7 @@ public class GetCommand : BaseCommand
         var errorMessage = await Validate();
         if (errorMessage is not null) return errorMessage;
 
-        var currentRoom = await _state.CurrentRoom();
+        var currentRoom = await _state.Room();
         // Populate room inventory
         var roomInventory = await _inventoryRepository.FindInventory(
             currentRoom.Inventory.PrimaryKey
@@ -46,7 +46,7 @@ public class GetCommand : BaseCommand
 
         if(roomInventory.Contains(_item!, (int)_quantity!))
         {
-            var being = await _state.PickedBeing();
+            var being = await _state.Being();
             await GiveItemsFromRoom(being, roomInventory);
             return $"{being.Name} got {MessageStandard.Quantity(_item!.Name, (int)_quantity!)}.";
         }

@@ -26,8 +26,8 @@ public class LookCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var currentRoom = await _playerState.CurrentRoom(); 
-        var pickedBeing = await _playerState.PickedBeing();
+        var currentRoom = await _playerState.Room(); 
+        var pickedBeing = await _playerState.Being();
         string outcome = $"{pickedBeing.Name} is in {currentRoom.Name}.";
 
         if (currentRoom.Description is not null)

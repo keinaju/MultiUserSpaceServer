@@ -29,7 +29,7 @@ public class NewRoomCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var pickedBeing = await _state.PickedBeing();
+        var pickedBeing = await _state.Being();
 
         //Create and set up new room
         Room room = new()
