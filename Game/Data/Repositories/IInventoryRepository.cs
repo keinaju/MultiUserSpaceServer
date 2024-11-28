@@ -5,4 +5,6 @@ namespace MUS.Game.Data.Repositories;
 public interface IInventoryRepository
 {
     Task<Inventory> FindInventory(int primaryKey);
+
+    Task UpdateInventory(Inventory updatedInventory);
 }

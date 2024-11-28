@@ -19,4 +19,11 @@ public class InventoryRepository : IInventoryRepository
             .ThenInclude(itemStack => itemStack.Item)
             .SingleAsync(inventory => inventory.PrimaryKey == primaryKey);
     }
+
+    public async Task UpdateInventory(Inventory updatedInventory)
+    {
+        var inventoryInDb = await FindInventory(updatedInventory.PrimaryKey);
+        inventoryInDb = updatedInventory;
+        await _context.SaveChangesAsync();
+    }
 }
