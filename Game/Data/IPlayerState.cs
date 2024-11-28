@@ -6,4 +6,5 @@ public interface IPlayerState
 {
     Task<Room> CurrentRoom();
     Task<Being> PickedBeing();
+    Task<Inventory> Inventory();
 }

@@ -7,16 +7,19 @@ namespace MUS.Game.Data;
 public class PlayerState : IPlayerState
 {
     private readonly IBeingRepository _beingRepository;
+    private readonly IInventoryRepository _inventoryRepository;
     private readonly IRoomRepository _roomRepository;
     private readonly ISessionService _session;
 
     public PlayerState(
         IBeingRepository beingRepository,
+        IInventoryRepository inventoryRepository,
         IRoomRepository roomRepository,
         ISessionService session
     )
     {
         _beingRepository = beingRepository;
+        _inventoryRepository = inventoryRepository;
         _roomRepository = roomRepository;
         _session = session;
     }
@@ -40,5 +43,14 @@ public class PlayerState : IPlayerState
             user.PickedBeing.PrimaryKey
         );
         return being;
+    }
+
+    public async Task<Inventory> Inventory()
+    {
+        var being = await PickedBeing();
+
+        return await _inventoryRepository.FindInventory(
+            being.Inventory.PrimaryKey
+        );
     }
 }
