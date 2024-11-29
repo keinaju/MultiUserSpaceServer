@@ -2,8 +2,10 @@ namespace MUS.Game.Utilities;
 
 static public class MessageStandard
 {
-    static public string Created(string type, string name)
-        => $"New {type} (named '{name}') has been created.";
+    static public string Created(string type, string name = "")
+        => name == "" ?
+            $"New {type} has been created." :
+            $"New {type} (named '{name}') has been created.";
 
     static public string DoesNotContain(string container, string item)
         => $"{container} does not contain {item}.";
@@ -18,7 +20,7 @@ static public class MessageStandard
         => string.Join(", ", enumarable);
 
     static public string Quantity(string item, int quantity)
-        => $"{item} ({quantity})";
+        => $"[{quantity}] {item}";
 
     static public string Renamed(string old, string @new)
         => $"{old} is renamed {@new}.";
