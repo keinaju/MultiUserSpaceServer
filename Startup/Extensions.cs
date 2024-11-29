@@ -2,6 +2,7 @@
 using MUS.Game;
 using MUS.Game.Clock;
 using MUS.Game.Commands;
+using MUS.Game.Commands.New;
 using MUS.Game.Commands.Set;
 using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
@@ -15,9 +16,6 @@ public static class Extensions
     {
         services.AddScoped<ICommandParser, CommandParser>();
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
-        services.AddScoped<IGameCommand, SetItemDescriptionCommand>();
-        services.AddScoped<IGameCommand, SetRoomDescriptionCommand>();
-        services.AddScoped<IGameCommand, SetRoomPoolDescriptionCommand>();
         services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GetCommand>();
@@ -32,10 +30,14 @@ public static class Extensions
         services.AddScoped<IGameCommand, LoginCommand>();
         services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
+        services.AddScoped<IGameCommand, SellCommand>();
         services.AddScoped<IGameCommand, PickBeingCommand>();
         services.AddScoped<IGameCommand, SetBeingNameCommand>();
+        services.AddScoped<IGameCommand, SetItemDescriptionCommand>();
         services.AddScoped<IGameCommand, SetItemNameCommand>();
+        services.AddScoped<IGameCommand, SetRoomDescriptionCommand>();
         services.AddScoped<IGameCommand, SetRoomNameCommand>();
+        services.AddScoped<IGameCommand, SetRoomPoolDescriptionCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
         services.AddScoped<IGameCommand, SetCuriosityCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
@@ -59,6 +61,7 @@ public static class Extensions
         services.AddScoped<IItemGeneratorRepository, ItemGeneratorRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemStackRepository, ItemStackRepository>();
+        services.AddScoped<IOfferRepository, OfferRepository>();
         services.AddScoped<IPlayerState, PlayerState>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IRoomPoolRepository, RoomPoolRepository>();
