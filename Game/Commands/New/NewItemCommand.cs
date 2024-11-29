@@ -1,7 +1,8 @@
 ﻿using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands;
+namespace MUS.Game.Commands.New;
 
 public class NewItemCommand : BaseCommand
 {
@@ -27,6 +28,6 @@ public class NewItemCommand : BaseCommand
         itemInDb.Name = $"I-{itemInDb.PrimaryKey}";
         await _itemRepository.UpdateItem(itemInDb);
 
-        return $"{itemInDb.Name} was created.";
+        return MessageStandard.Created("item", itemInDb.Name);
     }
 }

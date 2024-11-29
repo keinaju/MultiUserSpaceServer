@@ -1,8 +1,9 @@
 ﻿using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands;
+namespace MUS.Game.Commands.New;
 
 public class NewItemGeneratorCommand : BaseCommand
 {
@@ -49,6 +50,6 @@ public class NewItemGeneratorCommand : BaseCommand
 
         await _itemGeneratorRepository.CreateItemGenerator(generator);
 
-        return $"{ItemName} generator was created.";
+        return MessageStandard.Created("item generator", ItemName);
     }
 }

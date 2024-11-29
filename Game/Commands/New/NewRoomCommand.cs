@@ -1,8 +1,9 @@
 ﻿using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands;
+namespace MUS.Game.Commands.New;
 
 public class NewRoomCommand : BaseCommand
 {
@@ -53,6 +54,6 @@ public class NewRoomCommand : BaseCommand
         pickedBeing.Room = roomInDb;
         await _beingRepository.UpdateBeing(pickedBeing);
 
-        return $"Room '{roomInDb.Name}' was created. {pickedBeing.Name} moved there.";
+        return $"{MessageStandard.Created("room", roomInDb.Name)} {pickedBeing.Name} moved there.";
     }
 }

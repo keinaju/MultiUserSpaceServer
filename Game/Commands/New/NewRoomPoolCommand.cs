@@ -2,7 +2,7 @@ using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands;
+namespace MUS.Game.Commands.New;
 
 public class NewRoomPoolCommand : BaseCommand
 {
