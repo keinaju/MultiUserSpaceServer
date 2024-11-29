@@ -31,6 +31,6 @@ public class MyCommand : BaseCommand
             );
         }
 
-        return $"{being.Name} has: {inventory.Contents()}";
+        return $"{being.Name} has: {inventory.Contents()}.";
     }
 }
