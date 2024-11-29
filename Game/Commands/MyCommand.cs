@@ -1,5 +1,6 @@
 
 using MUS.Game.Data;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -23,6 +24,12 @@ public class MyCommand : BaseCommand
         var being = await _state.Being();
 
         var inventory = await _state.Inventory();
+        if(inventory.IsEmpty)
+        {
+            return MessageStandard.DoesNotContain(
+                $"{being.Name}'s inventory", "items"
+            );
+        }
 
         return $"{being.Name} has: {inventory.Contents()}";
     }
