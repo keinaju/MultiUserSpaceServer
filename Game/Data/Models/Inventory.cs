@@ -50,7 +50,7 @@ public class Inventory
         return MessageStandard.List(itemQuantities);
     }
 
-    public async Task TransferTo(
+    public void TransferTo(
         Inventory destinationInventory,
         Item item,
         int quantity

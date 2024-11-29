@@ -26,7 +26,7 @@ public class GetCommand : BaseCommand
         IItemRepository itemRepository,
         IPlayerState state
     )
-    : base(regex: @"^get (.+) (.+)$")
+    : base(regex: @"^get (\d+) (.+)$")
     {
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;
@@ -92,7 +92,7 @@ public class GetCommand : BaseCommand
             being.Inventory.PrimaryKey
         );
 
-        await roomInventory.TransferTo(beingInventory, _item!, (int)_quantity!);
+        roomInventory.TransferTo(beingInventory, _item!, (int)_quantity!);
         await _inventoryRepository.UpdateInventory(roomInventory);
         await _inventoryRepository.UpdateInventory(beingInventory);
     }
