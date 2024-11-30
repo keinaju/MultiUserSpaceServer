@@ -1,3 +1,4 @@
+using System.Text.RegularExpressions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MUS.Game.Data.Models;
@@ -26,6 +27,18 @@ public class OfferRepository : IOfferRepository
         var offer = await _context.Offers.FindAsync(primaryKey);
         _context.Offers.Remove(offer);
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<ICollection<Offer>> FindOffers(string regex = "")
+    {
+        return await _context.Offers
+            .Include(offer => offer.ItemToSell)
+            .Include(offer => offer.ItemToBuy)
+            .Where(offer => regex == "" ?
+                true :
+                Regex.IsMatch(offer.ItemToSell.Name, regex)
+            )
+            .ToListAsync();
     }
 
     public async Task<ICollection<Offer>> FindMatchingOffers(Offer newOffer)

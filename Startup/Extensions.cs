@@ -7,6 +7,7 @@ using MUS.Game.Commands.Set;
 using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
+using MUS.Game.Utilities;
 
 namespace MUS.Startup;
 
@@ -30,8 +31,9 @@ public static class Extensions
         services.AddScoped<IGameCommand, LoginCommand>();
         services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
-        services.AddScoped<IGameCommand, SellCommand>();
+        services.AddScoped<IGameCommand, OffersCommand>();
         services.AddScoped<IGameCommand, PickBeingCommand>();
+        services.AddScoped<IGameCommand, SellCommand>();
         services.AddScoped<IGameCommand, SetBeingNameCommand>();
         services.AddScoped<IGameCommand, SetItemDescriptionCommand>();
         services.AddScoped<IGameCommand, SetItemNameCommand>();
@@ -81,6 +83,11 @@ public static class Extensions
         services.AddTransient<ITokenService, TokenService>();
     }
 
+    private static void AddUtilities(this IServiceCollection services)
+    {
+        services.AddScoped<IOfferManager, OfferManager>();
+    }
+
     public static void AddGameServices(this IServiceCollection services)
     {
         services.AddCommands();
@@ -88,6 +95,7 @@ public static class Extensions
         services.AddSessions();
         services.AddRequestHandling();
         services.AddBackgroundServices();
+        services.AddUtilities();
     }
 
     public static void EnsureDatabaseExists(this IApplicationBuilder app)
