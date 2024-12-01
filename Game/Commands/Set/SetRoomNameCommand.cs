@@ -27,7 +27,7 @@ public class SetRoomNameCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var room = await _state.Room();
+        var room = await _state.GetRoom();
 
         var oldName = room.Name;
 

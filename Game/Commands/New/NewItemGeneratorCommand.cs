@@ -45,7 +45,7 @@ public class NewItemGeneratorCommand : BaseCommand
             MaxQuantity = 1,
             IntervalInTicks = 1
         };
-        var currentRoom = await _state.Room();
+        var currentRoom = await _state.GetRoom();
         generator.Inventories.Add(currentRoom.Inventory);
 
         await _itemGeneratorRepository.CreateItemGenerator(generator);

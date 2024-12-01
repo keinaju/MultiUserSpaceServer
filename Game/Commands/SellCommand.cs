@@ -71,10 +71,10 @@ public class SellCommand : BaseCommand
             return "Offer can't contain same items.";
         }
 
-        var invokingInventory = await _state.Inventory();
+        var invokingInventory = await _state.GetInventory();
         if(invokingInventory.Contains(sellItem, (int)sellQuantity) == false)
         {
-            var being = await _state.Being();
+            var being = await _state.GetBeing();
             return MessageStandard.DoesNotContain(
                 $"{being.Name}'s inventory",
                 MessageStandard.Quantity(sellItem.Name, (int)sellQuantity)

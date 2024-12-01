@@ -21,9 +21,9 @@ public class MyCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var being = await _state.Being();
+        var being = await _state.GetBeing();
 
-        var inventory = await _state.Inventory();
+        var inventory = await _state.GetInventory();
         if(inventory.IsEmpty)
         {
             return MessageStandard.DoesNotContain(

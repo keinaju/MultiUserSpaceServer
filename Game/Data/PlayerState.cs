@@ -24,7 +24,7 @@ public class PlayerState : IPlayerState
         _session = session;
     }
     
-    public async Task<Being> Being()
+    public async Task<Being> GetBeing()
     {
         var user = _session.AuthenticatedUser;
         if (user is null || user.PickedBeing is null)
@@ -38,19 +38,26 @@ public class PlayerState : IPlayerState
         return being;
     }
 
-    public async Task<Inventory> Inventory()
+    public async Task<Inventory> GetInventory()
     {
-        var being = await Being();
+        var being = await GetBeing();
 
         return await _inventoryRepository.FindInventory(
             being.Inventory.PrimaryKey
         );
     }
 
-    public async Task<Room> Room()
+    public async Task<Room> GetRoom()
     {
-        var being = await Being();
-        var room = await _roomRepository.FindRoom(being.Room.PrimaryKey);
+        var being = await GetBeing();
+        var room = await _roomRepository.FindRoom(being.InRoom.PrimaryKey);
         return room;
+    }
+
+    public async Task Move(Room destination)
+    {
+        var being = await GetBeing();
+        being.InRoom = destination;
+        await _beingRepository.UpdateBeing(being);
     }
 }

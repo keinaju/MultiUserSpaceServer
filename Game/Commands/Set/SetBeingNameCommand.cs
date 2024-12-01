@@ -27,7 +27,7 @@ public class SetBeingNameCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var being = await _state.Being();
+        var being = await _state.GetBeing();
         
         var oldName = being.Name;
 

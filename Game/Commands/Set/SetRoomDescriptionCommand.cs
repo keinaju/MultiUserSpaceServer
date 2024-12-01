@@ -27,7 +27,7 @@ public class SetRoomDescriptionCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var room = await _state.Room();
+        var room = await _state.GetRoom();
         room.Description = RoomDescription;
         await _roomRepository.UpdateRoom(room);
 

@@ -30,28 +30,29 @@ public class NewRoomCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var pickedBeing = await _state.Being();
+        var pickedBeing = await _state.GetBeing();
 
         //Create and set up new room
-        Room room = new()
+        var room = new Room()
         {
             Name = string.Empty,
+            GlobalAccessibility = false,
             Inventory = new Inventory()
         };
 
         //Connect new room to room it was created from
-        room.ConnectedToRooms.Add(pickedBeing.Room);
+        room.ConnectedToRooms.Add(pickedBeing.InRoom);
         var roomInDb = await _roomRepository.CreateRoom(room);
-        roomInDb.Name = $"R-{roomInDb.PrimaryKey}";
+        roomInDb.Name = $"r{roomInDb.PrimaryKey}";
         await _roomRepository.UpdateRoom(roomInDb);
 
         //Connect current room to new room
-        var currentRoom = pickedBeing.Room;
+        var currentRoom = pickedBeing.InRoom;
         currentRoom.ConnectedToRooms.Add(roomInDb);
         await _roomRepository.UpdateRoom(currentRoom);
 
         //Move being to new room
-        pickedBeing.Room = roomInDb;
+        pickedBeing.InRoom = roomInDb;
         await _beingRepository.UpdateBeing(pickedBeing);
 
         return $"{MessageStandard.Created("room", roomInDb.Name)} {pickedBeing.Name} moved there.";

@@ -37,7 +37,7 @@ public class SetCuriosityCommand : BaseCommand
             return MessageStandard.DoesNotExist(RoomPoolName);
         }
 
-        var currentRoom = await _state.Room();
+        var currentRoom = await _state.GetRoom();
         currentRoom.Curiosity = roomPool;
         await _roomRepository.UpdateRoom(currentRoom);
 
