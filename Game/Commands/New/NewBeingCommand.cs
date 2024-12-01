@@ -34,12 +34,13 @@ public class NewBeingCommand : BaseCommand
         var defaultSpawnRoom = settings!.DefaultSpawnRoom;
         var newBeing = new Being()
         {
+            Name = string.Empty,
             CreatedByUser = user,
             Inventory = new Inventory(),
-            Room = defaultSpawnRoom
+            InRoom = defaultSpawnRoom
         };
         var savedBeing = await _beingRepository.CreateBeing(newBeing);
-        savedBeing.Name = $"B-{savedBeing.PrimaryKey}";
+        savedBeing.Name = $"b{savedBeing.PrimaryKey}";
         await _beingRepository.UpdateBeing(savedBeing);
         return MessageStandard.Created("being", savedBeing.Name);
     }

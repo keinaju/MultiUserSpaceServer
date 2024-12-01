@@ -23,7 +23,7 @@ public class BeingRepository : IBeingRepository
     public async Task<Being> FindBeing(int primaryKey)
     {
         return await _context.Beings
-            .Include(being => being.Room)
+            .Include(being => being.InRoom)
             .Include(being => being.Inventory)
             .SingleAsync(being => being.PrimaryKey == primaryKey);
     }
@@ -33,7 +33,7 @@ public class BeingRepository : IBeingRepository
         try
         {
             return await _context.Beings
-                .Include(being => being.Room)
+                .Include(being => being.InRoom)
                 .Include(being => being.Inventory)
                 .SingleAsync(being => being.Name == beingName);
         }
