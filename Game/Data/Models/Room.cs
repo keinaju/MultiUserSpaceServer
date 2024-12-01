@@ -7,6 +7,11 @@ public class Room
     [Key]
     public int PrimaryKey { get; set; }
 
+    /// <summary>
+    /// Setting to determine if room can be accessed from any other room.
+    /// </summary>
+    public required bool GlobalAccessibility { get; set; }
+
     public required string Name { get; set; }
 
     public string? Description { get; set; }
@@ -22,10 +27,11 @@ public class Room
     {
         var clone = new Room()
         {
-            Name = this.Name,
+            Curiosity = this.Curiosity,
             Description = this.Description,
+            GlobalAccessibility = this.GlobalAccessibility,
             Inventory = new Inventory(),
-            Curiosity = this.Curiosity
+            Name = this.Name,
         };
 
         return clone;
