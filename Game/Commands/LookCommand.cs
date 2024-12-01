@@ -1,6 +1,7 @@
 ﻿using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -35,11 +36,29 @@ public class LookCommand : BaseCommand
             outcome += $" {currentRoom.Description}";
         }
 
+        outcome += GetBeingNamesText(currentRoom, pickedBeing);
         outcome += await GetInventoryText(currentRoom);
         outcome += GetConnectionsText(currentRoom);
         outcome += GetCuriosityText(currentRoom);
 
         return outcome;
+    }
+
+    private string GetBeingNamesText(Room room, Being pickedBeing)
+    {
+        var names = new List<string>();
+        foreach(var beingHere in room.BeingsHere)
+        {
+            if (beingHere.PrimaryKey == pickedBeing.PrimaryKey) continue;
+
+            names.Add(beingHere.Name);
+        }
+
+        if (names.Count == 0) return "";
+
+        if (names.Count == 1) return $" {names[0]} is here.";
+
+        return $" {MessageStandard.List(names)} are here.";
     }
 
     private string GetConnectionsText(Room room)
@@ -88,10 +107,9 @@ public class LookCommand : BaseCommand
         var itemList = new List<string>();
         foreach(var stack in inventory.ItemStacks)
         {
-            itemList.Add($"{stack.Item.Name} ({stack.Quantity})");
+            itemList.Add(MessageStandard.Quantity(stack.Item.Name, stack.Quantity));
         }
 
-        return $" {room.Name} has {inventory.ItemStacks.Count} stacks of items: "
-            + $"{string.Join(", ", itemList)}.";
+        return $" {room.Name} has {inventory.ItemStacks.Count} stacks of items: {MessageStandard.List(itemList)}.";
     }
 }
