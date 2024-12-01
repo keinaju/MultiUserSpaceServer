@@ -2,13 +2,16 @@ namespace MUS.Game.Utilities;
 
 static public class MessageStandard
 {
+    static public string Contains(string container, string content)
+        => $"{container} contains {content}.";
+
     static public string Created(string type, string name = "")
         => name == "" ?
             $"New {type} has been created." :
             $"New {type} (named '{name}') has been created.";
 
-    static public string DoesNotContain(string container, string item)
-        => $"{container} does not contain {item}.";
+    static public string DoesNotContain(string container, string content)
+        => $"{container} does not contain {content}.";
 
     static public string DoesNotExist(string input)
         => $"'{input}' does not exist.";
