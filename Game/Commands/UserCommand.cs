@@ -43,6 +43,6 @@ public class UserCommand : BaseCommand
         {
             names.Add(being.Name!);
         }
-        return $"{MessageStandard.Contains("Your user", MessageStandard.List(names))}";
+        return $"Your user contains following beings: {MessageStandard.List(names)}.";
     }
 }
