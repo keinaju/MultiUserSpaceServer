@@ -1,5 +1,6 @@
 ﻿using MUS.Game.Data.Models;
 using MUS.Game.Session;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -25,18 +26,23 @@ public class UserCommand : BaseCommand
             return "You are not logged in.";
         }
 
-        return $"You are logged in, {user.Username}. You have beings: {GetBeingNames(user.CreatedBeings)}.";
+        string output = $"You are logged in, {user.Username}. ";
+        output += GetBeingNames(user.CreatedBeings);
+        return output;
     }
 
     private string GetBeingNames(IEnumerable<Being> beings)
     {
-        var names = new List<string>();
+        if(beings.Count() == 0)
+        {
+            return MessageStandard.DoesNotContain("Your user", "beings");
+        }
 
+        var names = new List<string>();
         foreach (var being in beings)
         {
             names.Add(being.Name!);
         }
-
-        return string.Join(", ", names);
+        return $"{MessageStandard.Contains("Your user", MessageStandard.List(names))}";
     }
 }
