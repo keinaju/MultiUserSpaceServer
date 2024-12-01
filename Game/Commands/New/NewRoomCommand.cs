@@ -36,7 +36,7 @@ public class NewRoomCommand : BaseCommand
         var room = new Room()
         {
             Name = string.Empty,
-            GlobalAccessibility = false,
+            GlobalAccess = false,
             Inventory = new Inventory()
         };
 

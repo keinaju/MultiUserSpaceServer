@@ -5,7 +5,7 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Set;
 
-public class SetRoomGlobalAccessibilityCommand : BaseCommand
+public class SetRoomGlobalAccessCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -16,11 +16,11 @@ public class SetRoomGlobalAccessibilityCommand : BaseCommand
     private readonly IRoomRepository _roomRepository;
     private string TrueOrFalseInUserInput => GetParameter(1);
 
-    public SetRoomGlobalAccessibilityCommand(
+    public SetRoomGlobalAccessCommand(
         IPlayerState state,
         IRoomRepository roomRepository
     )
-    : base(regex: @"^set room global accessibility (true|false)$")
+    : base(regex: @"^set room global access (true|false)$")
     {
         _roomRepository = roomRepository;
         _state = state;
@@ -32,11 +32,11 @@ public class SetRoomGlobalAccessibilityCommand : BaseCommand
         
         if(TrueOrFalseInUserInput == "true")
         {
-            room.GlobalAccessibility = true;
+            room.GlobalAccess = true;
         }
         else if(TrueOrFalseInUserInput == "false")
         {
-            room.GlobalAccessibility = false;
+            room.GlobalAccess = false;
         }
 
         await _roomRepository.UpdateRoom(room);

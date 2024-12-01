@@ -10,7 +10,7 @@ public class Room
     /// <summary>
     /// Setting to determine if room can be accessed from any other room.
     /// </summary>
-    public required bool GlobalAccessibility { get; set; }
+    public required bool GlobalAccess { get; set; }
 
     public required string Name { get; set; }
 
@@ -29,7 +29,7 @@ public class Room
         {
             Curiosity = this.Curiosity,
             Description = this.Description,
-            GlobalAccessibility = this.GlobalAccessibility,
+            GlobalAccess = this.GlobalAccess,
             Inventory = new Inventory(),
             Name = this.Name,
         };

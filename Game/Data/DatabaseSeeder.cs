@@ -55,7 +55,7 @@ public class DatabaseSeeder
             {
                 Name = "r1",
                 Description = "Everything starts from one.",
-                GlobalAccessibility = false,
+                GlobalAccess = false,
                 Inventory = new Inventory()
             };
             await _roomRepository.CreateRoom(roomOne);

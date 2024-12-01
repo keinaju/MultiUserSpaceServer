@@ -70,7 +70,7 @@ public class GoToCommand : BaseCommand
         
         if (room is null) return null;
 
-        if(room.GlobalAccessibility == true) return room;
+        if(room.GlobalAccess == true) return room;
 
         return null;
     }
