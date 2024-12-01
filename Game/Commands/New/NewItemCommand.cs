@@ -25,7 +25,7 @@ public class NewItemCommand : BaseCommand
         Item newItem = new Item() { Name = string.Empty };
 
         var itemInDb = await _itemRepository.CreateItem(newItem);
-        itemInDb.Name = $"I-{itemInDb.PrimaryKey}";
+        itemInDb.Name = $"i{itemInDb.PrimaryKey}";
         await _itemRepository.UpdateItem(itemInDb);
 
         return MessageStandard.Created("item", itemInDb.Name);

@@ -28,7 +28,7 @@ public class NewRoomPoolCommand : BaseCommand
         };
 
         var rpInDb = await _roomPoolRepository.CreateRoomPool(rp);
-        rpInDb.Name = $"RP-{rpInDb.PrimaryKey}";
+        rpInDb.Name = $"rp{rpInDb.PrimaryKey}";
 
         await _roomPoolRepository.UpdateRoomPool(rpInDb);
         return MessageStandard.Created("room pool", rpInDb.Name);
