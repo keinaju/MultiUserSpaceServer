@@ -39,6 +39,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, SetItemNameCommand>();
         services.AddScoped<IGameCommand, SetRoomDescriptionCommand>();
         services.AddScoped<IGameCommand, SetRoomGlobalAccessCommand>();
+        services.AddScoped<IGameCommand, SetRoomInsideBeingCommand>();
         services.AddScoped<IGameCommand, SetRoomNameCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolDescriptionCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
