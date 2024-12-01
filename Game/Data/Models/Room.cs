@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace MUS.Game.Data.Models;
 
@@ -22,6 +23,9 @@ public class Room
     public Inventory Inventory { get; set; } = null!;
 
     public RoomPool? Curiosity { get; set; }
+
+    [InverseProperty(nameof(Being.InRoom))]
+    public ICollection<Being> BeingsHere { get; } = new HashSet<Being>();
 
     public Room Clone()
     {

@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Identity;
-using MUS.Game.Data;
+﻿using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
@@ -88,6 +87,18 @@ public class GoToCommand : BaseCommand
 
     private async Task<Room?> FindInsideRoom()
     {
+        var thisRoom = await _state.GetRoom();
+        foreach(var beingHere in thisRoom.BeingsHere)
+        {
+            var populatedBeing = await _beingRepository
+                .FindBeing(beingHere.PrimaryKey);
+
+            var insideRoom = populatedBeing.RoomInside;
+
+            if (insideRoom is null) continue;
+
+            if (populatedBeing.Name == RoomNameInUserInput) return insideRoom;
+        }
         return null;
     }
 }

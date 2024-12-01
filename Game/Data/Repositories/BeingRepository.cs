@@ -25,6 +25,7 @@ public class BeingRepository : IBeingRepository
         return await _context.Beings
             .Include(being => being.InRoom)
             .Include(being => being.Inventory)
+            .Include(being => being.RoomInside)
             .SingleAsync(being => being.PrimaryKey == primaryKey);
     }
 
@@ -35,6 +36,7 @@ public class BeingRepository : IBeingRepository
             return await _context.Beings
                 .Include(being => being.InRoom)
                 .Include(being => being.Inventory)
+                .Include(being => being.RoomInside)
                 .SingleAsync(being => being.Name == beingName);
         }
         catch(InvalidOperationException)
