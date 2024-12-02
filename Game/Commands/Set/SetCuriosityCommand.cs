@@ -34,7 +34,7 @@ public class SetCuriosityCommand : BaseCommand
         var roomPool = await _roomPoolRepository.FindRoomPool(RoomPoolName);
         if(roomPool is null)
         {
-            return MessageStandard.DoesNotExist(RoomPoolName);
+            return MessageStandard.DoesNotExist("Room pool", RoomPoolName);
         }
 
         var currentRoom = await _state.GetRoom();

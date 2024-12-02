@@ -13,8 +13,8 @@ static public class MessageStandard
     static public string DoesNotContain(string container, string content)
         => $"{container} does not contain {content}.";
 
-    static public string DoesNotExist(string input)
-        => $"'{input}' does not exist.";
+    static public string DoesNotExist(string type, string input)
+        => $"{type} '{input}' does not exist.";
 
     static public string Invalid(string input, string type)
         => $"'{input}' is not valid {type}.";

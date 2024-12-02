@@ -24,7 +24,7 @@ public class SetItemDescriptionCommand : BaseCommand
         var item = await _itemRepository.FindItem(ItemName);
         if(item is null)
         {
-            return MessageStandard.DoesNotExist(ItemName);
+            return MessageStandard.DoesNotExist("Item", ItemName);
         }
 
         item.Description = ItemDescription;

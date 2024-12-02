@@ -23,11 +23,10 @@ public class SetRoomPoolNameCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var roomPool = await _roomPoolRepository
-            .FindRoomPool(OldRoomPoolName);
+        var roomPool = await _roomPoolRepository.FindRoomPool(OldRoomPoolName);
         if(roomPool is null)
         {
-            return MessageStandard.DoesNotExist(OldRoomPoolName);
+            return MessageStandard.DoesNotExist("Room pool", OldRoomPoolName);
         }
 
         roomPool.Name = NewRoomPoolName;

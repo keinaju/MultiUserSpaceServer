@@ -68,7 +68,7 @@ public class GoCommand : BaseCommand
 
         if(destination is null)
         {
-            return MessageStandard.DoesNotExist(RoomNameInUserInput);
+            return MessageStandard.DoesNotExist("Room", RoomNameInUserInput);
         }
 
         var being = await _state.GetBeing();

@@ -57,13 +57,13 @@ public class SellCommand : BaseCommand
         var sellItem = await _itemRepository.FindItem(SellItemName);
         if(sellItem is null)
         {
-            return MessageStandard.DoesNotExist(SellItemName);
+            return MessageStandard.DoesNotExist("Item", SellItemName);
         }
         
         var buyItem = await _itemRepository.FindItem(BuyItemName);
         if(buyItem is null)
         {
-            return MessageStandard.DoesNotExist(BuyItemName);
+            return MessageStandard.DoesNotExist("Item", BuyItemName);
         }
 
         if(sellItem.PrimaryKey == buyItem.PrimaryKey)

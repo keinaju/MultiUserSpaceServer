@@ -24,7 +24,7 @@ public class SetItemNameCommand : BaseCommand
         var item = await _itemRepository.FindItem(OldItemName);
         if(item is null)
         {
-            return MessageStandard.DoesNotExist(OldItemName);
+            return MessageStandard.DoesNotExist("Item", OldItemName);
         }
 
         item.Name = NewItemName;

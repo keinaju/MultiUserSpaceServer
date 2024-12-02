@@ -35,7 +35,7 @@ public class SetRoomInsideBeingCommand : BaseCommand
         var room = await _roomRepository.FindRoom(RoomName);
         if(room is null)
         {
-            return MessageStandard.DoesNotExist(RoomName);
+            return MessageStandard.DoesNotExist("Room", RoomName);
         }
 
         var being = await _state.GetBeing();

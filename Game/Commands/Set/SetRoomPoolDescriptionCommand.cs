@@ -26,7 +26,7 @@ public class SetRoomPoolDescriptionCommand : BaseCommand
             .FindRoomPool(RoomPoolName);
         if(roomPool is null)
         {
-            return MessageStandard.DoesNotExist(RoomPoolName);
+            return MessageStandard.DoesNotExist("Room pool", RoomPoolName);
         }
 
         roomPool.Description = RoomPoolDescription;
