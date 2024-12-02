@@ -16,7 +16,7 @@ public class SetRoomPoolNameCommand : BaseCommand
     public SetRoomPoolNameCommand(
         IRoomPoolRepository roomPoolRepository
     )
-    : base(regex: @"^set roompool (.+) name (.+)$")
+    : base(regex: @"^set room pool (.+) name (.+)$")
     {
         _roomPoolRepository = roomPoolRepository;
     }

@@ -15,7 +15,7 @@ public class SetRoomPoolDescriptionCommand : BaseCommand
     private string RoomPoolDescription => GetParameter(2);
 
     public SetRoomPoolDescriptionCommand(IRoomPoolRepository roomPoolRepository)
-    : base(regex: @"^set roompool (.+) description (.+)$")
+    : base(regex: @"^set room pool (.+) description (.+)$")
     {
         _roomPoolRepository = roomPoolRepository;
     }

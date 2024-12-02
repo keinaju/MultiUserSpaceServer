@@ -15,7 +15,7 @@ public class NewRoomPoolCommand : BaseCommand
     public NewRoomPoolCommand(
         IRoomPoolRepository roomPoolRepository
     )
-    : base(regex: @"^new roompool$")
+    : base(regex: @"^new room pool$")
     {
         _roomPoolRepository = roomPoolRepository;
     }

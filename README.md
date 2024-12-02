@@ -102,13 +102,13 @@ The previously created rooms can be registered in user defined room pools.
 Command to create a new room pool:
 
 ```
-new roompool
+new room pool
 ```
 
 Command to add rooms to a room pool:
 
 ```
-add <roomname> in roompool <roompoolname>
+add <roomname> in room pool <roompoolname>
 ```
 
 Room pools provide a list of prototype rooms that can be used to generate more of them.
