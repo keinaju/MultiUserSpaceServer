@@ -3,7 +3,7 @@ using MUS.Game;
 
 namespace MUS.Controllers;
 
-[Route("api")]
+[Route("")]
 [ApiController]
 public class GameController : ControllerBase
 {
