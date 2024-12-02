@@ -39,32 +39,12 @@ public class AddItemInCraftPlanCommand : BaseCommand
         {
             return errorMessage;
         }
-
-        // Strategy 1:
-        // If craft plan already has this component,
-        // add quantity to existing craft component.
-        foreach(var componentInPlan in _craftPlan!.Components)
-        {
-            if(_componentItem!.PrimaryKey == componentInPlan.Item.PrimaryKey)
-            {
-                // The plan has already this component.
-                // Add quantity to existing component:
-                componentInPlan.Quantity += _parsedComponentQuantity;
-                await _craftPlanRepository.UpdateCraftPlan(_craftPlan);
-                return GetResponse();
-            }
-        }
-
-        // Strategy 2:
-        // If craft plan does not have this component,
-        // create a new craft component.
-        _craftPlan!.Components.Add(
-            new CraftComponent()
-            {
-                Item = _componentItem!,
-                Quantity = _parsedComponentQuantity
-            }
+        
+        _craftPlan!.AddComponent(
+            _componentItem!,
+            _parsedComponentQuantity
         );
+
         await _craftPlanRepository.UpdateCraftPlan(_craftPlan);
 
         return GetResponse();

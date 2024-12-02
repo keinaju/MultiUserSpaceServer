@@ -20,6 +20,33 @@ public class CraftPlan
     public ICollection<CraftComponent> Components { get; }
         = new HashSet<CraftComponent>();
     
+    public void AddComponent(Item item, int quantity)
+    {
+        // Strategy 1:
+        // If craft plan already has this component,
+        // add quantity to existing craft component quantity.
+        foreach(var componentInPlan in this.Components)
+        {
+            if(item.PrimaryKey == componentInPlan.Item.PrimaryKey)
+            {
+                // The plan has already this component.
+                // Add quantity to existing component:
+                componentInPlan.Quantity += quantity;
+                return;
+            }
+        }
+
+        // Strategy 2:
+        // If craft plan does not have this component,
+        // create a new craft component.
+        this.Components.Add(
+            new CraftComponent()
+            {
+                Item = item,
+                Quantity = quantity
+            }
+        );
+    }
 
     public string IsMadeOf()
     {
