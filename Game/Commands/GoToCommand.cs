@@ -33,43 +33,68 @@ public class GoToCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        Room currentRoom = await _state.GetRoom();
+        Room current = await _state.GetRoom();
+        Room? destination = null;
 
-        Room? destinationRoom = null;
-
-        if(PlaceParameter == "")
+        // Go to command has 4 strategies to find rooms
+        switch(PlaceParameter)
         {
-            destinationRoom = await FindConnectedRoom();
-            if(destinationRoom is null) destinationRoom = await FindInsideRoom();
-            if(destinationRoom is null) destinationRoom = await FindGlobalRoom();
-        }
-        else if(PlaceParameter == "global") destinationRoom = await FindGlobalRoom();
-        else if(PlaceParameter == "connected") destinationRoom = await FindConnectedRoom();
-        else if(PlaceParameter == "being") destinationRoom = await FindInsideRoom();
+            case "":
+                // 1. No parameter is to look for everywhere.
+                // In case of duplicates, first match is returned.
+                // Find first from connected rooms.
+                // If not found, find room from inside beings.
+                // If not found, find room with global access.
+                destination = await FindConnectedRoom();
+                if(destination is null) destination = await FindInsideRoom();
+                if(destination is null) destination = await FindGlobalRoom();
+                break;
 
-        if(destinationRoom is null)
+            case "global":
+                // 2. Global parameter is to look for rooms with global access only. 
+                destination = await FindGlobalRoom();
+                break;
+
+            case "connected":
+                // 3. Connected parameter => Look only for rooms connected to current room.
+                destination = await FindConnectedRoom();
+                break;
+
+            case "being":
+                // 4. Being parameter => Look only for rooms inside beings.
+                destination = await FindInsideRoom();
+                break;
+        }
+
+        if(destination is null)
         {
             return MessageStandard.DoesNotExist(RoomNameInUserInput);
         }
 
         var being = await _state.GetBeing();
 
-        if(destinationRoom.PrimaryKey == currentRoom.PrimaryKey)
+        if(destination.PrimaryKey == current.PrimaryKey)
         {
-            return $"{being.Name} is in {destinationRoom.Name}.";
+            return $"{being.Name} is in {destination.Name}.";
         }
 
-        await _state.Move(destinationRoom);
-        return $"{being.Name} moved to {destinationRoom.Name}.";
+        await _state.Move(destination);
+        return $"{being.Name} moved to {destination.Name}.";
     }
 
     private async Task<Room?> FindGlobalRoom()
     {
         var room = await _roomRepository.FindRoom(RoomNameInUserInput);
         
-        if (room is null) return null;
+        if (room is null)
+        {
+            return null;
+        }
 
-        if(room.GlobalAccess == true) return room;
+        if (room.GlobalAccess == true)
+        {
+            return room;
+        }
 
         return null;
     }
@@ -77,6 +102,7 @@ public class GoToCommand : BaseCommand
     private async Task<Room?> FindConnectedRoom()
     {
         var thisRoom = await _state.GetRoom();
+
         foreach(var connectedRoom in thisRoom.ConnectedToRooms)
         {
             if (connectedRoom.Name == RoomNameInUserInput) return connectedRoom;
@@ -88,17 +114,32 @@ public class GoToCommand : BaseCommand
     private async Task<Room?> FindInsideRoom()
     {
         var thisRoom = await _state.GetRoom();
+        var thisBeing = await _state.GetBeing();
+
         foreach(var beingHere in thisRoom.BeingsHere)
         {
-            var populatedBeing = await _beingRepository
-                .FindBeing(beingHere.PrimaryKey);
+            // Don't allow being to access it's own inside room
+            if (beingHere.PrimaryKey == thisBeing.PrimaryKey)
+            {
+                continue;
+            }
+
+            var populatedBeing = 
+                await _beingRepository.FindBeing(beingHere.PrimaryKey);
 
             var insideRoom = populatedBeing.RoomInside;
 
-            if (insideRoom is null) continue;
+            if (insideRoom is null)
+            {
+                continue;
+            }
 
-            if (populatedBeing.Name == RoomNameInUserInput) return insideRoom;
+            if (populatedBeing.Name == RoomNameInUserInput)
+            {
+                return insideRoom;
+            }
         }
+
         return null;
     }
 }
