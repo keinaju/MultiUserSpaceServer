@@ -60,7 +60,6 @@ public class CraftPlan
             ));
         }
 
-        return $"{Product.Name} is made of: "
-            + MessageStandard.List(componentQuantities);
+        return MessageStandard.List(componentQuantities);
     }
 }

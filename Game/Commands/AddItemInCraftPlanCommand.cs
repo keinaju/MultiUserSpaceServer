@@ -34,7 +34,7 @@ public class AddItemInCraftPlanCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var errorMessage = await GetValidationResult();
+        var errorMessage = await Validate();
         if(errorMessage != string.Empty)
         {
             return errorMessage;
@@ -50,7 +50,7 @@ public class AddItemInCraftPlanCommand : BaseCommand
         return GetResponse();
     }
 
-    private async Task<string> GetValidationResult()
+    private async Task<string> Validate()
     {
         // Validate quantity in user input
         bool result = int.TryParse(QuantityInUserInput, out _parsedComponentQuantity);
@@ -94,6 +94,6 @@ public class AddItemInCraftPlanCommand : BaseCommand
         return 
             MessageStandard.Quantity(_componentItem!.Name, _parsedComponentQuantity)
             + $" was added to {CraftPlanItemName}'s craft plan. "
-            + $"{_craftPlan!.IsMadeOf()}.";
+            + $"{CraftPlanItemName} is made of {_craftPlan!.IsMadeOf()}.";
     }
 }
