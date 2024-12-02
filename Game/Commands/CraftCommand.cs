@@ -93,7 +93,7 @@ public class CraftCommand : BaseCommand
         {
             return MessageStandard.DoesNotContain(
                 $"{_product.Name}'s craft plan",
-                "items"
+                "components"
             );
         }
 

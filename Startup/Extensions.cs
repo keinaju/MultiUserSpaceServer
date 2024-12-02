@@ -4,6 +4,7 @@ using MUS.Game.Clock;
 using MUS.Game.Commands;
 using MUS.Game.Commands.New;
 using MUS.Game.Commands.Set;
+using MUS.Game.Commands.Show;
 using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
@@ -47,6 +48,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
         services.AddScoped<IGameCommand, SetCuriosityCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
+        services.AddScoped<IGameCommand, ShowCraftPlanCommand>();
         services.AddScoped<IGameCommand, TakeCommand>();
         services.AddScoped<IGameCommand, TimeCommand>();
         services.AddScoped<IGameCommand, UserCommand>();
