@@ -20,7 +20,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GetCommand>();
-        services.AddScoped<IGameCommand, GoToCommand>();
+        services.AddScoped<IGameCommand, GoCommand>();
         services.AddScoped<IGameCommand, HelpCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
         services.AddScoped<IGameCommand, NewItemGeneratorCommand>();

@@ -5,7 +5,7 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
-public class GoToCommand : BaseCommand
+public class GoCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -19,12 +19,12 @@ public class GoToCommand : BaseCommand
     private string PlaceParameter => GetParameter(1).Trim();
     private string RoomNameInUserInput => GetParameter(2);
 
-    public GoToCommand(
+    public GoCommand(
         IBeingRepository beingRepository,
         IRoomRepository roomRepository,
         IPlayerState state
     )
-    : base(regex: @"^go to (global |connected |being )?(.+)$")
+    : base(regex: @"^go (global |connected |being )?(.+)$")
     {
         _beingRepository = beingRepository;
         _roomRepository = roomRepository;
