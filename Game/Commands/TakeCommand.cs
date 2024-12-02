@@ -48,7 +48,7 @@ public class TakeCommand : BaseCommand
         {
             var being = await _state.GetBeing();
             await GiveItemsFromRoom(being, roomInventory);
-            return $"{being.Name} got {MessageStandard.Quantity(_item!.Name, (int)_quantity!)}.";
+            return $"{being.Name} took {MessageStandard.Quantity(_item!.Name, (int)_quantity!)}.";
         }
 
         return MessageStandard.DoesNotContain(
