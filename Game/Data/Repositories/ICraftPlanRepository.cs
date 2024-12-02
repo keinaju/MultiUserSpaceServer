@@ -7,4 +7,5 @@ public interface ICraftPlanRepository
 {
     Task<CraftPlan> CreateCraftPlan(CraftPlan craftPlan);
     Task<CraftPlan?> FindCraftPlanByProduct(Item product);
+    Task UpdateCraftPlan(CraftPlan updatedCraftPlan);
 }

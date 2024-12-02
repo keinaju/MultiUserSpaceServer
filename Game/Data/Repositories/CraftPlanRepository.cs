@@ -24,18 +24,35 @@ public class CraftPlanRepository : ICraftPlanRepository
         return entry.Entity;
     }
 
+    public async Task<CraftPlan> FindCraftPlan(int primaryKey)
+    {
+        return await _context.CraftPlans
+            .Include(craftPlan => craftPlan.Components)
+            .ThenInclude(craftComponent =>  craftComponent.Item)
+            .SingleAsync(craftPlan => craftPlan.PrimaryKey == primaryKey);
+    }
+
     public async Task<CraftPlan?> FindCraftPlanByProduct(Item product)
     {
         try
         {
             return await _context.CraftPlans
-                .Where(craftPlan =>
+                .Include(craftPlan => craftPlan.Components)
+                .ThenInclude(craftComponent =>  craftComponent.Item)
+                .SingleAsync(craftPlan => 
                     craftPlan.Product.PrimaryKey == product.PrimaryKey
-                ).SingleAsync();
+                );
         }
         catch(InvalidOperationException)
         {
             return null;
         }
+    }
+
+    public async Task UpdateCraftPlan(CraftPlan updatedCraftPlan)
+    {
+        var cpInDb = await FindCraftPlan(updatedCraftPlan.PrimaryKey);
+        cpInDb = updatedCraftPlan;
+        await _context.SaveChangesAsync();
     }
 }

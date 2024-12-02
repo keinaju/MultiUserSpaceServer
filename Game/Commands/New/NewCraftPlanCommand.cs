@@ -31,7 +31,7 @@ public class NewCraftPlanCommand : BaseCommand
         var product = await _itemRepository.FindItem(ItemName);
         if(product is null)
         {
-            return MessageStandard.DoesNotExist(ItemName);
+            return MessageStandard.DoesNotExist("Item", ItemName);
         }
 
         // Prevent duplicate craft plans for one item
