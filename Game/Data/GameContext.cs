@@ -6,6 +6,7 @@ namespace MUS.Game.Data
     public class GameContext : DbContext
     {
         public DbSet<Being> Beings { get; set; }
+        public DbSet<CraftPlan> CraftPlans { get; set; }
         public DbSet<GameSettings> GameSettings { get; set; }
         public DbSet<ItemGenerator> ItemGenerators { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
