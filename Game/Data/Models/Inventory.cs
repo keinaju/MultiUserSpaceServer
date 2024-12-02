@@ -14,6 +14,31 @@ public class Inventory
 
     public bool IsEmpty => ItemStacks.Count == 0;
 
+    public void AddItems(Item item, int quantity)
+    {
+        ItemStack? stack = null;
+        try
+        {
+            stack = this.ItemStacks.Single(
+                stack => stack.Item.PrimaryKey == item.PrimaryKey
+            );
+        }
+        catch(InvalidOperationException)
+        {
+            // Stack does not exist, so create a new one
+            stack = new ItemStack()
+            {
+                Item = item,
+                Quantity = 0,
+                Inventory = this
+            };
+
+            this.ItemStacks.Add(stack);
+        }
+
+        stack.Quantity += quantity;
+    }
+
     public bool Contains(Item item, int quantity)
     {
         ItemStack? stack = null;
@@ -50,42 +75,24 @@ public class Inventory
         return MessageStandard.List(itemQuantities);
     }
 
-    public void TransferTo(
-        Inventory destinationInventory,
-        Item item,
-        int quantity
-    )
+    public void RemoveItems(Item item, int quantity)
     {
-        // Remove items from source stack
-        var sourceStack = ItemStacks.Single(stack => stack.Item == item);
-        if(sourceStack.Quantity == quantity)
+        var stack = this.ItemStacks.Single(
+            stack => stack.Item.PrimaryKey == item.PrimaryKey
+        );
+
+        if(stack.Quantity == quantity)
         {
-            ItemStacks.Remove(sourceStack);
-        }
-        else
-        {
-            sourceStack.Quantity -= quantity;
+            this.ItemStacks.Remove(stack);
+            return;
         }
 
-        // Add items in destination stack
-        // Ensure compatible stack exists in destination
-        ItemStack? destinationStack = null;
-        try
-        {
-            destinationStack = destinationInventory
-                .ItemStacks.Single(stack => stack.Item == item);
-        }
-        catch(InvalidOperationException)
-        {
-            destinationStack = new ItemStack()
-            {
-                Item = item,
-                Quantity = 0,
-                Inventory = destinationInventory
-            };
+        stack.Quantity -= quantity;
+    }
 
-            destinationInventory.ItemStacks.Add(destinationStack);
-        }
-        destinationStack.Quantity += quantity;
+    public void TransferTo(Inventory inventory, Item item, int quantity)
+    {
+        this.RemoveItems(item, quantity);
+        inventory.AddItems(item, quantity);
     }
 }
