@@ -10,4 +10,11 @@ public class Item
     public string Name { get; set; }
 
     public string? Description { get; set; }
+
+    public override string ToString()
+    {
+        return Description is null ?
+            $"{this.Name} is an item without description." :
+            Description;
+    }
 }

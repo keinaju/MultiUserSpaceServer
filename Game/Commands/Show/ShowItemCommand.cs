@@ -5,7 +5,7 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowCraftPlanCommand : BaseCommand
+public class ShowItemCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn
@@ -19,11 +19,11 @@ public class ShowCraftPlanCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
-    public ShowCraftPlanCommand(
+    public ShowItemCommand(
         ICraftPlanRepository craftPlanRepository,
         IItemRepository itemRepository
     )
-    : base(regex: @"^show (.+) craft plan$")
+    : base(regex: @"^show item (.+)$")
     {
         _craftPlanRepository = craftPlanRepository;
         _itemRepository = itemRepository;
@@ -37,7 +37,7 @@ public class ShowCraftPlanCommand : BaseCommand
             return errorMessage;
         }
 
-        return $"{_product!.Name} is made of {_craftPlan!.IsMadeOf()}.";
+        return $"{_product!.ToString()} {await GetMadeOfText()}";
     }
 
     private async Task<string> Validate()
@@ -48,20 +48,26 @@ public class ShowCraftPlanCommand : BaseCommand
             return MessageStandard.DoesNotExist("Item", ItemName);
         }
 
+        return string.Empty;
+    }
+
+    private async Task<string> GetMadeOfText()
+    {
         _craftPlan = await _craftPlanRepository
-            .FindCraftPlanByProduct(_product);
+            .FindCraftPlanByProduct(_product!);
+
         if(_craftPlan is null)
         {
-            return $"{ItemName} is not an item that can be crafted.";
+            return $"{_product!.Name} is not an item that can be crafted.";
         }
-        if(_craftPlan.Components.Count == 0)
+        else if(_craftPlan.Components.Count == 0)
         {
             return MessageStandard.DoesNotContain(
-                $"{_product.Name}'s craft plan",
+                $"{_product!.Name}'s craft plan",
                 "components"
             );
         }
 
-        return string.Empty;
+        return $"{_product!.Name} is made of {_craftPlan!.IsMadeOf()}.";
     }
 }
