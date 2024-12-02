@@ -5,7 +5,7 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
-public class GetCommand : BaseCommand
+public class TakeCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -21,12 +21,12 @@ public class GetCommand : BaseCommand
     private Item? _item = null;
     private int? _quantity = null;
 
-    public GetCommand(
+    public TakeCommand(
         IInventoryRepository inventoryRepository,
         IItemRepository itemRepository,
         IPlayerState state
     )
-    : base(regex: @"^get (\d+) (.+)$")
+    : base(regex: @"^take (\d+) (.+)$")
     {
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;

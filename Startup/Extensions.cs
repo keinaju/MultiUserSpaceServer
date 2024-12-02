@@ -19,7 +19,6 @@ public static class Extensions
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
         services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
-        services.AddScoped<IGameCommand, GetCommand>();
         services.AddScoped<IGameCommand, GoCommand>();
         services.AddScoped<IGameCommand, HelpCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
@@ -45,6 +44,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
         services.AddScoped<IGameCommand, SetCuriosityCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
+        services.AddScoped<IGameCommand, TakeCommand>();
         services.AddScoped<IGameCommand, TimeCommand>();
         services.AddScoped<IGameCommand, UserCommand>();
         services.AddScoped<IPrerequisiteFilter, PrerequisiteFilter>();
