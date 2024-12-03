@@ -32,29 +32,33 @@ public class NewRoomCommand : BaseCommand
     {
         var pickedBeing = await _state.GetBeing();
 
-        //Create and set up new room
-        var room = new Room()
+        var oldRoom = await _roomRepository.FindRoom(
+            pickedBeing.InRoom.PrimaryKey
+        );
+
+        // Initialize an empty room
+        var newRoom = new Room()
         {
-            Name = string.Empty,
             GlobalAccess = false,
+            Name = string.Empty,
             Inventory = new Inventory()
         };
 
         //Connect new room to room it was created from
-        room.ConnectedToRooms.Add(pickedBeing.InRoom);
-        var roomInDb = await _roomRepository.CreateRoom(room);
-        roomInDb.Name = $"r{roomInDb.PrimaryKey}";
-        await _roomRepository.UpdateRoom(roomInDb);
+        newRoom.ConnectedToRooms.Add(oldRoom);
+        newRoom = await _roomRepository.CreateRoom(newRoom);
+        newRoom.Name = $"r{newRoom.PrimaryKey}";
+        await _roomRepository.UpdateRoom(newRoom);
 
-        //Connect current room to new room
-        var currentRoom = pickedBeing.InRoom;
-        currentRoom.ConnectedToRooms.Add(roomInDb);
-        await _roomRepository.UpdateRoom(currentRoom);
+        //Connect old room to new room
+        oldRoom.ConnectedToRooms.Add(newRoom);
+        await _roomRepository.UpdateRoom(oldRoom);
 
         //Move being to new room
-        pickedBeing.InRoom = roomInDb;
+        pickedBeing.InRoom = newRoom;
         await _beingRepository.UpdateBeing(pickedBeing);
 
-        return $"{MessageStandard.Created("room", roomInDb.Name)} {pickedBeing.Name} moved there.";
+        return $"{MessageStandard.Created("room", newRoom.Name)} "
+            + $"{pickedBeing.Name} moved there.";
     }
 }
