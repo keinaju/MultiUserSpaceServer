@@ -23,7 +23,7 @@ public class AddFeatureInBeingCommand : BaseCommand
         IFeatureRepository featureRepository,
         IPlayerState state
     )
-    : base(regex: @"^add feature (.+)$")
+    : base(regex: @"^add feature (.+) in being$")
     {
         _beingRepository = beingRepository;
         _featureRepository = featureRepository;
