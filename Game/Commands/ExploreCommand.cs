@@ -11,17 +11,20 @@ public class ExploreCommand : BaseCommand
         Prerequisite.UserHasPickedBeing
     ];
 
+    private readonly IInventoryRepository _inventoryRepository;
     private readonly IPlayerState _state;
     private readonly IRoomPoolRepository _roomPoolRepository;
     private readonly IRoomRepository _roomRepository;
 
     public ExploreCommand(
+        IInventoryRepository inventoryRepository,
         IPlayerState state,
         IRoomPoolRepository roomPoolRepository,
         IRoomRepository roomRepository
     )
     : base(regex: @"^explore$")
     {
+        _inventoryRepository = inventoryRepository;
         _roomPoolRepository = roomPoolRepository;
         _roomRepository = roomRepository;
         _state = state;
@@ -29,21 +32,45 @@ public class ExploreCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
+        var being = await _state.GetBeing();
         var currentRoom = await _state.GetRoom();
+        var inventory = await _state.GetInventory();
 
         var curiosity = currentRoom.Curiosity;
         if(curiosity is null)
         {
-            return MessageStandard.DoesNotContain(currentRoom.Name, "a curiosity to explore");
+            return MessageStandard.DoesNotContain(
+                currentRoom.Name, "a curiosity to explore"
+            );
         }
+        
         // Populate
         curiosity = await _roomPoolRepository
             .FindRoomPool(curiosity.PrimaryKey);
-
+        
         var roomsInPool = curiosity.RoomsInPool;
         if(roomsInPool.Count == 0)
         {
-            return MessageStandard.DoesNotContain(curiosity.Name, "rooms");
+            return MessageStandard.DoesNotContain(
+                curiosity.Name, "rooms"
+            );
+        }
+
+        if(curiosity.ItemToExplore is not null)
+        {
+            // If player does not have the item defined
+            // in room pool, prevent exploring
+            if(!inventory.Contains(curiosity.ItemToExplore, 1))
+            {
+                return MessageStandard.DoesNotContain(
+                    $"{being.Name}'s inventory",
+                    $"required item to explore ({curiosity.ItemToExplore.Name})"
+                );
+            }
+
+            // Otherwise, take item from player
+            inventory.RemoveItems(curiosity.ItemToExplore, 1);
+            await _inventoryRepository.UpdateInventory(inventory);
         }
 
         int random = new Random().Next(0, roomsInPool.Count);

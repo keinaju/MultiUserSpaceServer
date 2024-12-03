@@ -23,8 +23,9 @@ public class NewRoomPoolCommand : BaseCommand
     public override async Task<string> Invoke()
     {
         var rp = new RoomPool() { 
-            Name = string.Empty,
-            Description = string.Empty
+            Description = string.Empty,
+            ItemToExplore = null,
+            Name = string.Empty
         };
 
         var rpInDb = await _roomPoolRepository.CreateRoomPool(rp);

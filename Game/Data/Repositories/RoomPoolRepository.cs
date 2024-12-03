@@ -28,6 +28,7 @@ public class RoomPoolRepository : IRoomPoolRepository
         return await _context.RoomPools
             .Include(roomPool => roomPool.RoomsInPool)
             .ThenInclude(roomsInPool => roomsInPool.Room)
+            .Include(roomPool => roomPool.ItemToExplore)
             .SingleAsync(rp => rp.PrimaryKey == primaryKey);
     }
 
@@ -38,6 +39,7 @@ public class RoomPoolRepository : IRoomPoolRepository
             return await _context.RoomPools
                 .Include(rp => rp.RoomsInPool)
                 .ThenInclude(rooms => rooms.Room)
+                .Include(roomPool => roomPool.ItemToExplore)
                 .SingleAsync(rp => rp.Name == roomPoolName);
         }
         catch(InvalidOperationException)
