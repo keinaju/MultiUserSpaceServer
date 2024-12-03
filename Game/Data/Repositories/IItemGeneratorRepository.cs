@@ -5,5 +5,5 @@ namespace MUS.Game.Data.Repositories;
 public interface IItemGeneratorRepository
 {
     Task<ItemGenerator> CreateItemGenerator(ItemGenerator itemGenerator);
-    Task<List<ItemGenerator>> GetAllItemGenerators();
+    Task<List<ItemGenerator>> FindAllItemGenerators();
 }

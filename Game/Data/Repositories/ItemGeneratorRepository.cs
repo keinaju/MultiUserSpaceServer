@@ -20,7 +20,7 @@ public class ItemGeneratorRepository : IItemGeneratorRepository
         return entry.Entity;
     }
 
-    public async Task<List<ItemGenerator>> GetAllItemGenerators()
+    public async Task<List<ItemGenerator>> FindAllItemGenerators()
     {
         return await _context.ItemGenerators
             .Include(generator => generator.Inventories)

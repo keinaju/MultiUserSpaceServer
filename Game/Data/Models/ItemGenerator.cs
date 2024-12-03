@@ -14,5 +14,5 @@ public class ItemGenerator
 
     public required int IntervalInTicks { get; set; }
 
-    public ICollection<Inventory> Inventories { get; } = [];
+    public ICollection<Inventory> Inventories { get; } = new HashSet<Inventory>();
 }
