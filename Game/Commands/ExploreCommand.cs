@@ -64,7 +64,7 @@ public class ExploreCommand : BaseCommand
             {
                 return MessageStandard.DoesNotContain(
                     $"{being.Name}'s inventory",
-                    $"required item to explore ({curiosity.ItemToExplore.Name})"
+                    $"required item to explore ({MessageStandard.Quantity(curiosity.ItemToExplore.Name, 1)})"
                 );
             }
 
