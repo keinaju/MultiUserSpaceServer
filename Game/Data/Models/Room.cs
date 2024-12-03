@@ -34,7 +34,7 @@ public class Room
             Curiosity = this.Curiosity,
             Description = this.Description,
             GlobalAccess = this.GlobalAccess,
-            Inventory = new Inventory(),
+            Inventory = this.Inventory.Clone(),
             Name = this.Name,
         };
 
