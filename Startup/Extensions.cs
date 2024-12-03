@@ -30,7 +30,6 @@ public static class Extensions
         services.AddScoped<IGameCommand, NewItemCommand>();
         services.AddScoped<IGameCommand, NewRoomCommand>();
         services.AddScoped<IGameCommand, NewRoomPoolCommand>();
-        services.AddScoped<IGameCommand, SetCuriosityCommand>();
         services.AddScoped<IGameCommand, LoginCommand>();
         services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
@@ -38,6 +37,8 @@ public static class Extensions
         services.AddScoped<IGameCommand, PickBeingCommand>();
         services.AddScoped<IGameCommand, SellCommand>();
         services.AddScoped<IGameCommand, SetBeingNameCommand>();
+        services.AddScoped<IGameCommand, SetCuriosityCommand>();
+        services.AddScoped<IGameCommand, SetHatcherIntervalCommand>();
         services.AddScoped<IGameCommand, SetItemDescriptionCommand>();
         services.AddScoped<IGameCommand, SetItemNameCommand>();
         services.AddScoped<IGameCommand, SetRoomDescriptionCommand>();
@@ -46,7 +47,6 @@ public static class Extensions
         services.AddScoped<IGameCommand, SetRoomNameCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolDescriptionCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
-        services.AddScoped<IGameCommand, SetCuriosityCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
         services.AddScoped<IGameCommand, ShowItemCommand>();
         services.AddScoped<IGameCommand, ShowItemHatchersCommand>();

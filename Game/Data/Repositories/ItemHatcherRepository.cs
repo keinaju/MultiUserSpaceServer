@@ -36,4 +36,14 @@ public class ItemHatcherRepository : IItemHatcherRepository
             .Include(hatcher => hatcher.Inventories)
             .ToListAsync();
     }
+
+    public async Task UpdateItemHatcher(ItemHatcher updatedItemHatcher)
+    {
+        var hatcherInDb = await _context.ItemHatchers
+            .FindAsync(updatedItemHatcher.PrimaryKey);
+
+        hatcherInDb = updatedItemHatcher;
+
+        await _context.SaveChangesAsync();
+    }
 }
