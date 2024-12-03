@@ -26,6 +26,7 @@ public class BeingRepository : IBeingRepository
             .Include(being => being.InRoom)
             .Include(being => being.Inventory)
             .Include(being => being.RoomInside)
+            .Include(being => being.Features)
             .SingleAsync(being => being.PrimaryKey == primaryKey);
     }
 
@@ -37,6 +38,7 @@ public class BeingRepository : IBeingRepository
                 .Include(being => being.InRoom)
                 .Include(being => being.Inventory)
                 .Include(being => being.RoomInside)
+                .Include(being => being.Features)
                 .SingleAsync(being => being.Name == beingName);
         }
         catch(InvalidOperationException)

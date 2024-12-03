@@ -9,4 +9,7 @@ public class Feature
     public int PrimaryKey { get; set; }
 
     public required string Name { get; set; }
+
+    public ICollection<Being> AssociatedWithBeings { get; }
+        = new HashSet<Being>();
 }

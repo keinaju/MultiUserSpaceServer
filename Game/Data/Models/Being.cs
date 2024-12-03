@@ -11,6 +11,11 @@ public class Being
     public required User CreatedByUser { get; set; } = null!;
 
     /// <summary>
+    /// Features associated with this being.
+    /// </summary>
+    public ICollection<Feature> Features { get; } = new HashSet<Feature>();
+
+    /// <summary>
     /// Location of being.
     /// </summary>
     public required Room InRoom { get; set; }
@@ -26,7 +31,7 @@ public class Being
 
     public Being Clone()
     {
-        return new Being()
+        var clone = new Being()
         {
             CreatedByUser = this.CreatedByUser,
             InRoom = this.InRoom,
@@ -35,5 +40,12 @@ public class Being
             RoomInside = this.RoomInside is null ?
                 null : this.RoomInside.Clone()
         };
+
+        foreach(var feature in this.Features)
+        {
+            clone.Features.Add(feature);
+        }
+
+        return clone;
     }
 }
