@@ -44,6 +44,11 @@ public class Room
             Name = this.Name,
         };
 
+        foreach(var feature in this.BeingMustHaveFeatures)
+        {
+            clone.BeingMustHaveFeatures.Add(feature);
+        }
+
         return clone;
     }
 }
