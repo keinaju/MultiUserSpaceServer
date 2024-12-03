@@ -8,9 +8,9 @@ public class Inventory
     [Key]
     public int PrimaryKey { get; set; }
 
-    public ICollection<ItemStack> ItemStacks { get; set; } = new HashSet<ItemStack>();
+    public ICollection<ItemStack> ItemStacks { get; } = new HashSet<ItemStack>();
 
-    public ICollection<ItemGenerator> ItemGenerators { get; } = [];
+    public ICollection<ItemGenerator> ItemGenerators { get; } = new HashSet<ItemGenerator>();
 
     public bool IsEmpty => ItemStacks.Count == 0;
 
@@ -37,6 +37,27 @@ public class Inventory
         }
 
         stack.Quantity += quantity;
+    }
+
+    public Inventory Clone()
+    {
+        var newInventory = new Inventory() {};
+
+        foreach(var oldStack in this.ItemStacks)
+        {
+            // Clone items to new inventory
+            var newStack = oldStack.Clone();
+            newStack.Inventory = newInventory;
+            newInventory.ItemStacks.Add(newStack);
+        }
+        
+        foreach(var generator in this.ItemGenerators)
+        {
+            // Refer to same item generator when room inventory is cloned
+            newInventory.ItemGenerators.Add(generator);
+        }
+
+        return newInventory;
     }
 
     public bool Contains(Item item, int quantity)

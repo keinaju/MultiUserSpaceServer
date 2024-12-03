@@ -25,6 +25,11 @@ public class RoomRepository : IRoomRepository
         return await _context.Rooms
             .Include(room => room.ConnectedToRooms)
             .Include(room => room.Inventory)
+            .ThenInclude(inventory => inventory.ItemStacks)
+            .ThenInclude(itemStack => itemStack.Item)
+            .Include(room => room.Inventory)
+            .ThenInclude(inventory => inventory.ItemGenerators)
+            .ThenInclude(itemGenerator => itemGenerator.Item)
             .Include(room => room.Curiosity)
             .Include(room => room.BeingsHere)
             .SingleAsync(room => room.PrimaryKey == primaryKey);
