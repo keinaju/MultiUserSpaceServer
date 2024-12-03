@@ -5,7 +5,7 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Set;
 
-public class SetHatcherIntervalCommand : BaseCommand
+public class SetItemHatcherIntervalCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -34,12 +34,12 @@ public class SetHatcherIntervalCommand : BaseCommand
         }
     }
 
-    public SetHatcherIntervalCommand(
+    public SetItemHatcherIntervalCommand(
         IItemHatcherRepository itemHatcherRepository,
         IItemRepository itemRepository,
         IPlayerState state
     )
-    : base(regex: @"^set (.+) hatcher interval (\d+)$")
+    : base(regex: @"^set (.+) item hatcher interval (\d+)$")
     {
         _itemHatcherRepository = itemHatcherRepository;
         _itemRepository = itemRepository;

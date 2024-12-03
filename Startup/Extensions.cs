@@ -38,7 +38,8 @@ public static class Extensions
         services.AddScoped<IGameCommand, SellCommand>();
         services.AddScoped<IGameCommand, SetBeingNameCommand>();
         services.AddScoped<IGameCommand, SetCuriosityCommand>();
-        services.AddScoped<IGameCommand, SetHatcherIntervalCommand>();
+        services.AddScoped<IGameCommand, SetItemHatcherIntervalCommand>();
+        services.AddScoped<IGameCommand, SetItemHatcherQuantityCommand>();
         services.AddScoped<IGameCommand, SetItemDescriptionCommand>();
         services.AddScoped<IGameCommand, SetItemNameCommand>();
         services.AddScoped<IGameCommand, SetRoomDescriptionCommand>();
