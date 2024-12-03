@@ -8,6 +8,7 @@ namespace MUS.Game.Data
         public DbSet<Being> Beings { get; set; }
         public DbSet<CraftPlan> CraftPlans { get; set; }
         public DbSet<Deployment> Deployments { get; set; }
+        public DbSet<Feature> Features { get; set; }
         public DbSet<GameSettings> GameSettings { get; set; }
         public DbSet<ItemHatcher> ItemHatchers { get; set; }
         public DbSet<Inventory> Inventories { get; set; }
