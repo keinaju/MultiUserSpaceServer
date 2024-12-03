@@ -71,11 +71,23 @@ public class GoCommand : BaseCommand
             return MessageStandard.DoesNotExist("Room", RoomNameInUserInput);
         }
 
+        // Populate
+        destination = await _roomRepository.FindRoom(destination.PrimaryKey);
+
         var being = await _state.GetBeing();
 
         if(destination.PrimaryKey == current.PrimaryKey)
         {
             return $"{being.Name} is in {destination.Name}.";
+        }
+
+        foreach(var requiredFeature in destination.BeingMustHaveFeatures)
+        {
+            if(!being.Features.Contains(requiredFeature))
+            {
+                return $"{being.Name} can not enter {destination.Name} " +
+                $"without {requiredFeature.Name} feature.";
+            }
         }
 
         await _state.Move(destination);
