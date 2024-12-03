@@ -26,6 +26,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, HelpCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
         services.AddScoped<IGameCommand, NewCraftPlanCommand>();
+        services.AddScoped<IGameCommand, NewDeploymentCommand>();
         services.AddScoped<IGameCommand, NewItemHatcherCommand>();
         services.AddScoped<IGameCommand, NewItemCommand>();
         services.AddScoped<IGameCommand, NewRoomCommand>();
@@ -69,6 +70,7 @@ public static class Extensions
     {
         services.AddScoped<IBeingRepository, BeingRepository>();
         services.AddScoped<ICraftPlanRepository, CraftPlanRepository>();
+        services.AddScoped<IDeploymentRepository, DeploymentRepository>();
         services.AddScoped<IGameSettingsRepository, GameSettingsRepository>();
         services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IItemHatcherRepository, ItemHatcherRepository>();
