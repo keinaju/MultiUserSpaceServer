@@ -18,6 +18,7 @@ public static class Extensions
     {
         services.AddScoped<ICommandParser, CommandParser>();
         services.AddScoped<IGameCommand, AddFeatureInBeingCommand>();
+        services.AddScoped<IGameCommand, AddFeatureInRoomCommand>();
         services.AddScoped<IGameCommand, AddItemInCraftPlanCommand>();
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
         services.AddScoped<IGameCommand, BreakOrCraftCommand>();
