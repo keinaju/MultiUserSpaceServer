@@ -35,7 +35,7 @@ public class NewItemGeneratorCommand : BaseCommand
         var item = await _itemRepository.FindItem(ItemName);
         if (item is null)
         {
-            return $"{ItemName} does not exist.";
+            return MessageStandard.DoesNotExist("Item", ItemName);
         }
 
         var generator = new ItemGenerator()
@@ -50,6 +50,7 @@ public class NewItemGeneratorCommand : BaseCommand
 
         await _itemGeneratorRepository.CreateItemGenerator(generator);
 
-        return MessageStandard.Created("item generator", ItemName);
+        return MessageStandard.Created("item generator", ItemName)
+            + $" {currentRoom.Name} is subscribed to this.";
     }
 }
