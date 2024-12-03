@@ -12,4 +12,7 @@ public class Feature
 
     public ICollection<Being> AssociatedWithBeings { get; }
         = new HashSet<Being>();
+
+    public ICollection<Room> MustHaveInRooms { get; }
+        = new HashSet<Room>();
 }

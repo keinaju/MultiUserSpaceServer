@@ -32,6 +32,7 @@ public class RoomRepository : IRoomRepository
             .ThenInclude(itemHatcher => itemHatcher.Item)
             .Include(room => room.Curiosity)
             .Include(room => room.BeingsHere)
+            .Include(room => room.BeingMustHaveFeatures)
             .SingleAsync(room => room.PrimaryKey == primaryKey);
     }
 
@@ -44,6 +45,7 @@ public class RoomRepository : IRoomRepository
                 .Include(room => room.Inventory)
                 .Include(room => room.Curiosity)
                 .Include(room => room.BeingsHere)
+                .Include(room => room.BeingMustHaveFeatures)
                 .SingleAsync(room => room.Name == roomName);
         }
         catch (InvalidOperationException)
