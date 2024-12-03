@@ -28,8 +28,8 @@ public class RoomRepository : IRoomRepository
             .ThenInclude(inventory => inventory.ItemStacks)
             .ThenInclude(itemStack => itemStack.Item)
             .Include(room => room.Inventory)
-            .ThenInclude(inventory => inventory.ItemGenerators)
-            .ThenInclude(itemGenerator => itemGenerator.Item)
+            .ThenInclude(inventory => inventory.ItemHatchers)
+            .ThenInclude(itemHatcher => itemHatcher.Item)
             .Include(room => room.Curiosity)
             .Include(room => room.BeingsHere)
             .SingleAsync(room => room.PrimaryKey == primaryKey);

@@ -75,17 +75,17 @@ pick <beingname>
 
 ### Items
 
-Items are generated with item generators.
+Items are generated with item hatchers.
 Command to create a new item:
 
 ```
 new item
 ```
 
-Command to create a new item generator:
+Command to create a new item hatcher:
 
 ```
-new <itemname> item generator
+new <itemname> item hatcher
 ```
 
 ### Room pools and curiosities

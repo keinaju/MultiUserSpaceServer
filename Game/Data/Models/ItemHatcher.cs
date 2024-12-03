@@ -2,7 +2,7 @@
 
 namespace MUS.Game.Data.Models;
 
-public class ItemGenerator
+public class ItemHatcher
 {
     [Key]
     public int PrimaryKey { get; set; }

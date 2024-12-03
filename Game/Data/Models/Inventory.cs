@@ -10,7 +10,7 @@ public class Inventory
 
     public ICollection<ItemStack> ItemStacks { get; } = new HashSet<ItemStack>();
 
-    public ICollection<ItemGenerator> ItemGenerators { get; } = new HashSet<ItemGenerator>();
+    public ICollection<ItemHatcher> ItemHatchers { get; } = new HashSet<ItemHatcher>();
 
     public bool IsEmpty => ItemStacks.Count == 0;
 
@@ -51,10 +51,10 @@ public class Inventory
             newInventory.ItemStacks.Add(newStack);
         }
         
-        foreach(var generator in this.ItemGenerators)
+        foreach(var hatcher in this.ItemHatchers)
         {
-            // Refer to same item generator when room inventory is cloned
-            newInventory.ItemGenerators.Add(generator);
+            // Refer to same item hatcher when room inventory is cloned
+            newInventory.ItemHatchers.Add(hatcher);
         }
 
         return newInventory;

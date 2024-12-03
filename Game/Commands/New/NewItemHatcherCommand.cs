@@ -5,27 +5,27 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewItemGeneratorCommand : BaseCommand
+public class NewItemHatcherCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
         Prerequisite.UserHasPickedBeing,
     ];
 
-    private readonly IItemGeneratorRepository _itemGeneratorRepository;
+    private readonly IItemHatcherRepository _itemHatcherRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
 
     private string ItemName => GetParameter(1);
 
-    public NewItemGeneratorCommand(
-        IItemGeneratorRepository itemGeneratorRepository,
+    public NewItemHatcherCommand(
+        IItemHatcherRepository itemHatcherRepository,
         IItemRepository itemRepository,
         IPlayerState state
     )
-    : base(regex: @"^new (.+) generator$")
+    : base(regex: @"^new (.+) hatcher$")
     {
-        _itemGeneratorRepository = itemGeneratorRepository;
+        _itemHatcherRepository = itemHatcherRepository;
         _itemRepository = itemRepository;
         _state = state;
     }
@@ -38,7 +38,7 @@ public class NewItemGeneratorCommand : BaseCommand
             return MessageStandard.DoesNotExist("Item", ItemName);
         }
 
-        var generator = new ItemGenerator()
+        var hatcher = new ItemHatcher()
         {
             Item = item,
             MinQuantity = 1,
@@ -46,11 +46,11 @@ public class NewItemGeneratorCommand : BaseCommand
             IntervalInTicks = 1
         };
         var currentRoom = await _state.GetRoom();
-        generator.Inventories.Add(currentRoom.Inventory);
+        hatcher.Inventories.Add(currentRoom.Inventory);
 
-        await _itemGeneratorRepository.CreateItemGenerator(generator);
+        await _itemHatcherRepository.CreateItemHatcher(hatcher);
 
-        return MessageStandard.Created("item generator", ItemName)
+        return MessageStandard.Created("item hatcher", ItemName)
             + $" {currentRoom.Name} is subscribed to this.";
     }
 }

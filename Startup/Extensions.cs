@@ -26,7 +26,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, HelpCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
         services.AddScoped<IGameCommand, NewCraftPlanCommand>();
-        services.AddScoped<IGameCommand, NewItemGeneratorCommand>();
+        services.AddScoped<IGameCommand, NewItemHatcherCommand>();
         services.AddScoped<IGameCommand, NewItemCommand>();
         services.AddScoped<IGameCommand, NewRoomCommand>();
         services.AddScoped<IGameCommand, NewRoomPoolCommand>();
@@ -59,7 +59,7 @@ public static class Extensions
     {
         services.AddHostedService<GameClock>();
         services.AddScoped<IGameClockListener, TickSaveListener>();
-        services.AddScoped<IGameClockListener, ItemGeneratorListener>();
+        services.AddScoped<IGameClockListener, ItemHatcherListener>();
     }
 
     private static void AddRepositories(this IServiceCollection services)
@@ -68,7 +68,7 @@ public static class Extensions
         services.AddScoped<ICraftPlanRepository, CraftPlanRepository>();
         services.AddScoped<IGameSettingsRepository, GameSettingsRepository>();
         services.AddScoped<IInventoryRepository, InventoryRepository>();
-        services.AddScoped<IItemGeneratorRepository, ItemGeneratorRepository>();
+        services.AddScoped<IItemHatcherRepository, ItemHatcherRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemStackRepository, ItemStackRepository>();
         services.AddScoped<IOfferRepository, OfferRepository>();
