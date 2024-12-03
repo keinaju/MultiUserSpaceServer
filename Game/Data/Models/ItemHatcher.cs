@@ -1,5 +1,4 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
 

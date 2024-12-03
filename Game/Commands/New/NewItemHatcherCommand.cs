@@ -38,19 +38,27 @@ public class NewItemHatcherCommand : BaseCommand
             return MessageStandard.DoesNotExist("Item", ItemName);
         }
 
-        var hatcher = new ItemHatcher()
+        var room = await _state.GetRoom();
+        // Do not allow multiple hatchers of one item in one inventory
+        foreach(var hatcherInRoom in room.Inventory.ItemHatchers)
+        {
+            if(hatcherInRoom.Item.PrimaryKey == item.PrimaryKey){
+                return $"{room.Name} already has a hatcher for {item.Name}.";
+            }
+        }
+        
+        var newHatcher = new ItemHatcher()
         {
             Item = item,
             MinQuantity = 1,
             MaxQuantity = 1,
             IntervalInTicks = 1
         };
-        var currentRoom = await _state.GetRoom();
-        hatcher.Inventories.Add(currentRoom.Inventory);
+        newHatcher.Inventories.Add(room.Inventory);
 
-        await _itemHatcherRepository.CreateItemHatcher(hatcher);
+        await _itemHatcherRepository.CreateItemHatcher(newHatcher);
 
-        return MessageStandard.Created("item hatcher", ItemName)
-            + $" {currentRoom.Name} is subscribed to this.";
+        return MessageStandard.Created($"item hatcher ({newHatcher.GetDetails()})")
+            + $" {room.Name} is subscribed to this.";
     }
 }
