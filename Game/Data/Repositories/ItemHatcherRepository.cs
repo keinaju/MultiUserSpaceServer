@@ -27,4 +27,13 @@ public class ItemHatcherRepository : IItemHatcherRepository
             .Include(hatcher => hatcher.Item)
             .ToListAsync();
     }
+
+    public async Task<List<ItemHatcher>> FindItemHatchersByInventory(Inventory inventory)
+    {
+        return await _context.ItemHatchers
+            .Where(hatcher => hatcher.Inventories.Contains(inventory))
+            .Include(hatcher => hatcher.Item)
+            .Include(hatcher => hatcher.Inventories)
+            .ToListAsync();
+    }
 }

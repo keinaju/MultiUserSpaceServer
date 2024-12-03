@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
 
@@ -15,4 +16,9 @@ public class ItemHatcher
     public required int IntervalInTicks { get; set; }
 
     public ICollection<Inventory> Inventories { get; } = new HashSet<Inventory>();
+
+    public string GetDetails() =>
+        $"[{MinQuantity} to {MaxQuantity}] " +
+        $"{Item.Name} per {IntervalInTicks} ticks " +
+        $"with {Inventories.Count} inventories";
 }
