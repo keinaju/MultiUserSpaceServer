@@ -38,7 +38,6 @@ public static class Extensions
         services.AddScoped<IGameCommand, LoginCommand>();
         services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
-        services.AddScoped<IGameCommand, OffersCommand>();
         services.AddScoped<IGameCommand, PickBeingCommand>();
         services.AddScoped<IGameCommand, SellCommand>();
         services.AddScoped<IGameCommand, SetBeingNameCommand>();
@@ -57,9 +56,10 @@ public static class Extensions
         services.AddScoped<IGameCommand, SignupCommand>();
         services.AddScoped<IGameCommand, ShowItemCommand>();
         services.AddScoped<IGameCommand, ShowItemHatchersCommand>();
+        services.AddScoped<IGameCommand, ShowOffersCommand>();
+        services.AddScoped<IGameCommand, ShowUserCommand>();
         services.AddScoped<IGameCommand, TakeCommand>();
         services.AddScoped<IGameCommand, TimeCommand>();
-        services.AddScoped<IGameCommand, UserCommand>();
         services.AddScoped<IPrerequisiteFilter, PrerequisiteFilter>();
     }
 
