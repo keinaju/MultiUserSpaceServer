@@ -22,6 +22,7 @@ public class SignupCommand : BaseCommand
     {
         User newUser = new()
         {
+            IsBuilder = false,
             Username = Username,
             HashedPassword = User.HashPassword(Password),
         };

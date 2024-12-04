@@ -39,6 +39,7 @@ public class DatabaseSeeder
             string adminPassword = Environment.GetEnvironmentVariable("256-BIT_KEY");
             var adminUser = new User()
             {
+                IsBuilder = true,
                 Username = "admin",
                 HashedPassword = User.HashPassword(adminPassword)
             };

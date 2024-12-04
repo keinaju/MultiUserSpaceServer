@@ -5,6 +5,7 @@ namespace MUS.Game.Commands;
 public enum Prerequisite
 {
     UserIsLoggedIn,
+    UserIsBuilder,
     UserHasPickedBeing
 }
 
@@ -28,7 +29,17 @@ public class PrerequisiteFilter : IPrerequisiteFilter
             var user = _session.AuthenticatedUser;
             if (user is null)
             {
-                return "This command has a prerequisite for a user session. Use 'login' command to start a session.";
+                return "This command has a prerequisite for a user session. "
+                + " Use 'login' command to start a session.";
+            }
+        }
+
+        if (prerequisites.Contains(Prerequisite.UserIsBuilder))
+        {
+            var user = _session.AuthenticatedUser;
+            if(!user.IsBuilder)
+            {
+                return "This command has a prerequisite for a builder role.";
             }
         }
 
@@ -37,7 +48,8 @@ public class PrerequisiteFilter : IPrerequisiteFilter
             var user = _session.AuthenticatedUser;
             if (user.PickedBeing is null)
             {
-                return "This command has a prerequisite for a picked being. Use 'pick' command to pick a being.";
+                return "This command has a prerequisite for a picked being. "
+                + "Use 'pick' command to pick a being.";
             }
         }
 
