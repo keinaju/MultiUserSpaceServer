@@ -85,7 +85,13 @@ public class ExploreCommand : BaseCommand
 
         clone.ConnectedToRooms.Add(currentRoom);
         await _roomRepository.UpdateRoom(clone);
+
         currentRoom.ConnectedToRooms.Add(clone);
+        // Prevent further exploring if room already has several connections
+        if(currentRoom.ConnectedToRooms.Count >= 4)
+        {
+            currentRoom.Curiosity = null;
+        }
         await _roomRepository.UpdateRoom(currentRoom);
 
         return $"You found a connection to {clone.Name}.";
