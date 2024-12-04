@@ -8,7 +8,8 @@ namespace MUS.Game.Commands.New;
 public class NewFeatureCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn
+        Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder
     ];
 
     private readonly IFeatureRepository _featureRepository;

@@ -9,6 +9,7 @@ public class NewRoomCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder,
         Prerequisite.UserHasPickedBeing,
     ];
 

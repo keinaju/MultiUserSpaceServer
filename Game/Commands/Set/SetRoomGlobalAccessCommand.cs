@@ -9,6 +9,7 @@ public class SetRoomGlobalAccessCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder,
         Prerequisite.UserHasPickedBeing
     ];
 

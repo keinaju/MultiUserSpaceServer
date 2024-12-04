@@ -8,7 +8,7 @@ namespace MUS.Game.Commands.New;
 public class NewBeingCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsLoggedIn
     ];
 
     private readonly IBeingRepository _beingRepository;

@@ -7,6 +7,7 @@ public class SetRoomPoolNameCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder
     ];
 
     private readonly IRoomPoolRepository _roomPoolRepository;

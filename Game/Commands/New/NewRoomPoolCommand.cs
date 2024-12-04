@@ -7,7 +7,8 @@ namespace MUS.Game.Commands.New;
 public class NewRoomPoolCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn
+        Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder
     ];
 
     private readonly IRoomPoolRepository _roomPoolRepository;

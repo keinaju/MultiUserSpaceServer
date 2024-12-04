@@ -6,7 +6,8 @@ namespace MUS.Game.Commands;
 public class AddRoomInRoomPoolCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn
+        Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder
     ];
 
     private readonly IRoomRepository _roomRepository;

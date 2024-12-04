@@ -9,7 +9,7 @@ public class NewCraftPlanCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserHasPickedBeing
+        Prerequisite.UserIsBuilder
     ];
 
     private readonly ICraftPlanRepository _craftPlanRepository;

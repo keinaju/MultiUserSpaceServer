@@ -7,6 +7,7 @@ public class SetItemDescriptionCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder
     ];
 
     private readonly IItemRepository _itemRepository;

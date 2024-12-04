@@ -9,6 +9,7 @@ public class SetItemHatcherQuantityCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
+        Prerequisite.UserIsBuilder,
         Prerequisite.UserHasPickedBeing
     ];
 
