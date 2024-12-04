@@ -2,18 +2,18 @@
 using MUS.Game.Session;
 using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands;
+namespace MUS.Game.Commands.Show;
 
-public class UserCommand : BaseCommand
+public class ShowUserCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [];
 
     private readonly ISessionService _session;
 
-    public UserCommand(
+    public ShowUserCommand(
         ISessionService session
     )
-    : base(regex: @"^user$")
+    : base(regex: @"^show user$")
     {
         _session = session;
     }
