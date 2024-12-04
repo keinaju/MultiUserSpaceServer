@@ -1,9 +1,9 @@
 using System;
 using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands;
+namespace MUS.Game.Commands.Show;
 
-public class OffersCommand : BaseCommand
+public class ShowOffersCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [];
 
@@ -11,8 +11,8 @@ public class OffersCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
-    public OffersCommand(IOfferManager offerManager)
-    : base(regex: @"^(.*) offers$")
+    public ShowOffersCommand(IOfferManager offerManager)
+    : base(regex: @"^show (.*) offers$")
     {
         _offerManager = offerManager;
     }
