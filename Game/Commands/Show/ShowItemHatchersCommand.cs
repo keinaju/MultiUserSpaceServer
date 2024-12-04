@@ -12,6 +12,9 @@ public class ShowItemHatchersCommand : BaseCommand
         Prerequisite.UserHasPickedBeing
     ];
 
+    protected override string Description =>
+        "Shows all item hatchers the current room has subscribed to.";
+
     private readonly IItemHatcherRepository _itemHatcherRepository;
     private readonly IPlayerState _state;
 
@@ -19,7 +22,7 @@ public class ShowItemHatchersCommand : BaseCommand
         IItemHatcherRepository itemHatcherRepository,
         IPlayerState state
     )
-    : base(regex: @"^show hatchers$")
+    : base(regex: @"^show hatchers in room$")
     {
         _itemHatcherRepository = itemHatcherRepository;
         _state = state;

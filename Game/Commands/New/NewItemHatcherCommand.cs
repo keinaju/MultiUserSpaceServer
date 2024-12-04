@@ -19,12 +19,15 @@ public class NewItemHatcherCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
+    protected override string Description =>
+        "Creates a new item hatcher that generates items into inventories.";
+
     public NewItemHatcherCommand(
         IItemHatcherRepository itemHatcherRepository,
         IItemRepository itemRepository,
         IPlayerState state
     )
-    : base(regex: @"^new (.+) hatcher$")
+    : base(regex: @"^new (.+) item hatcher$")
     {
         _itemHatcherRepository = itemHatcherRepository;
         _itemRepository = itemRepository;

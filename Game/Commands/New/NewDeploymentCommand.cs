@@ -20,6 +20,9 @@ public class NewDeploymentCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
+    protected override string Description =>
+        "Creates a new deployment to convert an item into the current being.";
+
     public NewDeploymentCommand(
         IDeploymentRepository deploymentRepository,
         IItemRepository itemRepository,

@@ -16,6 +16,9 @@ public class AddRoomInRoomPoolCommand : BaseCommand
     private string RoomName => GetParameter(1);
     private string RoomPoolName => GetParameter(2);
 
+    protected override string Description =>
+        "Adds a room in a room pool.";
+
     public AddRoomInRoomPoolCommand(
         IRoomRepository roomRepository,
         IRoomPoolRepository roomPoolRepository

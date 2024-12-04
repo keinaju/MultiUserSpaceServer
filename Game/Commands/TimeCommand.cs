@@ -6,6 +6,9 @@ public class TimeCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [];
 
+    protected override string Description =>
+        "Shows the tick count.";
+
     private readonly ITickCounterRepository _tickCounterRepository;
 
     public TimeCommand(ITickCounterRepository tickCounterRepository)

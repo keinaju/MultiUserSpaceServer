@@ -11,6 +11,9 @@ public class NewBeingCommand : BaseCommand
         Prerequisite.UserIsLoggedIn
     ];
 
+    protected override string Description =>
+        "Creates a new being.";
+
     private readonly IBeingRepository _beingRepository;
     private readonly IGameSettingsRepository _gameSettingsRepository;
     private readonly ISessionService _session;

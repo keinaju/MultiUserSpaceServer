@@ -14,6 +14,9 @@ public class SetRoomPoolNameCommand : BaseCommand
     private string OldRoomPoolName => GetParameter(1);
     private string NewRoomPoolName => GetParameter(2);
 
+    protected override string Description =>
+        "Sets a name for a room pool.";
+
     public SetRoomPoolNameCommand(
         IRoomPoolRepository roomPoolRepository
     )

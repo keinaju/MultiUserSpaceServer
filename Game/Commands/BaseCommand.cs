@@ -6,18 +6,18 @@ public abstract class BaseCommand : IGameCommand
 {
     public abstract Prerequisite[] Prerequisites { get; }
 
+    protected abstract string Description { get; } 
+
     protected Match? RegularExpressionMatch = null;
 
     private readonly Regex _regularExpression;
 
+    public string HelpText =>
+        $"{Description} {_regularExpression.ToString()}";
+
     protected BaseCommand(string regex)
     {
         _regularExpression = new Regex(regex);
-    }
-
-    protected string GetParameter(int index)
-    {
-        return RegularExpressionMatch!.Groups[index].Value;
     }
 
     public bool IsMatch(string userInput)
@@ -34,4 +34,9 @@ public abstract class BaseCommand : IGameCommand
     }
 
     public abstract Task<string> Invoke();
+
+    protected string GetParameter(int index)
+    {
+        return RegularExpressionMatch!.Groups[index].Value;
+    }
 }

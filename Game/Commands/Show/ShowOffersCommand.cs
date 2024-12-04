@@ -11,6 +11,10 @@ public class ShowOffersCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
+    protected override string Description =>
+        "Shows offers. Pass * to show all offers. "
+        + "Pass an item name to show only offers that sell those items.";
+
     public ShowOffersCommand(IOfferManager offerManager)
     : base(regex: @"^show (.*) offers$")
     {

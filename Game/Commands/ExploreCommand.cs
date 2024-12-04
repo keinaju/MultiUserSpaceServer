@@ -11,6 +11,9 @@ public class ExploreCommand : BaseCommand
         Prerequisite.UserHasPickedBeing
     ];
 
+    protected override string Description =>
+    "Explores a curiosity in the current room, possibly revealing more rooms.";
+
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IPlayerState _state;
     private readonly IRoomPoolRepository _roomPoolRepository;

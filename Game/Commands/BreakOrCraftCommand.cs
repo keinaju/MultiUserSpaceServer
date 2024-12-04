@@ -25,6 +25,9 @@ public class BreakOrCraftCommand : BaseCommand
     private string BreakOrCraft => GetParameter(1);
     private string ItemName => GetParameter(2);
 
+    protected override string Description =>
+        "Breaks an item into components, or crafts an item from components.";
+
     public BreakOrCraftCommand(
         ICraftPlanRepository craftPlanRepository,
         IInventoryRepository inventoryRepository,

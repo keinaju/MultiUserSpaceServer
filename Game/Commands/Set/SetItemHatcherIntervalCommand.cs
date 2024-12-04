@@ -35,6 +35,9 @@ public class SetItemHatcherIntervalCommand : BaseCommand
         }
     }
 
+    protected override string Description =>
+        "Sets a tick interval for an item hatcher.";
+
     public SetItemHatcherIntervalCommand(
         IItemHatcherRepository itemHatcherRepository,
         IItemRepository itemRepository,

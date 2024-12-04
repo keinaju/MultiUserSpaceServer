@@ -12,6 +12,9 @@ public class SellCommand : BaseCommand
         Prerequisite.UserHasPickedBeing
     ];
 
+    protected override string Description => 
+        "Creates an offer to sell items for other items.";
+
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IOfferRepository _offerRepository;
@@ -21,6 +24,7 @@ public class SellCommand : BaseCommand
     private string SellItemName => GetParameter(2);
     private string BuyQuantityInUserInput => GetParameter(3);
     private string BuyItemName => GetParameter(4);
+
 
     public SellCommand(
         IInventoryRepository inventoryRepository,

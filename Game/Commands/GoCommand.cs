@@ -19,6 +19,9 @@ public class GoCommand : BaseCommand
     private string PlaceParameter => GetParameter(1).Trim();
     private string RoomNameInUserInput => GetParameter(2);
 
+    protected override string Description =>
+        "Moves the current being in a new room.";
+
     public GoCommand(
         IBeingRepository beingRepository,
         IRoomRepository roomRepository,

@@ -12,6 +12,9 @@ public class LookCommand : BaseCommand
         Prerequisite.UserHasPickedBeing
     ];
 
+    protected override string Description =>
+        "Looks at the current room.";
+
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IPlayerState _playerState;
 

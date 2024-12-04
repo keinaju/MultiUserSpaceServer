@@ -18,6 +18,10 @@ public class TakeCommand : BaseCommand
 
     private string QuantityInUserInput => GetParameter(1);
     private string ItemNameInUserInput => GetParameter(2);
+
+    protected override string Description =>
+        "Takes items from the current room's inventory.";
+
     private Item? _item = null;
     private int? _quantity = null;
 

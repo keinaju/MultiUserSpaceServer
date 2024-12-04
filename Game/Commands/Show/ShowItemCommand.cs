@@ -19,6 +19,8 @@ public class ShowItemCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
+    protected override string Description => "Shows an item.";
+
     public ShowItemCommand(
         ICraftPlanRepository craftPlanRepository,
         IItemRepository itemRepository

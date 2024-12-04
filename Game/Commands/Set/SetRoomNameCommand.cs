@@ -16,6 +16,9 @@ public class SetRoomNameCommand : BaseCommand
     private readonly IRoomRepository _roomRepository;
     private string RoomName => GetParameter(1);
 
+    protected override string Description =>
+        "Sets a name for the current room.";
+
     public SetRoomNameCommand(
         IPlayerState state,
         IRoomRepository roomRepository

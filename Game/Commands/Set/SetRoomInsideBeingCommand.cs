@@ -19,6 +19,9 @@ public class SetRoomInsideBeingCommand : BaseCommand
 
     private string RoomName => GetParameter(1);
 
+    protected override string Description =>
+        "Sets a room that resides inside the current being.";
+
     public SetRoomInsideBeingCommand(
         IBeingRepository beingRepository,
         IPlayerState state,

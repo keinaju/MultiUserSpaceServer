@@ -13,6 +13,9 @@ public class NewRoomCommand : BaseCommand
         Prerequisite.UserHasPickedBeing,
     ];
 
+    protected override string Description =>
+        "Creates a new room and connects it to the current room.";
+
     private readonly IBeingRepository _beingRepository;
     private readonly IPlayerState _state;
     private readonly IRoomRepository _roomRepository;

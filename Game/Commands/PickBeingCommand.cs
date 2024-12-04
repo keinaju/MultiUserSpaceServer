@@ -9,6 +9,9 @@ public class PickBeingCommand : BaseCommand
         Prerequisite.UserIsLoggedIn,
     ];
 
+    protected override string Description =>
+        "Selects a being to control.";
+
     private readonly IBeingRepository _beingRepository;
     private readonly IUserRepository _userRepository;
     private readonly ISessionService _session;

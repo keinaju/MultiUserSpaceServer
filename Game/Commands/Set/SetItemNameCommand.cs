@@ -14,6 +14,9 @@ public class SetItemNameCommand : BaseCommand
     private string OldItemName => GetParameter(1);
     private string NewItemName => GetParameter(2);
 
+    protected override string Description =>
+        "Sets a name for an item.";
+
     public SetItemNameCommand(IItemRepository itemRepository)
     : base(regex: @"^set item (.+) name (.+)$")
     {

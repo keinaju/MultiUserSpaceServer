@@ -21,6 +21,9 @@ public class SetItemHatcherQuantityCommand : BaseCommand
     private string MinInUserInput => GetParameter(2);
     private string MaxInUserInput => GetParameter(3);
 
+    protected override string Description =>
+    "Sets a minimum and maximum quantity of items to generate for an item hatcher.";
+
     private int? ParsedQuantity(string input)
     {
         if(int.TryParse(input, out int parsed))

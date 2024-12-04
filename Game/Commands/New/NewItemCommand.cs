@@ -11,6 +11,9 @@ public class NewItemCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
+    protected override string Description =>
+        "Creates a new item.";
+
     private readonly IItemRepository _itemRepository;
 
     public NewItemCommand(

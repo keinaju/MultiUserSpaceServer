@@ -10,6 +10,9 @@ public class SignupCommand : BaseCommand
     private string Username => GetParameter(1);
     private string Password => GetParameter(2);
 
+    protected override string Description =>
+        "Creates a user for the given username and password.";
+
     public SignupCommand(
         IUserRepository userRepository
     )

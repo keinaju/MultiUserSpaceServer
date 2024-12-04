@@ -24,6 +24,9 @@ public class DeployCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
+    protected override string Description =>
+        "Converts an item into a being.";
+
     public DeployCommand(
         IBeingRepository beingRepository,
         IDeploymentRepository deploymentRepository,

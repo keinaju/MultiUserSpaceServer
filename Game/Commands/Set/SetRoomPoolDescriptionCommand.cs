@@ -15,6 +15,9 @@ public class SetRoomPoolDescriptionCommand : BaseCommand
     private string RoomPoolName => GetParameter(1);
     private string RoomPoolDescription => GetParameter(2);
 
+    protected override string Description =>
+        "Sets a description for a room pool.";
+
     public SetRoomPoolDescriptionCommand(IRoomPoolRepository roomPoolRepository)
     : base(regex: @"^set room pool (.+) description (.+)$")
     {

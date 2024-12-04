@@ -16,6 +16,9 @@ public class SetRoomDescriptionCommand : BaseCommand
     private readonly IRoomRepository _roomRepository;
     private string RoomDescription => GetParameter(1);
 
+    protected override string Description =>
+        "Sets a description for a room.";
+
     public SetRoomDescriptionCommand(
         IPlayerState state,
         IRoomRepository roomRepository

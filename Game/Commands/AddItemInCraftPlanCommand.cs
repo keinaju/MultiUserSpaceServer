@@ -23,6 +23,9 @@ public class AddItemInCraftPlanCommand : BaseCommand
     private string ComponentItemName => GetParameter(2);
     private string CraftPlanItemName => GetParameter(3);
 
+    protected override string Description =>
+        "Adds items in a craft plan.";
+
     public AddItemInCraftPlanCommand(
         ICraftPlanRepository craftPlanRepository,
         IItemRepository itemRepository

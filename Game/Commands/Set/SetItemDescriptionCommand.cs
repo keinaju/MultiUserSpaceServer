@@ -14,6 +14,9 @@ public class SetItemDescriptionCommand : BaseCommand
     private string ItemName => GetParameter(1);
     private string ItemDescription => GetParameter(2);
 
+    protected override string Description =>
+        "Sets a description for an item.";
+
     public SetItemDescriptionCommand(IItemRepository itemRepository)
     : base(regex: @"^set item (.+) description (.+)$")
     {

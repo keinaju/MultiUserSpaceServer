@@ -16,6 +16,9 @@ public class NewCraftPlanCommand : BaseCommand
     private readonly IItemRepository _itemRepository;
     private string ItemName => GetParameter(1);
 
+    protected override string Description =>
+        "Creates a new plan for crafting an item.";
+
     public NewCraftPlanCommand(
         ICraftPlanRepository craftPlanRepository,
         IItemRepository itemRepository

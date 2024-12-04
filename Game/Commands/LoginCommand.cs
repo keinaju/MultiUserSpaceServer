@@ -15,6 +15,9 @@ public class LoginCommand : BaseCommand
     private string Username => GetParameter(1);
     private string Password => GetParameter(2);
 
+    protected override string Description =>
+        "Requests a login token from server to establish a session.";
+
     private const string UNSUCCESSFUL_MESSAGE = "Login failed.";
 
     public LoginCommand(

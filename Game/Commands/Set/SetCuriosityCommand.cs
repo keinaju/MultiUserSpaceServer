@@ -18,6 +18,9 @@ public class SetCuriosityCommand : BaseCommand
 
     private string RoomPoolName => GetParameter(1);
 
+    protected override string Description =>
+        "Sets a room pool to use to generate cloned rooms in the current room.";
+
     public SetCuriosityCommand(
         IRoomPoolRepository roomPoolRepository,
         IRoomRepository roomRepository,

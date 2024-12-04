@@ -11,6 +11,9 @@ public class MyCommand : BaseCommand
         Prerequisite.UserHasPickedBeing
     ];
 
+    protected override string Description =>
+        "Shows all items in the current being's inventory.";
+
     private readonly IPlayerState _state;
 
     public MyCommand(IPlayerState state)

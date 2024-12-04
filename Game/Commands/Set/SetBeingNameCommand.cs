@@ -15,6 +15,9 @@ public class SetBeingNameCommand : BaseCommand
     private readonly IPlayerState _state;
     private string BeingName => GetParameter(1);
 
+    protected override string Description =>
+        "Sets the current being name.";
+
     public SetBeingNameCommand(
         IBeingRepository beingRepository,
         IPlayerState state

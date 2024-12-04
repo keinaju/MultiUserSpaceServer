@@ -19,6 +19,9 @@ public class AddFeatureInRoomCommand : BaseCommand
 
     private string FeatureName => GetParameter(1);
 
+    protected override string Description =>
+        "Adds a feature to the current room that a being must have to enter.";
+
     public AddFeatureInRoomCommand(
         IFeatureRepository featureRepository,
         IPlayerState state,

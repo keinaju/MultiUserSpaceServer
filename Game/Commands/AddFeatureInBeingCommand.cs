@@ -17,6 +17,9 @@ public class AddFeatureInBeingCommand : BaseCommand
     private readonly IFeatureRepository _featureRepository;
     private readonly IPlayerState _state;
 
+    protected override string Description =>
+        "Adds a feature in the current being.";
+
     private string FeatureName => GetParameter(1);
 
     public AddFeatureInBeingCommand(

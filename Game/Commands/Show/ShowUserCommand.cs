@@ -8,6 +8,9 @@ public class ShowUserCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [];
 
+    protected override string Description =>
+        "Shows information for the currently logged in user.";
+
     private readonly ISessionService _session;
 
     public ShowUserCommand(

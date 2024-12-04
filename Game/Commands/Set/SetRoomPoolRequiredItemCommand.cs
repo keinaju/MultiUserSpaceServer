@@ -18,6 +18,9 @@ public class SetRoomPoolRequiredItemCommand : BaseCommand
     private string RoomPoolName => GetParameter(1);
     private string ItemName => GetParameter(2);
 
+    protected override string Description =>
+        "Sets an item that is required to explore a room pool.";
+
     public SetRoomPoolRequiredItemCommand(
         IItemRepository itemRepository,
         IRoomPoolRepository roomPoolRepository

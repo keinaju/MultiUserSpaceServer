@@ -11,6 +11,9 @@ public class NewRoomPoolCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
+    protected override string Description =>
+        "Creates a new room pool to generate cloned rooms.";
+
     private readonly IRoomPoolRepository _roomPoolRepository;
 
     public NewRoomPoolCommand(

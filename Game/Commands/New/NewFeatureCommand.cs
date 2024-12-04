@@ -16,6 +16,9 @@ public class NewFeatureCommand : BaseCommand
 
     private string FeatureName => GetParameter(1);
 
+    protected override string Description =>
+        "Creates a new feature.";
+
     public NewFeatureCommand(IFeatureRepository featureRepository)
     : base(regex: @"^new feature (.+)$")
     {

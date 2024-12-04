@@ -17,6 +17,9 @@ public class SetRoomGlobalAccessCommand : BaseCommand
     private readonly IRoomRepository _roomRepository;
     private string TrueOrFalseInUserInput => GetParameter(1);
 
+    protected override string Description =>
+    "Sets a setting for the current room to determine if it can be entered from anywhere.";
+
     public SetRoomGlobalAccessCommand(
         IPlayerState state,
         IRoomRepository roomRepository

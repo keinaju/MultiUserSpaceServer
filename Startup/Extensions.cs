@@ -23,10 +23,11 @@ public static class Extensions
         services.AddScoped<IGameCommand, AddRoomInRoomPoolCommand>();
         services.AddScoped<IGameCommand, BreakOrCraftCommand>();
         services.AddScoped<IGameCommand, DeployCommand>();
-        services.AddScoped<IGameCommand, EmptyStringCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GoCommand>();
-        services.AddScoped<IGameCommand, HelpCommand>();
+        services.AddScoped<IGameCommand, IntroductionCommand>();
+        services.AddScoped<IGameCommand, LoginCommand>();
+        services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
         services.AddScoped<IGameCommand, NewCraftPlanCommand>();
         services.AddScoped<IGameCommand, NewDeploymentCommand>();
@@ -35,8 +36,6 @@ public static class Extensions
         services.AddScoped<IGameCommand, NewItemCommand>();
         services.AddScoped<IGameCommand, NewRoomCommand>();
         services.AddScoped<IGameCommand, NewRoomPoolCommand>();
-        services.AddScoped<IGameCommand, LoginCommand>();
-        services.AddScoped<IGameCommand, LookCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
         services.AddScoped<IGameCommand, PickBeingCommand>();
         services.AddScoped<IGameCommand, SellCommand>();
@@ -53,6 +52,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, SetRoomPoolDescriptionCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolRequiredItemCommand>();
+        services.AddScoped<IGameCommand, ShowCommandsCommand>();
         services.AddScoped<IGameCommand, ShowItemCommand>();
         services.AddScoped<IGameCommand, ShowItemHatchersCommand>();
         services.AddScoped<IGameCommand, ShowOffersCommand>();
