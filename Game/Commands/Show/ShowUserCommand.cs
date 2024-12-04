@@ -27,8 +27,20 @@ public class ShowUserCommand : BaseCommand
         }
 
         string output = $"You are logged in, {user.Username}. ";
+        output += GetRoleText(user);
         output += GetBeingNames(user.CreatedBeings);
+
         return output;
+    }
+
+    private string GetRoleText(User user)
+    {
+        if(user.IsBuilder)
+        {
+            return "Your user has access to builder commands. ";
+        }
+
+        return string.Empty;
     }
 
     private string GetBeingNames(IEnumerable<Being> beings)
