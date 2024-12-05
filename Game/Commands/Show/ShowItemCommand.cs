@@ -10,6 +10,7 @@ public class ShowItemCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [];
 
     private readonly ICraftPlanRepository _craftPlanRepository;
+    private readonly IDeploymentRepository _deploymentRepository;
     private readonly IItemRepository _itemRepository;
 
     private CraftPlan? _craftPlan = null;
@@ -17,15 +18,17 @@ public class ShowItemCommand : BaseCommand
 
     private string ItemName => GetParameter(1);
 
-    protected override string Description => "Shows an item.";
+    protected override string Description => "Shows an item and it's details.";
 
     public ShowItemCommand(
         ICraftPlanRepository craftPlanRepository,
+        IDeploymentRepository deploymentRepository,
         IItemRepository itemRepository
     )
     : base(regex: @"^show item (.+)$")
     {
         _craftPlanRepository = craftPlanRepository;
+        _deploymentRepository = deploymentRepository;
         _itemRepository = itemRepository;
     }
 
@@ -37,7 +40,9 @@ public class ShowItemCommand : BaseCommand
             return errorMessage;
         }
 
-        return $"{_product!.ToString()} {await GetMadeOfText()}";
+        return _product!.ToString() + " " +
+            await GetMadeOfText() + " " +
+            await GetDeploymentText();
     }
 
     private async Task<string> Validate()
@@ -69,5 +74,18 @@ public class ShowItemCommand : BaseCommand
         }
 
         return $"{_product!.Name} is made of {_craftPlan!.IsMadeOf()}.";
+    }
+
+    private async Task<string> GetDeploymentText()
+    {
+        var deployment = await _deploymentRepository
+            .FindDeploymentByItem(_product!);
+        
+        if(deployment is null)
+        {
+            return "";
+        }
+
+        return $"{deployment.Item.Name} can be deployed to {deployment.Prototype.Name}.";
     }
 }

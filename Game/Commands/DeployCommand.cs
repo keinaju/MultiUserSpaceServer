@@ -1,7 +1,5 @@
 using System;
-using Microsoft.AspNetCore.Authorization.Infrastructure;
 using MUS.Game.Data;
-using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
 using MUS.Game.Utilities;
@@ -20,6 +18,7 @@ public class DeployCommand : BaseCommand
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
+    private readonly IRoomRepository _roomRepository;
     private readonly ISessionService _session;
 
     private string ItemName => GetParameter(1);
@@ -33,6 +32,7 @@ public class DeployCommand : BaseCommand
         IInventoryRepository inventoryRepository,
         IItemRepository itemRepository,
         IPlayerState state,
+        IRoomRepository roomRepository,
         ISessionService session
     )
     : base(regex: @"^deploy (.+)$")
@@ -41,6 +41,7 @@ public class DeployCommand : BaseCommand
         _deploymentRepository = deploymentRepository;
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;
+        _roomRepository = roomRepository;
         _state = state;
         _session = session;
     }
@@ -58,6 +59,16 @@ public class DeployCommand : BaseCommand
         if(deployment is null)
         {
             return MessageStandard.DoesNotContain(ItemName, "a deployment");
+        }
+
+        // Populate
+        deployment.Prototype = await _beingRepository
+            .FindBeing(deployment.Prototype.PrimaryKey);
+        if(deployment.Prototype.RoomInside is not null)
+        {
+            deployment.Prototype.RoomInside = await _roomRepository.FindRoom(
+                deployment.Prototype.RoomInside.PrimaryKey
+            );
         }
 
         var being = await _state.GetBeing();

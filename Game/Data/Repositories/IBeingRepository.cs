@@ -8,6 +8,7 @@ public interface IBeingRepository
     Task DeleteBeing(int primaryKey);
     Task<Being> FindBeing(int primaryKey);
     Task<Being?> FindBeing(string beingName);
+    Task<Being?> FindBeingByRoomInside(Room room);
     Task<List<Being>> FindBeingsByUser(User user);
     Task UpdateBeing(Being being);
 }

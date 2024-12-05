@@ -26,6 +26,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, DeployCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GoCommand>();
+        services.AddScoped<IGameCommand, LeaveCommand>();
         services.AddScoped<IGameCommand, GrantItemCommand>();
         services.AddScoped<IGameCommand, IntroductionCommand>();
         services.AddScoped<IGameCommand, LoginCommand>();

@@ -47,6 +47,22 @@ public class BeingRepository : IBeingRepository
         }
     }
 
+    public async Task<Being?> FindBeingByRoomInside(Room room)
+    {
+        try
+        {
+            return await _context.Beings
+            .Include(being => being.InRoom)
+            .SingleAsync(being =>
+                being.RoomInside == room
+            );
+        }
+        catch(InvalidOperationException)
+        {
+            return null;
+        }
+    }
+
     public async Task<List<Being>> FindBeingsByUser(User user)
     {
         return await _context.Beings
