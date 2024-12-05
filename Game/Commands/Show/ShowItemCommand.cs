@@ -7,9 +7,7 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowItemCommand : BaseCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn
-    ];
+    public override Prerequisite[] Prerequisites => [];
 
     private readonly ICraftPlanRepository _craftPlanRepository;
     private readonly IItemRepository _itemRepository;
