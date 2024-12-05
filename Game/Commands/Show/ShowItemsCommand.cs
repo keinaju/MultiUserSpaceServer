@@ -32,6 +32,7 @@ public class ShowItemsCommand : BaseCommand
         {
             itemNames.Add(item.Name);
         }
+        itemNames.Sort();
 
         return $"Items are: {MessageStandard.List(itemNames)}.";
     }
