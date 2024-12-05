@@ -39,6 +39,11 @@ public class ItemRepository : IItemRepository
         }
     }
 
+    public async Task<ICollection<Item>> FindItems()
+    {
+        return await _context.Items.ToListAsync();
+    }
+
     public async Task UpdateItem(Item updatedItem)
     {
         var itemInDb = await FindItem(updatedItem.PrimaryKey);
