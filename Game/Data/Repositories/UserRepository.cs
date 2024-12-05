@@ -23,7 +23,7 @@ public class UserRepository : IUserRepository
     public async Task<User> FindUser(int primaryKey)
     {
         return await _context.Users
-            .Include(user => user.PickedBeing)
+            .Include(user => user.SelectedBeing)
             .Include(user => user.CreatedBeings)
             .SingleAsync(user => user.PrimaryKey == primaryKey);
     }
@@ -33,7 +33,7 @@ public class UserRepository : IUserRepository
         try
         {
             return await _context.Users
-                .Include(user => user.PickedBeing)
+                .Include(user => user.SelectedBeing)
                 .Include(user => user.CreatedBeings)
                 .SingleAsync(user => user.Username == username);
         }

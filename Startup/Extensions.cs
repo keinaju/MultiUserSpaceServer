@@ -2,6 +2,7 @@
 using MUS.Game;
 using MUS.Game.Clock;
 using MUS.Game.Commands;
+using MUS.Game.Commands.Grant;
 using MUS.Game.Commands.New;
 using MUS.Game.Commands.Set;
 using MUS.Game.Commands.Show;
@@ -25,6 +26,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, DeployCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, GoCommand>();
+        services.AddScoped<IGameCommand, GrantItemCommand>();
         services.AddScoped<IGameCommand, IntroductionCommand>();
         services.AddScoped<IGameCommand, LoginCommand>();
         services.AddScoped<IGameCommand, LookCommand>();
@@ -37,7 +39,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, NewRoomCommand>();
         services.AddScoped<IGameCommand, NewRoomPoolCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
-        services.AddScoped<IGameCommand, PickBeingCommand>();
+        services.AddScoped<IGameCommand, SelectBeingCommand>();
         services.AddScoped<IGameCommand, SellCommand>();
         services.AddScoped<IGameCommand, SetBeingNameCommand>();
         services.AddScoped<IGameCommand, SetCuriosityCommand>();
@@ -53,10 +55,12 @@ public static class Extensions
         services.AddScoped<IGameCommand, SetRoomPoolNameCommand>();
         services.AddScoped<IGameCommand, SetRoomPoolRequiredItemCommand>();
         services.AddScoped<IGameCommand, ShowCommandsCommand>();
+        services.AddScoped<IGameCommand, ShowFeaturesCommand>();
         services.AddScoped<IGameCommand, ShowGlobalRoomsCommand>();
         services.AddScoped<IGameCommand, ShowItemCommand>();
         services.AddScoped<IGameCommand, ShowItemHatchersCommand>();
         services.AddScoped<IGameCommand, ShowOffersCommand>();
+        services.AddScoped<IGameCommand, ShowRoomPoolsCommand>();
         services.AddScoped<IGameCommand, ShowUserCommand>();
         services.AddScoped<IGameCommand, SignupCommand>();
         services.AddScoped<IGameCommand, TakeCommand>();

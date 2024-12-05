@@ -10,7 +10,7 @@ public class AddItemInCraftPlanCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
         Prerequisite.UserIsBuilder,
-        Prerequisite.UserHasPickedBeing
+        Prerequisite.UserHasSelectedBeing
     ];
 
     private readonly IItemRepository _itemRepository;
@@ -30,7 +30,7 @@ public class AddItemInCraftPlanCommand : BaseCommand
         ICraftPlanRepository craftPlanRepository,
         IItemRepository itemRepository
     )
-    : base(regex: @"^add (\d+) (.+) in (.+) craft plan$")
+    : base(regex: @"^add (\d+) (.+) in craft plan (.+)$")
     {
         _craftPlanRepository = craftPlanRepository;
         _itemRepository = itemRepository;

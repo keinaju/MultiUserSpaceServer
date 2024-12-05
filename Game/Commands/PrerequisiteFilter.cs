@@ -6,7 +6,7 @@ public enum Prerequisite
 {
     UserIsLoggedIn,
     UserIsBuilder,
-    UserHasPickedBeing
+    UserHasSelectedBeing
 }
 
 public class PrerequisiteFilter : IPrerequisiteFilter
@@ -43,13 +43,13 @@ public class PrerequisiteFilter : IPrerequisiteFilter
             }
         }
 
-        if (prerequisites.Contains(Prerequisite.UserHasPickedBeing))
+        if (prerequisites.Contains(Prerequisite.UserHasSelectedBeing))
         {
             var user = _session.AuthenticatedUser;
-            if (user.PickedBeing is null)
+            if (user.SelectedBeing is null)
             {
-                return "This command has a prerequisite for a picked being. "
-                + "Use 'pick' command to pick a being.";
+                return "This command has a prerequisite for a selected being. "
+                + "Use 'select' command to select a being.";
             }
         }
 

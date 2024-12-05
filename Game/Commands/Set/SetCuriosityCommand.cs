@@ -9,7 +9,7 @@ public class SetCuriosityCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
         Prerequisite.UserIsBuilder,
-        Prerequisite.UserHasPickedBeing
+        Prerequisite.UserHasSelectedBeing
     ];
 
     private readonly IRoomPoolRepository _roomPoolRepository;

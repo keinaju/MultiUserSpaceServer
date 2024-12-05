@@ -10,7 +10,7 @@ public class SetRoomGlobalAccessCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
         Prerequisite.UserIsBuilder,
-        Prerequisite.UserHasPickedBeing
+        Prerequisite.UserHasSelectedBeing
     ];
 
     private readonly IPlayerState _state;

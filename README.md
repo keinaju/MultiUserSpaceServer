@@ -28,7 +28,7 @@ signup <user> <password>
 login <user> <password>
 user
 new being
-pick <beingname>
+select <beingname>
 new room
 ```
 
@@ -45,7 +45,7 @@ Command to create a new room:
 new room
 ```
 
-This command creates a new room, and automatically connects it bi-directionally to the room where user's currently picked being was.
+This command creates a new room, and automatically connects it bi-directionally to the room where user's currently selected being was.
 To move the being into another room:
 
 ```
@@ -67,10 +67,10 @@ Command to create a new being:
 new being
 ```
 
-Each user can have at most one selected being. Command to pick a being from all available beings per user:
+Each user can have at most one selected being. Command to select a being from all available beings per user:
 
 ```
-pick <beingname>
+select <beingname>
 ```
 
 ### Items

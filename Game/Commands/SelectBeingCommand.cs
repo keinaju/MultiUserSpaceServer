@@ -3,7 +3,7 @@ using MUS.Game.Session;
 
 namespace MUS.Game.Commands;
 
-public class PickBeingCommand : BaseCommand
+public class SelectBeingCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
@@ -17,12 +17,12 @@ public class PickBeingCommand : BaseCommand
     private readonly ISessionService _session;
     private string BeingName => GetParameter(1);
 
-    public PickBeingCommand(
+    public SelectBeingCommand(
         IBeingRepository beingRepository,
         IUserRepository userRepository,
         ISessionService session
     )
-    : base(regex: @"^pick (.+)$")
+    : base(regex: @"^select (.+)$")
     {
         _beingRepository = beingRepository;
         _userRepository = userRepository;
@@ -40,8 +40,8 @@ public class PickBeingCommand : BaseCommand
             return $"'{BeingName}' does not exist.";
         }
 
-        user.PickedBeing = being;
+        user.SelectedBeing = being;
         await _userRepository.UpdateUser(user);
-        return $"You picked {being.Name}.";
+        return $"You selected {being.Name}.";
     }
 }

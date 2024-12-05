@@ -24,6 +24,11 @@ public class FeatureRepository : IFeatureRepository
         return entry.Entity;
     }
 
+    public async Task<ICollection<Feature>> FindFeatures()
+    {
+        return await _context.Features.ToListAsync();
+    }
+
     public async Task<Feature?> FindFeature(string featureName)
     {
         try

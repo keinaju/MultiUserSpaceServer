@@ -23,6 +23,11 @@ public class RoomPoolRepository : IRoomPoolRepository
         return roomPoolEntry.Entity;
     }
 
+    public async Task<ICollection<RoomPool>> FindRoomPools()
+    {
+        return await _context.RoomPools.ToListAsync();
+    }
+
     public async Task<RoomPool> FindRoomPool(int primaryKey)
     {
         return await _context.RoomPools

@@ -10,7 +10,7 @@ public class NewItemHatcherCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
         Prerequisite.UserIsBuilder,
-        Prerequisite.UserHasPickedBeing,
+        Prerequisite.UserHasSelectedBeing,
     ];
 
     private readonly IItemHatcherRepository _itemHatcherRepository;

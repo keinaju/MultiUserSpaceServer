@@ -32,8 +32,8 @@ public class User
     /// Selected being to play the game.
     /// User can have only one selected being.
     /// </summary>
-    public int? PickedBeingPrimaryKey { get; set; }
-    public Being? PickedBeing { get; set; }
+    public int? SelectedBeingPrimaryKey { get; set; }
+    public Being? SelectedBeing { get; set; }
 
     /// <summary>
     /// User name to store in database.

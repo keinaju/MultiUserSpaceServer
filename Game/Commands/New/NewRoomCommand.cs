@@ -10,7 +10,7 @@ public class NewRoomCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
         Prerequisite.UserIsBuilder,
-        Prerequisite.UserHasPickedBeing,
+        Prerequisite.UserHasSelectedBeing,
     ];
 
     protected override string Description =>
@@ -34,10 +34,10 @@ public class NewRoomCommand : BaseCommand
 
     public override async Task<string> Invoke()
     {
-        var pickedBeing = await _state.GetBeing();
+        var selectedBeing = await _state.GetBeing();
 
         var oldRoom = await _roomRepository.FindRoom(
-            pickedBeing.InRoom.PrimaryKey
+            selectedBeing.InRoom.PrimaryKey
         );
 
         // Initialize an empty room
@@ -59,10 +59,10 @@ public class NewRoomCommand : BaseCommand
         await _roomRepository.UpdateRoom(oldRoom);
 
         //Move being to new room
-        pickedBeing.InRoom = newRoom;
-        await _beingRepository.UpdateBeing(pickedBeing);
+        selectedBeing.InRoom = newRoom;
+        await _beingRepository.UpdateBeing(selectedBeing);
 
         return $"{MessageStandard.Created("room", newRoom.Name)} "
-            + $"{pickedBeing.Name} moved there.";
+            + $"{selectedBeing.Name} moved there.";
     }
 }

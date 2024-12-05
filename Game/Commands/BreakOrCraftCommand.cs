@@ -9,7 +9,7 @@ public class BreakOrCraftCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserHasPickedBeing
+        Prerequisite.UserHasSelectedBeing
     ];
 
     private readonly ICraftPlanRepository _craftPlanRepository;

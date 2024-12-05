@@ -9,7 +9,7 @@ public class LookCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserHasPickedBeing
+        Prerequisite.UserHasSelectedBeing
     ];
 
     protected override string Description =>
@@ -31,15 +31,15 @@ public class LookCommand : BaseCommand
     public override async Task<string> Invoke()
     {
         var currentRoom = await _playerState.GetRoom(); 
-        var pickedBeing = await _playerState.GetBeing();
-        string outcome = $"{pickedBeing.Name} is in {currentRoom.Name}.";
+        var selectedBeing = await _playerState.GetBeing();
+        string outcome = $"{selectedBeing.Name} is in {currentRoom.Name}.";
 
         if (currentRoom.Description is not null)
         {
             outcome += $" {currentRoom.Description}";
         }
 
-        outcome += GetBeingNamesText(currentRoom, pickedBeing);
+        outcome += GetBeingNamesText(currentRoom, selectedBeing);
         outcome += await GetInventoryText(currentRoom);
         outcome += GetConnectionsText(currentRoom);
         outcome += GetCuriosityText(currentRoom);
@@ -47,12 +47,15 @@ public class LookCommand : BaseCommand
         return outcome;
     }
 
-    private string GetBeingNamesText(Room room, Being pickedBeing)
+    private string GetBeingNamesText(Room room, Being selectedBeing)
     {
         var names = new List<string>();
         foreach(var beingHere in room.BeingsHere)
         {
-            if (beingHere.PrimaryKey == pickedBeing.PrimaryKey) continue;
+            if (beingHere.PrimaryKey == selectedBeing.PrimaryKey)
+            {
+                continue;
+            }
 
             names.Add(beingHere.Name);
         }

@@ -27,13 +27,13 @@ public class PlayerState : IPlayerState
     public async Task<Being> GetBeing()
     {
         var user = _session.AuthenticatedUser;
-        if (user is null || user.PickedBeing is null)
+        if (user is null || user.SelectedBeing is null)
         {
             throw new NullReferenceException();
         }
 
         var being = await _beingRepository.FindBeing(
-            user.PickedBeing.PrimaryKey
+            user.SelectedBeing.PrimaryKey
         );
         return being;
     }

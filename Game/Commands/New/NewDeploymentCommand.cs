@@ -10,7 +10,7 @@ public class NewDeploymentCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserHasPickedBeing,
+        Prerequisite.UserHasSelectedBeing,
         Prerequisite.UserIsBuilder
     ];
 

@@ -9,7 +9,7 @@ public class TakeCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [
         Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserHasPickedBeing,
+        Prerequisite.UserHasSelectedBeing,
     ];
 
     private readonly IInventoryRepository _inventoryRepository;
