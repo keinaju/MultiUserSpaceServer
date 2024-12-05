@@ -20,6 +20,13 @@ public class RoomRepository : IRoomRepository
         return entry.Entity;
     }
 
+    public async Task<ICollection<Room>> FindGlobalRooms()
+    {
+        return await _context.Rooms
+            .Where(room => room.GlobalAccess == true)
+            .ToListAsync();
+    }
+
     public async Task<Room> FindRoom(int primaryKey)
     {
         return await _context.Rooms
