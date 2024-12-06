@@ -23,7 +23,8 @@ public class StartupProcess
             options.AddDefaultPolicy(
                 policy =>
                 {
-                    policy.WithOrigins("http://localhost:3001")
+                    policy
+                    .AllowAnyOrigin()
                     .AllowAnyHeader()
                     .AllowAnyMethod();
                 });
