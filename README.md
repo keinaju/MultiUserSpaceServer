@@ -26,19 +26,19 @@ Example of first commands would be:
 ```
 signup <user> <password>
 login <user> <password>
-user
+show user
 new being
 select <beingname>
 new room
 ```
 
-This would effectively add a new room to the game world, which would automatically be connected to the inital room created in startup process.
+This would add a new room to the game world, which would automatically be connected to the inital room created in startup process.
 
 ## Game concepts
 
 ### Rooms
 
-Room is the basic building block of MUS application.
+Room is the basic building block of the application.
 Command to create a new room:
 
 ```
@@ -49,7 +49,7 @@ This command creates a new room, and automatically connects it bi-directionally 
 To move the being into another room:
 
 ```
-go to <roomname>
+go <roomname>
 ```
 
 To look for details in a room:
@@ -57,6 +57,7 @@ To look for details in a room:
 ```
 look
 ```
+See more detailed commands in All Commands -section.
 
 ### Beings
 
@@ -92,13 +93,13 @@ new <itemname> item hatcher
 
 In addition to connections to other rooms, rooms can contain 'curiosities', which open connections to more rooms.
 Players are free to explore these curiosities, which will generate more rooms on-demand-basis.
+New rooms are generated from a room pool, which consists of prototypes to use for cloning new rooms.
 Command to explore a room:
 
 ```
 explore
 ```
 
-The previously created rooms can be registered in user defined room pools.
 Command to create a new room pool:
 
 ```
@@ -111,6 +112,107 @@ Command to add rooms to a room pool:
 add <roomname> in room pool <roompoolname>
 ```
 
-Room pools provide a list of prototype rooms that can be used to generate more of them.
 The curiosity inside the room can refer to any single room pool.
 This allows the game world to extend itself.
+
+### All commands
+
+```
+Adds a feature in the current being. ^add feature (.+) in being$
+
+Adds a feature to the current room that a being must have to enter. ^add feature (.+) in room$
+
+Adds items in a craft plan. ^add (\d+) (.+) in craft plan (.+)$
+
+Adds a room in a room pool. ^add (.+) in room pool (.+)$
+
+Breaks an item into components, or crafts an item from components. ^(break|craft) (.+)$
+
+Converts an item into a being. ^deploy (.+)$
+
+Explores a curiosity in the current room, possibly revealing more rooms. ^explore$
+
+Moves the current being in a new room. ^go (global |connected |being )?(.+)$
+
+Moves the current being out of an inside room. ^leave$
+
+Grants items to the current being. ^grant (\d+) item (.+)$
+
+Shows an introduction. ^(\s*|help)$
+
+Requests a login token from server to establish a session. ^login (.+) (.+)$
+
+Looks at the current room. ^look$
+
+Creates a new being. ^new being$
+
+Creates a new plan for crafting an item. ^new (.+) craft plan$
+
+Creates a new deployment to convert an item into the current being. ^new deploy (.+)$
+
+Creates a new feature. ^new feature (.+)$
+
+Creates a new item hatcher that generates items into inventories. ^new (.+) item hatcher$
+
+Creates a new item. ^new item$
+
+Creates a new room and connects it to the current room. ^new room$
+
+Creates a new room pool to generate cloned rooms. ^new room pool$
+
+Shows all items in the current being's inventory. ^my$
+
+Selects a being to control. ^select (.+)$
+
+Creates an offer to sell items for other items. ^sell (\d+) (.+) for (\d+) (.+)$
+
+Sets the current being name. ^set being name (.+)$
+
+Sets a room pool to use to generate cloned rooms in the current room. ^set curiosity (.+)$
+
+Sets a tick interval for an item hatcher. ^set (.+) item hatcher interval (\d+)$
+
+Sets a minimum and maximum quantity of items to generate for an item hatcher. ^set (.+) item hatcher quantity (\d+) to (\d+)$
+
+Sets a description for an item. ^set item (.+) description (.+)$
+
+Sets a name for an item. ^set item (.+) name (.+)$
+
+Sets a description for a room. ^set room description (.+)$
+
+Sets a setting for the current room to determine if it can be entered from anywhere. ^set room global access (true|false)$
+
+Sets a room that resides inside the current being. ^set inside (.+)$
+
+Sets a name for the current room. ^set room name (.+)$
+
+Sets a description for a room pool. ^set room pool (.+) description (.+)$
+
+Sets a name for a room pool. ^set room pool (.+) name (.+)$
+
+Sets an item that is required to explore a room pool. ^set room pool (.+) required item (.+)$
+
+Shows all commands in the application. ^show commands$
+
+Shows all features. ^show features$
+
+Shows all rooms that can be accessed from anywhere. ^show global rooms$
+
+Shows an item and it's details. ^show item (.+)$
+
+Shows all items ^show items$
+
+Shows all item hatchers the current room has subscribed to. ^show hatchers in room$
+
+Shows offers. Pass * to show all offers. Pass an item name to show only offers that sell those items. ^show (.*) offers$
+
+Shows all room pools. ^show room pools$
+
+Shows information for the currently logged in user. ^show user$
+
+Creates a user for the given username and password. ^signup (.+) (.+)$
+
+Takes items from the current room's inventory. ^take (\d+) (.+)$
+
+Shows the tick count. ^time$
+```
