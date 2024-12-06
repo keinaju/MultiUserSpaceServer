@@ -36,7 +36,8 @@ public class DatabaseSeeder
         var adminInDb = await _userRepository.FindUser("admin");
         if (adminInDb is null)
         {
-            string adminPassword = Environment.GetEnvironmentVariable("256-BIT_KEY");
+            string adminPassword = 
+                Environment.GetEnvironmentVariable("MUS_256-BIT_KEY");
             var adminUser = new User()
             {
                 IsBuilder = true,

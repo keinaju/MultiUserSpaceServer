@@ -7,7 +7,7 @@ namespace MUS.Game.Session;
 
 public class TokenService : ITokenService
 {
-    string _secret = Environment.GetEnvironmentVariable("256-BIT_KEY");
+    string _secret = Environment.GetEnvironmentVariable("MUS_256-BIT_KEY");
 
     public TokenService() { }
 

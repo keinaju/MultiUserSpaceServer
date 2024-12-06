@@ -15,7 +15,9 @@ public class StartupProcess
 
     public void ConfigureServices(IServiceCollection services)
     {
-        var connectionString = Environment.GetEnvironmentVariable("MYSQL_CONNECTION_STRING");
+        var connectionString = Environment.GetEnvironmentVariable(
+            "MUS_MYSQL_CONNECTION_STRING"
+        );
         var serverVersion = new MySqlServerVersion(new Version(8, 4, 3));
 
         services.AddCors(options =>
