@@ -40,6 +40,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, NewRoomCommand>();
         services.AddScoped<IGameCommand, NewRoomPoolCommand>();
         services.AddScoped<IGameCommand, MyCommand>();
+        services.AddScoped<IGameCommand, PingCommand>();
         services.AddScoped<IGameCommand, SelectBeingCommand>();
         services.AddScoped<IGameCommand, SellCommand>();
         services.AddScoped<IGameCommand, SetBeingNameCommand>();
@@ -98,6 +99,7 @@ public static class Extensions
 
     private static void AddRequestHandling(this IServiceCollection services)
     {
+        services.AddScoped<IGameResponse, GameResponse>();
         services.AddScoped<IGameService, GameService>();
         services.AddTransient<IHttpContextAccessor, HttpContextAccessor>();
     }
