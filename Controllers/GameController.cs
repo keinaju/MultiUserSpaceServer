@@ -21,8 +21,8 @@ public class GameController : ControllerBase
             return BadRequest();
         }
 
-        string outcome = await _game.ProcessUserInput(payload.UserInput);
+        var response = await _game.Respond(payload.UserInput);
 
-        return Ok(outcome);
+        return Ok(response.GetTexts());
     }
 }

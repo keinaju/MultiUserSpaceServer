@@ -12,6 +12,7 @@ public class SetBeingNameCommand : BaseCommand
     ];
 
     private readonly IBeingRepository _beingRepository;
+    private readonly IGameResponse _response;
     private readonly IPlayerState _state;
     private string BeingName => GetParameter(1);
 
@@ -20,15 +21,17 @@ public class SetBeingNameCommand : BaseCommand
 
     public SetBeingNameCommand(
         IBeingRepository beingRepository,
+        IGameResponse response,
         IPlayerState state
     )
     : base(regex: @"^set being name (.+)$")
     {
         _beingRepository = beingRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var being = await _state.GetBeing();
         
@@ -37,6 +40,8 @@ public class SetBeingNameCommand : BaseCommand
         being.Name = BeingName;
         await _beingRepository.UpdateBeing(being);
 
-        return MessageStandard.Renamed(oldName, being.Name);
+        _response.AddText(
+            MessageStandard.Renamed(oldName, being.Name)
+        );
     }
 }

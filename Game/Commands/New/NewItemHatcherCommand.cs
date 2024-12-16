@@ -13,16 +13,18 @@ public class NewItemHatcherCommand : BaseCommand
         Prerequisite.UserHasSelectedBeing,
     ];
 
+    protected override string Description =>
+    "Creates a new item hatcher that generates items into inventories.";
+
+    private string ItemName => GetParameter(1);
+
+    private readonly IGameResponse _response;
     private readonly IItemHatcherRepository _itemHatcherRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
 
-    private string ItemName => GetParameter(1);
-
-    protected override string Description =>
-        "Creates a new item hatcher that generates items into inventories.";
-
     public NewItemHatcherCommand(
+        IGameResponse response,
         IItemHatcherRepository itemHatcherRepository,
         IItemRepository itemRepository,
         IPlayerState state
@@ -31,15 +33,21 @@ public class NewItemHatcherCommand : BaseCommand
     {
         _itemHatcherRepository = itemHatcherRepository;
         _itemRepository = itemRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var item = await _itemRepository.FindItem(ItemName);
         if (item is null)
         {
-            return MessageStandard.DoesNotExist("Item", ItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist(
+                    "Item", ItemName
+                )
+            );
+            return;
         }
 
         var room = await _state.GetRoom();
@@ -47,7 +55,10 @@ public class NewItemHatcherCommand : BaseCommand
         foreach(var hatcherInRoom in room.Inventory.ItemHatchers)
         {
             if(hatcherInRoom.Item.PrimaryKey == item.PrimaryKey){
-                return $"{room.Name} already has a hatcher for {item.Name}.";
+                _response.AddText(
+                    $"{room.Name} already has a hatcher for {item.Name}."
+                );
+                return;
             }
         }
         
@@ -62,7 +73,9 @@ public class NewItemHatcherCommand : BaseCommand
 
         await _itemHatcherRepository.CreateItemHatcher(newHatcher);
 
-        return MessageStandard.Created($"item hatcher ({newHatcher.GetDetails()})")
-            + $" {room.Name} is subscribed to this.";
+        _response.AddText(
+            MessageStandard.Created($"item hatcher ({newHatcher.GetDetails()})")
+            + $" {room.Name} is subscribed to this."
+        );
     }
 }

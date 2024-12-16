@@ -14,26 +14,31 @@ public class MyCommand : BaseCommand
     protected override string Description =>
         "Shows all items in the current being's inventory.";
 
+    private readonly IGameResponse _response;
     private readonly IPlayerState _state;
 
-    public MyCommand(IPlayerState state)
+    public MyCommand(IGameResponse response, IPlayerState state)
     : base(regex: @"^my$")
     {
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var being = await _state.GetBeing();
 
         var inventory = await _state.GetInventory();
         if(inventory.IsEmpty)
         {
-            return MessageStandard.DoesNotContain(
-                $"{being.Name}'s inventory", "items"
+            _response.AddText(
+                MessageStandard.DoesNotContain(
+                    $"{being.Name}'s inventory", "items"
+                )
             );
+            return;
         }
 
-        return $"{being.Name} has: {inventory.Contents()}.";
+        _response.AddText($"{being.Name} has: {inventory.Contents()}.");
     }
 }

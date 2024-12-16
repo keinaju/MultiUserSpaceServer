@@ -14,25 +14,28 @@ public class NewRoomCommand : BaseCommand
     ];
 
     protected override string Description =>
-        "Creates a new room and connects it to the current room.";
+    "Creates a new room and connects it to the current room.";
 
     private readonly IBeingRepository _beingRepository;
+    private readonly IGameResponse _response;
     private readonly IPlayerState _state;
     private readonly IRoomRepository _roomRepository;
 
     public NewRoomCommand(
         IBeingRepository beingRepository,
+        IGameResponse response,
         IPlayerState state,
         IRoomRepository roomRepository
     )
     : base(regex: @"^new room$")
     {
         _beingRepository = beingRepository;
+        _response = response;
         _state = state;
         _roomRepository = roomRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var selectedBeing = await _state.GetBeing();
 
@@ -62,7 +65,11 @@ public class NewRoomCommand : BaseCommand
         selectedBeing.InRoom = newRoom;
         await _beingRepository.UpdateBeing(selectedBeing);
 
-        return $"{MessageStandard.Created("room", newRoom.Name)} "
-            + $"{selectedBeing.Name} moved there.";
+        _response.AddText(
+            $"{MessageStandard.Created("room", newRoom.Name)}"
+        );
+        _response.AddText(
+            $"{selectedBeing.Name} moved to {newRoom.Name}."
+        );
     }
 }

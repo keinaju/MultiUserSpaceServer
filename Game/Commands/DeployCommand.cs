@@ -15,6 +15,7 @@ public class DeployCommand : BaseCommand
 
     private readonly IBeingRepository _beingRepository;
     private readonly IDeploymentRepository _deploymentRepository;
+    private readonly IGameResponse _response;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
@@ -29,6 +30,7 @@ public class DeployCommand : BaseCommand
     public DeployCommand(
         IBeingRepository beingRepository,
         IDeploymentRepository deploymentRepository,
+        IGameResponse response,
         IInventoryRepository inventoryRepository,
         IItemRepository itemRepository,
         IPlayerState state,
@@ -41,32 +43,40 @@ public class DeployCommand : BaseCommand
         _deploymentRepository = deploymentRepository;
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;
+        _response = response;
         _roomRepository = roomRepository;
         _state = state;
         _session = session;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var item = await _itemRepository.FindItem(ItemName);
         if(item is null)
         {
-            return MessageStandard.DoesNotExist("Item", ItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Item", ItemName)
+            );
+            return;
         }
 
         var deployment = await _deploymentRepository
-            .FindDeploymentByItem(item);
+        .FindDeploymentByItem(item);
         if(deployment is null)
         {
-            return MessageStandard.DoesNotContain(ItemName, "a deployment");
+            _response.AddText(
+                MessageStandard.DoesNotContain(ItemName, "a deployment")
+            );
+            return;
         }
 
         // Populate
         deployment.Prototype = await _beingRepository
-            .FindBeing(deployment.Prototype.PrimaryKey);
+        .FindBeing(deployment.Prototype.PrimaryKey);
         if(deployment.Prototype.RoomInside is not null)
         {
-            deployment.Prototype.RoomInside = await _roomRepository.FindRoom(
+            deployment.Prototype.RoomInside = 
+            await _roomRepository.FindRoom(
                 deployment.Prototype.RoomInside.PrimaryKey
             );
         }
@@ -75,10 +85,13 @@ public class DeployCommand : BaseCommand
         var inventory = await _state.GetInventory();
         if(!inventory.Contains(item, 1))
         {
-            return MessageStandard.DoesNotContain(
-                $"{being.Name}'s inventory",
-                MessageStandard.Quantity(item.Name, 1)
+            _response.AddText(
+                MessageStandard.DoesNotContain(
+                    $"{being.Name}'s inventory",
+                    MessageStandard.Quantity(item.Name, 1)
+                )
             );
+            return;
         }
 
         inventory.RemoveItems(item, 1);
@@ -91,6 +104,8 @@ public class DeployCommand : BaseCommand
         clone.Name = $"d{clone.PrimaryKey}";
         await _beingRepository.UpdateBeing(clone);
 
-        return $"{being.Name} deployed {item.Name} to {clone.Name}.";
+        _response.AddText(
+            $"{being.Name} deployed {item.Name} to {clone.Name}."
+        );
     }
 }

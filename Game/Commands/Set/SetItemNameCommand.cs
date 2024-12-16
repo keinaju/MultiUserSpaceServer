@@ -10,6 +10,7 @@ public class SetItemNameCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
+    private readonly IGameResponse _response;
     private readonly IItemRepository _itemRepository;
     private string OldItemName => GetParameter(1);
     private string NewItemName => GetParameter(2);
@@ -17,23 +18,32 @@ public class SetItemNameCommand : BaseCommand
     protected override string Description =>
         "Sets a name for an item.";
 
-    public SetItemNameCommand(IItemRepository itemRepository)
+    public SetItemNameCommand(
+        IGameResponse response,
+        IItemRepository itemRepository
+    )
     : base(regex: @"^set item (.+) name (.+)$")
     {
         _itemRepository = itemRepository;
+        _response = response;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var item = await _itemRepository.FindItem(OldItemName);
         if(item is null)
         {
-            return MessageStandard.DoesNotExist("Item", OldItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Item", OldItemName)
+            );
+            return;
         }
 
         item.Name = NewItemName;
         await _itemRepository.UpdateItem(item);
 
-        return MessageStandard.Renamed(OldItemName, NewItemName);
+        _response.AddText(
+            MessageStandard.Renamed(OldItemName, NewItemName)
+        );
     }
 }

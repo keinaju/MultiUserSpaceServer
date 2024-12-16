@@ -8,12 +8,12 @@ public abstract class BaseCommand : IGameCommand
 
     protected abstract string Description { get; } 
 
+    public string HelpText =>
+    $"{Description} {_regularExpression.ToString()}";
+
     protected Match? RegularExpressionMatch = null;
 
     private readonly Regex _regularExpression;
-
-    public string HelpText =>
-        $"{Description} {_regularExpression.ToString()}";
 
     protected BaseCommand(string regex)
     {
@@ -33,7 +33,7 @@ public abstract class BaseCommand : IGameCommand
         return false;
     }
 
-    public abstract Task<string> Invoke();
+    public abstract Task Invoke();
 
     protected string GetParameter(int index)
     {

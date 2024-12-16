@@ -7,19 +7,26 @@ public class TimeCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [];
 
     protected override string Description =>
-        "Shows the tick count.";
+    "Shows the tick count.";
 
+    private readonly IGameResponse _response;
     private readonly ITickCounterRepository _tickCounterRepository;
 
-    public TimeCommand(ITickCounterRepository tickCounterRepository)
+    public TimeCommand(
+        IGameResponse response,
+        ITickCounterRepository tickCounterRepository
+    )
     : base(regex: @"^time$")
     {
+        _response = response;
         _tickCounterRepository = tickCounterRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var tickCounter = await _tickCounterRepository.GetTickCount();
-        return $"Tick is {tickCounter!.TickCount}.";
+        _response.AddText(
+            $"The tick is {tickCounter!.TickCount.ToString()}."
+        );
     }
 }

@@ -15,6 +15,7 @@ public class SellCommand : BaseCommand
     protected override string Description => 
         "Creates an offer to sell items for other items.";
 
+    private readonly IGameResponse _response;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IOfferRepository _offerRepository;
@@ -27,6 +28,7 @@ public class SellCommand : BaseCommand
 
 
     public SellCommand(
+        IGameResponse response,
         IInventoryRepository inventoryRepository,
         IItemRepository itemRepository,
         IOfferRepository offerRepository,
@@ -37,52 +39,67 @@ public class SellCommand : BaseCommand
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;
         _offerRepository = offerRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var sellQuantity = GetParsedQuantity(SellQuantityInUserInput);
         if(sellQuantity is null)
         {
-            return MessageStandard.Invalid(
-                SellQuantityInUserInput, "quantity"
+            _response.AddText(
+                MessageStandard.Invalid(SellQuantityInUserInput, "quantity")
             );
+            return;
         }
 
         var buyQuantity = GetParsedQuantity(BuyQuantityInUserInput);
         if(buyQuantity is null)
         {
-            return MessageStandard.Invalid(
-                BuyQuantityInUserInput, "quantity"
+            _response.AddText(
+                MessageStandard.Invalid(BuyQuantityInUserInput, "quantity")
             );
+            return;
         }
 
         var sellItem = await _itemRepository.FindItem(SellItemName);
         if(sellItem is null)
         {
-            return MessageStandard.DoesNotExist("Item", SellItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Item", SellItemName)
+            );
+            return;
         }
         
         var buyItem = await _itemRepository.FindItem(BuyItemName);
         if(buyItem is null)
         {
-            return MessageStandard.DoesNotExist("Item", BuyItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Item", BuyItemName)
+            );
+            return;
         }
 
         if(sellItem.PrimaryKey == buyItem.PrimaryKey)
         {
-            return "Offer can't contain same items.";
+            _response.AddText(
+                "Offer can't contain same items."
+            );
+            return;
         }
 
         var invokingInventory = await _state.GetInventory();
         if(invokingInventory.Contains(sellItem, (int)sellQuantity) == false)
         {
             var being = await _state.GetBeing();
-            return MessageStandard.DoesNotContain(
-                $"{being.Name}'s inventory",
-                MessageStandard.Quantity(sellItem.Name, (int)sellQuantity)
+            _response.AddText(
+                MessageStandard.DoesNotContain(
+                    $"{being.Name}'s inventory",
+                    MessageStandard.Quantity(sellItem.Name, (int)sellQuantity)
+                )
             );
+            return;
         }
 
         var newOffer = new Offer()
@@ -94,10 +111,12 @@ public class SellCommand : BaseCommand
             Inventory = invokingInventory
         };
 
-        var matchingOffers = await _offerRepository.FindMatchingOffers(newOffer) as List<Offer>;
+        var matchingOffers = await _offerRepository
+        .FindMatchingOffers(newOffer) as List<Offer>;
         if(matchingOffers.Count == 0)
         {
-            return await CreateOffer(newOffer);
+            _response.AddText(await CreateOffer(newOffer));
+            return;
         }
 
         // Offer has matches
@@ -122,7 +141,8 @@ public class SellCommand : BaseCommand
         }
         if(bestOffer is null)
         {
-            return await CreateOffer(newOffer);
+            _response.AddText(await CreateOffer(newOffer));
+            return;
         }
 
         // Remove best matching offer from database
@@ -139,7 +159,8 @@ public class SellCommand : BaseCommand
         await _inventoryRepository.UpdateInventory(bestOffer.Inventory);
         await _inventoryRepository.UpdateInventory(invokingInventory);
 
-        return $"You sold {newOffer.ToString()}.";
+        _response.AddText($"You sold {newOffer.ToString()}.");
+        return;
     }
 
     private async Task<string> CreateOffer(

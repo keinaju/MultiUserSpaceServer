@@ -13,8 +13,9 @@ public class AddItemInCraftPlanCommand : BaseCommand
         Prerequisite.UserHasSelectedBeing
     ];
 
-    private readonly IItemRepository _itemRepository;
     private readonly ICraftPlanRepository _craftPlanRepository;
+    private readonly IGameResponse _response;
+    private readonly IItemRepository _itemRepository;
     private int _parsedComponentQuantity = 0;
     private Item? _componentItem = null;
     private CraftPlan? _craftPlan = null;
@@ -28,20 +29,23 @@ public class AddItemInCraftPlanCommand : BaseCommand
 
     public AddItemInCraftPlanCommand(
         ICraftPlanRepository craftPlanRepository,
+        IGameResponse response,
         IItemRepository itemRepository
     )
     : base(regex: @"^add (\d+) (.+) in craft plan (.+)$")
     {
         _craftPlanRepository = craftPlanRepository;
         _itemRepository = itemRepository;
+        _response = response;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var errorMessage = await Validate();
         if(errorMessage != string.Empty)
         {
-            return errorMessage;
+            _response.AddText(errorMessage);
+            return;
         }
         
         _craftPlan!.AddComponent(
@@ -51,7 +55,11 @@ public class AddItemInCraftPlanCommand : BaseCommand
 
         await _craftPlanRepository.UpdateCraftPlan(_craftPlan);
 
-        return GetResponse();
+        _response.AddText(
+            MessageStandard.Quantity(_componentItem!.Name, _parsedComponentQuantity)
+            + $" was added to {CraftPlanItemName}'s craft plan. "
+            + $"{CraftPlanItemName} is made of {_craftPlan!.IsMadeOf()}."
+        );
     }
 
     private async Task<string> Validate()
@@ -91,13 +99,5 @@ public class AddItemInCraftPlanCommand : BaseCommand
         }
 
         return string.Empty;
-    }
-
-    private string GetResponse()
-    {
-        return 
-            MessageStandard.Quantity(_componentItem!.Name, _parsedComponentQuantity)
-            + $" was added to {CraftPlanItemName}'s craft plan. "
-            + $"{CraftPlanItemName} is made of {_craftPlan!.IsMadeOf()}.";
     }
 }

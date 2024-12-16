@@ -1,5 +1,3 @@
-using System;
-using System.Diagnostics;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
@@ -10,22 +8,28 @@ public class ShowFeaturesCommand : BaseCommand
     public override Prerequisite[] Prerequisites => [];
 
     private readonly IFeatureRepository _featureRepository;
+    private readonly IGameResponse _response;
 
     protected override string Description =>
         "Shows all features.";
 
-    public ShowFeaturesCommand(IFeatureRepository featureRepository)
+    public ShowFeaturesCommand(
+        IFeatureRepository featureRepository,
+        IGameResponse response
+    )
     : base(regex: @"^show features$")
     {
         _featureRepository = featureRepository;
+        _response = response;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var features = await _featureRepository.FindFeatures();
         if(features.Count == 0)
         {
-            return "There are no features.";
+            _response.AddText("There are no features.");
+            return;
         }
 
         var featureNames = new List<string>();
@@ -34,6 +38,8 @@ public class ShowFeaturesCommand : BaseCommand
             featureNames.Add(feature.Name);
         }
 
-        return $"Features are: {MessageStandard.List(featureNames)}.";
+        _response.AddText(
+            $"Features are: {MessageStandard.List(featureNames)}."
+        );
     }
 }

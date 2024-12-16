@@ -6,30 +6,34 @@ public class SignupCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [];
 
-    private readonly IUserRepository _userRepository;
+    protected override string Description =>
+    "Creates a user for the given username and password.";
+
     private string Username => GetParameter(1);
     private string Password => GetParameter(2);
 
-    protected override string Description =>
-        "Creates a user for the given username and password.";
+    private readonly IGameResponse _response;
+    private readonly IUserRepository _userRepository;
 
     public SignupCommand(
+        IGameResponse response,
         IUserRepository userRepository
     )
     : base(regex: @"^signup (.+) (.+)$")
     {
+        _response = response;
         _userRepository = userRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
-        User newUser = new()
+        var newUser = new User()
         {
             IsBuilder = false,
             Username = Username,
             HashedPassword = User.HashPassword(Password),
         };
-        var user = await _userRepository.CreateUser(newUser);
-        return $"Signup succeeded, {user.Username}.";
+        var userInDb = await _userRepository.CreateUser(newUser);
+        _response.AddText($"Signup succeeded, {userInDb.Username}.");
     }
 }

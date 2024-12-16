@@ -7,9 +7,19 @@ public class IntroductionCommand : BaseCommand
     protected override string Description =>
         "Shows an introduction.";
 
-    public IntroductionCommand() : base(regex: @"^(\s*|help)$") { }
+    private readonly IGameResponse _response;
+    
+    public IntroductionCommand(IGameResponse response)
+    : base(regex: @"^(\s*|help)$")
+    {
+        _response = response;
+    }
 
-    public override async Task<string> Invoke() =>
-        @"Welcome to Multi User Space!
-        Try to help yourself by typing 'show commands'.";
+    public override Task Invoke()
+    {
+        _response.AddText("Welcome to a Multi User Space -application!");
+        _response.AddText("Try to help yourself by typing 'show commands'.");
+        
+        return Task.CompletedTask;
+    }
 }

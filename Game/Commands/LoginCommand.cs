@@ -8,46 +8,51 @@ public class LoginCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [];
 
-    private readonly IUserRepository _userRepository;
-    private readonly ITokenService _tokenService;
-    private readonly IHeaderDictionary _responseHeaders;
+    protected override string Description =>
+    "Requests a login token from server to establish a session.";
 
     private string Username => GetParameter(1);
     private string Password => GetParameter(2);
 
-    protected override string Description =>
-        "Requests a login token from server to establish a session.";
-
     private const string UNSUCCESSFUL_MESSAGE = "Login failed.";
 
+    private readonly IGameResponse _response;
+    private readonly IUserRepository _userRepository;
+    private readonly ITokenService _tokenService;
+    private readonly IHeaderDictionary _responseHeaders;
+
     public LoginCommand(
+        IGameResponse response,
         IUserRepository userRepository,
         ITokenService tokenService,
         IHttpContextAccessor contextAccessor
     )
     : base(regex: @"^login (.+) (.+)$")
     {
-        _userRepository = userRepository;
-        _tokenService = tokenService;
+        _response = response;
         _responseHeaders = contextAccessor.HttpContext.Response.Headers;
+        _tokenService = tokenService;
+        _userRepository = userRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var user = await _userRepository.FindUser(Username);
         if (user is null)
         {
-            return UNSUCCESSFUL_MESSAGE;
+            _response.AddText(UNSUCCESSFUL_MESSAGE);
+            return;
         }
 
         bool result = User.VerifyPassword(Password, user.HashedPassword);
         if (result)
         {
             AddTokenHeaders(user);
-            return $"You are logged in, {Username}.";
+            _response.AddText($"You are logged in, {Username}.");
+            return;
         }
 
-        return UNSUCCESSFUL_MESSAGE;
+        _response.AddText(UNSUCCESSFUL_MESSAGE);
     }
 
     private void AddTokenHeaders(User user)

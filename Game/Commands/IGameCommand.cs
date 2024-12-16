@@ -8,5 +8,5 @@ public interface IGameCommand
 
     bool IsMatch(string userInput);
 
-    Task<string> Invoke();
+    Task Invoke();
 }

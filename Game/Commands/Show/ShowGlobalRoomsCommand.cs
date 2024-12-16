@@ -8,23 +8,29 @@ public class ShowGlobalRoomsCommand : BaseCommand
 {
     public override Prerequisite[] Prerequisites => [];
 
+    private readonly IGameResponse _response;
     private readonly IRoomRepository _roomRepository;
 
     protected override string Description =>
         "Shows all rooms that can be accessed from anywhere.";
     
-    public ShowGlobalRoomsCommand(IRoomRepository roomRepository)
+    public ShowGlobalRoomsCommand(
+        IGameResponse response,
+        IRoomRepository roomRepository
+    )
     : base(regex: @"^show global rooms$")
     {
+        _response = response;
         _roomRepository = roomRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var rooms = await _roomRepository.FindGlobalRooms();
         if(rooms.Count == 0)
         {
-            return "There are no global rooms.";
+            _response.AddText("There are no global rooms.");
+            return;
         }
 
         var roomNames = new List<string>();
@@ -33,6 +39,8 @@ public class ShowGlobalRoomsCommand : BaseCommand
             roomNames.Add(room.Name);
         }
 
-        return $"Global rooms are: {MessageStandard.List(roomNames)}.";
+        _response.AddText(
+            $"Global rooms are: {MessageStandard.List(roomNames)}."
+        );
     }
 }

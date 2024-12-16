@@ -12,6 +12,7 @@ public class SetCuriosityCommand : BaseCommand
         Prerequisite.UserHasSelectedBeing
     ];
 
+    private readonly IGameResponse _response;
     private readonly IRoomPoolRepository _roomPoolRepository;
     private readonly IRoomRepository _roomRepository;
     private readonly IPlayerState _state;
@@ -22,32 +23,39 @@ public class SetCuriosityCommand : BaseCommand
         "Sets a room pool to use to generate cloned rooms in the current room.";
 
     public SetCuriosityCommand(
+        IGameResponse response,
         IRoomPoolRepository roomPoolRepository,
         IRoomRepository roomRepository,
         IPlayerState state
     )
     : base(regex: @"^set curiosity (.+)$")
     {
+        _response = response;
         _roomPoolRepository = roomPoolRepository;
         _roomRepository = roomRepository;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var roomPool = await _roomPoolRepository.FindRoomPool(RoomPoolName);
         if(roomPool is null)
         {
-            return MessageStandard.DoesNotExist("Room pool", RoomPoolName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Room pool", RoomPoolName)
+            );
+            return;
         }
 
         var currentRoom = await _state.GetRoom();
         currentRoom.Curiosity = roomPool;
         await _roomRepository.UpdateRoom(currentRoom);
 
-        return MessageStandard.Set(
-            $"{currentRoom.Name}'s curiosity",
-            roomPool.Name
+        _response.AddText(
+            MessageStandard.Set(
+                $"{currentRoom.Name}'s curiosity",
+                roomPool.Name
+            )
         );
     }
 }

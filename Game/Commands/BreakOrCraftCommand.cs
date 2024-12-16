@@ -13,6 +13,7 @@ public class BreakOrCraftCommand : BaseCommand
     ];
 
     private readonly ICraftPlanRepository _craftPlanRepository;
+    private readonly IGameResponse _response;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
@@ -30,6 +31,7 @@ public class BreakOrCraftCommand : BaseCommand
 
     public BreakOrCraftCommand(
         ICraftPlanRepository craftPlanRepository,
+        IGameResponse response,
         IInventoryRepository inventoryRepository,
         IItemRepository itemRepository,
         IPlayerState state
@@ -39,22 +41,24 @@ public class BreakOrCraftCommand : BaseCommand
         _craftPlanRepository = craftPlanRepository;
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var errorMessage = await Validate();
         if(errorMessage != string.Empty)
         {
-            return errorMessage;
+            _response.AddText(errorMessage);
+            return;
         }
         
         _being = await _state.GetBeing();
         _inventory = await _state.GetInventory();
 
-        if (BreakOrCraft == "break") return await BreakStrategy();
-        else return await CraftStrategy();
+        if (BreakOrCraft == "break") await BreakStrategy();
+        else await CraftStrategy();
     }
 
     private async Task<string> Validate()
@@ -81,14 +85,17 @@ public class BreakOrCraftCommand : BaseCommand
         return string.Empty;
     }
 
-    private async Task<string> BreakStrategy()
+    private async Task BreakStrategy()
     {
         if(!_inventory.Contains(_product!, 1))
         {
-            return MessageStandard.DoesNotContain(
-                $"{_being.Name}'s inventory",
-                _product!.Name
+            _response.AddText(
+                MessageStandard.DoesNotContain(
+                    $"{_being.Name}'s inventory",
+                    _product!.Name
+                )
             );
+            return;
         }
 
         // At this point inventory contains required product
@@ -104,21 +111,26 @@ public class BreakOrCraftCommand : BaseCommand
 
         await _inventoryRepository.UpdateInventory(_inventory);
         
-        return $"{_being.Name} breaked {_product!.Name} to {_craftPlan.IsMadeOf()}.";
+        _response.AddText(
+            $"{_being.Name} breaked {_product!.Name} to {_craftPlan.IsMadeOf()}."
+        );
     }
 
-    private async Task<string> CraftStrategy()
+    private async Task CraftStrategy()
     {
         foreach(var component in _craftPlan!.Components)
         {
             if(!_inventory.Contains(component.Item, component.Quantity))
             {
-                return MessageStandard.DoesNotContain(
-                    $"{_being.Name}'s inventory",
-                    MessageStandard.Quantity(
-                        component.Item.Name, component.Quantity
+                _response.AddText(
+                    MessageStandard.DoesNotContain(
+                        $"{_being.Name}'s inventory",
+                        MessageStandard.Quantity(
+                            component.Item.Name, component.Quantity
+                        )
                     )
                 );
+                return;
             }
         }
 
@@ -135,6 +147,8 @@ public class BreakOrCraftCommand : BaseCommand
 
         await _inventoryRepository.UpdateInventory(_inventory);
         
-        return $"{_being.Name} crafted {_product!.Name} from {_craftPlan.IsMadeOf()}.";
+        _response.AddText(
+            $"{_being.Name} crafted {_product!.Name} from {_craftPlan.IsMadeOf()}."
+        );
     }
 }

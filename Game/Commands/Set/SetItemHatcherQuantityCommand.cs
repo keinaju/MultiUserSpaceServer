@@ -13,6 +13,7 @@ public class SetItemHatcherQuantityCommand : BaseCommand
         Prerequisite.UserHasSelectedBeing
     ];
 
+    private readonly IGameResponse _response;
     private readonly IItemHatcherRepository _itemHatcherRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
@@ -37,6 +38,7 @@ public class SetItemHatcherQuantityCommand : BaseCommand
     }
 
     public SetItemHatcherQuantityCommand(
+        IGameResponse response,
         IItemHatcherRepository itemHatcherRepository,
         IItemRepository itemRepository,
         IPlayerState state
@@ -45,32 +47,45 @@ public class SetItemHatcherQuantityCommand : BaseCommand
     {
         _itemHatcherRepository = itemHatcherRepository;
         _itemRepository = itemRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var item = await _itemRepository.FindItem(ItemName);
         if(item is null)
         {
-            return MessageStandard.DoesNotExist("Item", ItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Item", ItemName)
+            );
+            return;
         }
 
         var min = ParsedQuantity(MinInUserInput);
         if(min is null)
         {
-            return MessageStandard.Invalid(MinInUserInput, "minimum quantity");
+            _response.AddText(
+                MessageStandard.Invalid(MinInUserInput, "minimum quantity")
+            );
+            return;
         }
 
         var max = ParsedQuantity(MaxInUserInput);
         if(max is null)
         {
-            return MessageStandard.Invalid(MaxInUserInput, "maximum quantity");
+            _response.AddText(
+                MessageStandard.Invalid(MaxInUserInput, "maximum quantity")
+            );
+            return;
         }
 
         if(max < min)
         {
-            return "Maximum quantity can not be smaller than minimum quantity.";
+            _response.AddText(
+                "Maximum quantity can not be smaller than minimum quantity."
+            );
+            return;
         }
 
         var room = await _state.GetRoom();
@@ -82,14 +97,19 @@ public class SetItemHatcherQuantityCommand : BaseCommand
                 hatcher.MinQuantity = (int)min;
                 hatcher.MaxQuantity = (int)max;
                 await _itemHatcherRepository.UpdateItemHatcher(hatcher);
-                return MessageStandard.Set(
-                    "Item hatcher", $"({hatcher.GetDetails()})"
+                _response.AddText(
+                    MessageStandard.Set(
+                        "Item hatcher", $"({hatcher.GetDetails()})"
+                    )
                 );
+                return; 
             }
         }
 
-        return MessageStandard.DoesNotContain(
-            $"{room.Name}", $"a hatcher for {item.Name}"
+        _response.AddText(
+            MessageStandard.DoesNotContain(
+                $"{room.Name}", $"a hatcher for {item.Name}"
+            )
         );
     }
 }

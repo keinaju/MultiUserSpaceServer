@@ -11,32 +11,46 @@ public class SetRoomPoolDescriptionCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
+    private readonly IGameResponse _response;
     private readonly IRoomPoolRepository _roomPoolRepository;
     private string RoomPoolName => GetParameter(1);
     private string RoomPoolDescription => GetParameter(2);
 
     protected override string Description =>
-        "Sets a description for a room pool.";
+    "Sets a description for a room pool.";
 
-    public SetRoomPoolDescriptionCommand(IRoomPoolRepository roomPoolRepository)
+    public SetRoomPoolDescriptionCommand(
+        IGameResponse response,
+        IRoomPoolRepository roomPoolRepository
+    )
     : base(regex: @"^set room pool (.+) description (.+)$")
     {
+        _response = response;
         _roomPoolRepository = roomPoolRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var roomPool = await _roomPoolRepository
-            .FindRoomPool(RoomPoolName);
+        .FindRoomPool(RoomPoolName);
         if(roomPool is null)
         {
-            return MessageStandard.DoesNotExist("Room pool", RoomPoolName);
+            _response.AddText(
+                MessageStandard.DoesNotExist(
+                    "Room pool", RoomPoolName
+                )
+            );
+            return;
         }
 
         roomPool.Description = RoomPoolDescription;
         await _roomPoolRepository.UpdateRoomPool(roomPool);
 
-        return MessageStandard
-            .Set($"{RoomPoolName}'s description", RoomPoolDescription);
+        _response.AddText(
+            MessageStandard.Set(
+                $"{RoomPoolName}'s description",
+                RoomPoolDescription
+            )
+        );
     }
 }

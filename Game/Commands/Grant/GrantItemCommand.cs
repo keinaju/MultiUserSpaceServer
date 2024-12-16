@@ -15,8 +15,9 @@ public class GrantItemCommand : BaseCommand
     ];
 
     protected override string Description =>
-        "Grants items to the current being.";
+    "Grants items to the current being.";
 
+    private readonly IGameResponse _response;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
@@ -24,6 +25,7 @@ public class GrantItemCommand : BaseCommand
     private string ItemName => GetParameter(2);
 
     public GrantItemCommand(
+        IGameResponse response,
         IInventoryRepository inventoryRepository,
         IItemRepository itemRepository,
         IPlayerState state
@@ -32,21 +34,32 @@ public class GrantItemCommand : BaseCommand
     {
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var quantity = GetQuantity();
         if(quantity is null)
         {
-            return MessageStandard.Invalid(QuantityInUserInput, "quantity");
+            _response.AddText(
+                MessageStandard.Invalid(
+                    QuantityInUserInput, "quantity"
+                )
+            );
+            return;
         }
 
         var item = await GetItem();
         if(item is null)
         {
-            return MessageStandard.DoesNotExist("Item", ItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist(
+                    "Item", ItemName
+                )
+            );
+            return;
         }
 
         var inventory = await _state.GetInventory();
@@ -55,8 +68,10 @@ public class GrantItemCommand : BaseCommand
 
         var being = await _state.GetBeing();
 
-        return $"{MessageStandard.Quantity(ItemName, (int)quantity)} was " +
-        $"granted to {being.Name}'s inventory.";
+        _response.AddText(
+            $"{MessageStandard.Quantity(ItemName, (int)quantity)} was " +
+            $"granted to {being.Name}'s inventory."
+        );
     }
 
     private async Task<Item?> GetItem()

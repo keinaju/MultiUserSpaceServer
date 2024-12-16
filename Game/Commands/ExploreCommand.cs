@@ -14,12 +14,16 @@ public class ExploreCommand : BaseCommand
     protected override string Description =>
     "Explores a curiosity in the current room, possibly revealing more rooms.";
 
+    private const int NUMBER_OF_CONNECTIONS_MAXIMUM = 4;
+    
+    private readonly IGameResponse _response;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IPlayerState _state;
     private readonly IRoomPoolRepository _roomPoolRepository;
     private readonly IRoomRepository _roomRepository;
 
     public ExploreCommand(
+        IGameResponse response,
         IInventoryRepository inventoryRepository,
         IPlayerState state,
         IRoomPoolRepository roomPoolRepository,
@@ -28,12 +32,13 @@ public class ExploreCommand : BaseCommand
     : base(regex: @"^explore$")
     {
         _inventoryRepository = inventoryRepository;
+        _response = response;
         _roomPoolRepository = roomPoolRepository;
         _roomRepository = roomRepository;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var being = await _state.GetBeing();
         var currentRoom = await _state.GetRoom();
@@ -42,21 +47,25 @@ public class ExploreCommand : BaseCommand
         var curiosity = currentRoom.Curiosity;
         if(curiosity is null)
         {
-            return MessageStandard.DoesNotContain(
-                currentRoom.Name, "a curiosity to explore"
+            _response.AddText(
+                MessageStandard.DoesNotContain(
+                    currentRoom.Name, "a curiosity to explore"
+                )
             );
+            return;
         }
         
         // Populate
         curiosity = await _roomPoolRepository
-            .FindRoomPool(curiosity.PrimaryKey);
+        .FindRoomPool(curiosity.PrimaryKey);
         
         var roomsInPool = curiosity.RoomsInPool;
         if(roomsInPool.Count == 0)
         {
-            return MessageStandard.DoesNotContain(
-                curiosity.Name, "rooms"
+            _response.AddText(
+                MessageStandard.DoesNotContain(curiosity.Name, "rooms")
             );
+            return;
         }
 
         if(curiosity.ItemToExplore is not null)
@@ -65,10 +74,13 @@ public class ExploreCommand : BaseCommand
             // in room pool, prevent exploring
             if(!inventory.Contains(curiosity.ItemToExplore, 1))
             {
-                return MessageStandard.DoesNotContain(
-                    $"{being.Name}'s inventory",
-                    $"required item to explore ({MessageStandard.Quantity(curiosity.ItemToExplore.Name, 1)})"
+                _response.AddText(
+                    MessageStandard.DoesNotContain(
+                        $"{being.Name}'s inventory",
+                        $"required item to explore ({MessageStandard.Quantity(curiosity.ItemToExplore.Name, 1)})"
+                    )
                 );
+                return; 
             }
 
             // Otherwise, take item from player
@@ -84,19 +96,21 @@ public class ExploreCommand : BaseCommand
 
         var clone = randomRoom.Clone();
         clone = await _roomRepository.CreateRoom(clone);
-        clone.Name = $"{clone.Name}-{clone.PrimaryKey}";
+        clone.Name = $"{clone.Name}{clone.PrimaryKey}";
 
         clone.ConnectedToRooms.Add(currentRoom);
         await _roomRepository.UpdateRoom(clone);
 
         currentRoom.ConnectedToRooms.Add(clone);
         // Prevent further exploring if room already has several connections
-        if(currentRoom.ConnectedToRooms.Count >= 4)
+        if (currentRoom.ConnectedToRooms.Count >= NUMBER_OF_CONNECTIONS_MAXIMUM)
         {
             currentRoom.Curiosity = null;
         }
         await _roomRepository.UpdateRoom(currentRoom);
 
-        return $"You found a connection to {clone.Name}.";
+        _response.AddText(
+            $"You found a connection to {clone.Name}."
+        );
     }
 }

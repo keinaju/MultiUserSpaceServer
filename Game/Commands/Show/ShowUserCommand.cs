@@ -11,29 +11,33 @@ public class ShowUserCommand : BaseCommand
     protected override string Description =>
         "Shows information for the currently logged in user.";
 
+    private readonly IGameResponse _response;
     private readonly ISessionService _session;
 
     public ShowUserCommand(
+        IGameResponse response,
         ISessionService session
     )
     : base(regex: @"^show user$")
     {
+        _response = response;
         _session = session;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var user = _session.AuthenticatedUser;
         if (user is null)
         {
-            return "You are not logged in.";
+            _response.AddText("You are not logged in.");
+            return;
         }
 
         string output = $"You are logged in, {user.Username}. ";
         output += GetRoleText(user);
         output += GetBeingNames(user.CreatedBeings);
 
-        return output;
+        _response.AddText(output);
     }
 
     private string GetRoleText(User user)

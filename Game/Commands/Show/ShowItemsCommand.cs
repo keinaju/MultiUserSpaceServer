@@ -11,20 +11,26 @@ public class ShowItemsCommand : BaseCommand
     protected override string Description =>
         "Shows all items";
 
+    private readonly IGameResponse _response;
     private readonly IItemRepository _itemRepository;
 
-    public ShowItemsCommand(IItemRepository itemRepository)
+    public ShowItemsCommand(
+        IGameResponse response,
+        IItemRepository itemRepository
+    )
     : base(regex: @"^show items$")
     {
         _itemRepository = itemRepository;
+        _response = response;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var items = await _itemRepository.FindItems();
         if(items.Count == 0)
         {
-            return "There are no items.";
+            _response.AddText("There are no items.");
+            return;
         }
 
         var itemNames = new List<string>();
@@ -34,6 +40,8 @@ public class ShowItemsCommand : BaseCommand
         }
         itemNames.Sort();
 
-        return $"Items are: {MessageStandard.List(itemNames)}.";
+        _response.AddText(
+            $"Items are: {MessageStandard.List(itemNames)}."
+        );
     }
 }

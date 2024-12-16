@@ -12,33 +12,42 @@ public class NewFeatureCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
-    private readonly IFeatureRepository _featureRepository;
+    protected override string Description => "Creates a new feature.";
 
     private string FeatureName => GetParameter(1);
 
-    protected override string Description =>
-        "Creates a new feature.";
+    private readonly IGameResponse _response;
+    private readonly IFeatureRepository _featureRepository;
 
-    public NewFeatureCommand(IFeatureRepository featureRepository)
+    public NewFeatureCommand(
+        IFeatureRepository featureRepository,
+        IGameResponse response
+    )
     : base(regex: @"^new feature (.+)$")
     {
         _featureRepository = featureRepository;
+        _response = response;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var featureInDb = await _featureRepository
             .FindFeature(FeatureName);
         if(featureInDb is not null)
         {
-            return $"{featureInDb.Name} feature already exists.";
+            _response.AddText(
+                $"{featureInDb.Name} feature already exists."
+            );
+            return;
         }
 
         var newFeature = await _featureRepository
-            .CreateFeature(
-                new Feature() { Name = FeatureName }
-            );
+        .CreateFeature(
+            new Feature() { Name = FeatureName }
+        );
 
-        return MessageStandard.Created("feature", newFeature.Name);
+        _response.AddText(
+            MessageStandard.Created("feature", newFeature.Name)
+        );
     }
 }

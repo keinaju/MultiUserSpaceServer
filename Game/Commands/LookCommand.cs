@@ -15,10 +15,12 @@ public class LookCommand : BaseCommand
     protected override string Description =>
         "Looks at the current room.";
 
+    private readonly IGameResponse _response;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IPlayerState _playerState;
 
     public LookCommand(
+        IGameResponse response,
         IInventoryRepository inventoryRepository,
         IPlayerState playerState
     )
@@ -26,52 +28,61 @@ public class LookCommand : BaseCommand
     {
         _inventoryRepository = inventoryRepository;
         _playerState = playerState;
+        _response = response;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var currentRoom = await _playerState.GetRoom(); 
         var selectedBeing = await _playerState.GetBeing();
-        string outcome = $"{selectedBeing.Name} is in {currentRoom.Name}.";
+        _response.AddText(
+            $"{selectedBeing.Name} is in {currentRoom.Name}."
+        );
 
         if (currentRoom.Description is not null)
         {
-            outcome += $" {currentRoom.Description}";
+            _response.AddText(currentRoom.Description);
         }
 
-        outcome += GetBeingNamesText(currentRoom, selectedBeing);
-        outcome += await GetInventoryText(currentRoom);
-        outcome += GetConnectionsText(currentRoom);
-        outcome += GetCuriosityText(currentRoom);
-
-        return outcome;
+        AddBeingNamesText(currentRoom, selectedBeing);
+        await AddInventoryText(currentRoom);
+        AddConnectionsText(currentRoom);
+        AddCuriosityText(currentRoom);
     }
 
-    private string GetBeingNamesText(Room room, Being selectedBeing)
+    private void AddBeingNamesText(Room room, Being selectedBeing)
     {
         var names = new List<string>();
         foreach(var beingHere in room.BeingsHere)
         {
             if (beingHere.PrimaryKey == selectedBeing.PrimaryKey)
             {
+                // Do not add selected being's name in list
                 continue;
             }
 
-            names.Add(beingHere.Name);
+            names.Add(beingHere.Name!);
         }
 
-        if (names.Count == 0) return "";
+        if (names.Count == 0)
+        {
+            return;
+        }
+        else if (names.Count == 1)
+        {
+            _response.AddText($"{names[0]} is here.");
+            return;
+        }
 
-        if (names.Count == 1) return $" {names[0]} is here.";
-
-        return $" {MessageStandard.List(names)} are here.";
+        _response.AddText($"{MessageStandard.List(names)} are here.");
     }
 
-    private string GetConnectionsText(Room room)
+    private void AddConnectionsText(Room room)
     {
         if (room.ConnectedToRooms.Count == 0)
         {
-            return " This room has no connected rooms.";
+            _response.AddText("This room has no connected rooms.");
+            return;
         }
         
         var names = new List<string>();
@@ -80,25 +91,30 @@ public class LookCommand : BaseCommand
             names.Add(connectedRoom.Name);
         }
 
-        return $" {room.Name} is connected to: {string.Join(", ", names)}.";
+        _response.AddText(
+            $"{room.Name} is connected to: {MessageStandard.List(names)}."
+        );
+        return;
     }
 
-    private string GetCuriosityText(Room room)
+    private void AddCuriosityText(Room room)
     {
         var curiosity = room.Curiosity;
         if(curiosity is null)
         {
-            return "";
+            return;
         }
 
         if(curiosity.Description != "")
         {
-            return $" {curiosity.Description}";
+            _response.AddText(curiosity.Description);
+            return;
         }
-        return $" {room.Name} has a curiosity.";
+
+        _response.AddText($"{room.Name} has a curiosity.");
     }
 
-    private async Task<string> GetInventoryText(Room room)
+    private async Task AddInventoryText(Room room)
     {
         // Populate with item stacks
         var inventory = await _inventoryRepository.FindInventory(
@@ -107,15 +123,20 @@ public class LookCommand : BaseCommand
 
         if(inventory.IsEmpty)
         {
-            return $" {room.Name} has no items.";
+            _response.AddText($"{room.Name} has no items.");
+            return;
         }
 
         var itemList = new List<string>();
         foreach(var stack in inventory.ItemStacks)
         {
-            itemList.Add(MessageStandard.Quantity(stack.Item.Name, stack.Quantity));
+            itemList.Add(
+                MessageStandard.Quantity(stack.Item.Name, stack.Quantity)
+            );
         }
 
-        return $" {room.Name} has {inventory.ItemStacks.Count} stacks of items: {MessageStandard.List(itemList)}.";
+        _response.AddText(
+            $"{room.Name} has {inventory.ItemStacks.Count} stacks of items: {MessageStandard.List(itemList)}."
+        );
     }
 }

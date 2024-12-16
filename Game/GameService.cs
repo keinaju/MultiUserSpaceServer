@@ -4,30 +4,38 @@ namespace MUS.Game;
 
 public class GameService : IGameService
 {
-    ICommandParser _parser;
-    IPrerequisiteFilter _prerequisiteFilter;
+    private readonly ICommandParser _parser;
+    private readonly IGameResponse _response;
+    private readonly IPrerequisiteFilter _prerequisiteFilter;
 
-    public GameService(ICommandParser parser, IPrerequisiteFilter prerequisiteFilter)
+    public GameService(
+        ICommandParser parser,
+        IGameResponse response,
+        IPrerequisiteFilter prerequisiteFilter
+    )
     {
         _parser = parser;
         _prerequisiteFilter = prerequisiteFilter;
+        _response = response;
     }
 
-    public async Task<string> ProcessUserInput(string userInput)
+    public async Task<IGameResponse> Respond(string userInput)
     {
-        var operation = _parser.Parse(userInput);
-        if(operation is null)
+        var command = _parser.Parse(userInput);
+        if(command is null)
         {
-            return $"'{userInput}' does not match any known operation.";
+            _response.AddText($"'{userInput}' does not match any known command.");
+            return _response;
         }
 
-        string? complain = _prerequisiteFilter.Complain(operation.Prerequisites);
-        if (complain is not null) 
+        string? complainText = _prerequisiteFilter.Complain(command.Prerequisites);
+        if (complainText is not null) 
         {
-            return complain;
+            _response.AddText(complainText);
+            return _response;
         }
 
-        string outcome = await operation.Invoke();
-        return outcome;
+        await command.Invoke();
+        return _response;
     }
 }

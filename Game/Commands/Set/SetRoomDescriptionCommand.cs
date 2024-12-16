@@ -12,6 +12,7 @@ public class SetRoomDescriptionCommand : BaseCommand
         Prerequisite.UserHasSelectedBeing
     ];
     
+    private readonly IGameResponse _response;
     private readonly IPlayerState _state;
     private readonly IRoomRepository _roomRepository;
     private string RoomDescription => GetParameter(1);
@@ -20,21 +21,28 @@ public class SetRoomDescriptionCommand : BaseCommand
         "Sets a description for a room.";
 
     public SetRoomDescriptionCommand(
+        IGameResponse response,
         IPlayerState state,
         IRoomRepository roomRepository
     )
     : base(regex: @"^set room description (.+)$")
     {
         _state = state;
+        _response = response;
         _roomRepository = roomRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var room = await _state.GetRoom();
         room.Description = RoomDescription;
         await _roomRepository.UpdateRoom(room);
 
-        return MessageStandard.Set($"{room.Name}'s description", RoomDescription);
+        _response.AddText(
+            MessageStandard.Set(
+                $"{room.Name}'s description",
+                RoomDescription
+            )
+        );
     }
 }

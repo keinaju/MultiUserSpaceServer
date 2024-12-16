@@ -12,30 +12,39 @@ public class NewRoomPoolCommand : BaseCommand
     ];
 
     protected override string Description =>
-        "Creates a new room pool to generate cloned rooms.";
+    "Creates a new room pool to generate cloned rooms.";
 
+    private readonly IGameResponse _response;
     private readonly IRoomPoolRepository _roomPoolRepository;
 
     public NewRoomPoolCommand(
+        IGameResponse response,
         IRoomPoolRepository roomPoolRepository
     )
     : base(regex: @"^new room pool$")
     {
+        _response = response;
         _roomPoolRepository = roomPoolRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
-        var rp = new RoomPool() { 
+        var newRoomPool = new RoomPool() { 
             Description = string.Empty,
             ItemToExplore = null,
             Name = string.Empty
         };
 
-        var rpInDb = await _roomPoolRepository.CreateRoomPool(rp);
-        rpInDb.Name = $"rp{rpInDb.PrimaryKey}";
+        var roomPoolInDb = await _roomPoolRepository
+        .CreateRoomPool(newRoomPool);
+        roomPoolInDb.Name = $"rp{roomPoolInDb.PrimaryKey}";
 
-        await _roomPoolRepository.UpdateRoomPool(rpInDb);
-        return MessageStandard.Created("room pool", rpInDb.Name);
+        await _roomPoolRepository.UpdateRoomPool(roomPoolInDb);
+
+        _response.AddText(
+            MessageStandard.Created(
+                "room pool", roomPoolInDb.Name
+            )
+        );
     }
 }

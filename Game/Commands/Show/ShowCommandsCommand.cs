@@ -10,15 +10,20 @@ public class ShowCommandsCommand : BaseCommand
     protected override string Description =>
         "Shows all commands in the application.";
 
+    private readonly IGameResponse _response;
     private readonly IServiceProvider _serviceProvider;
 
-    public ShowCommandsCommand(IServiceProvider serviceProvider)
+    public ShowCommandsCommand(
+        IGameResponse response,
+        IServiceProvider serviceProvider
+    )
     : base(regex: $"^show commands$")
     {
+        _response = response;
         _serviceProvider = serviceProvider;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var commands = _serviceProvider.GetServices<IGameCommand>();
         
@@ -29,6 +34,8 @@ public class ShowCommandsCommand : BaseCommand
             commandsList.Add(command.HelpText);
         }
 
-        return MessageStandard.List(commandsList);
+        _response.AddText(
+            MessageStandard.List(commandsList)
+        );
     }
 }

@@ -12,6 +12,7 @@ public class TakeCommand : BaseCommand
         Prerequisite.UserHasSelectedBeing,
     ];
 
+    private readonly IGameResponse _response;
     private readonly IInventoryRepository _inventoryRepository;
     private readonly IItemRepository _itemRepository;
     private readonly IPlayerState _state;
@@ -26,6 +27,7 @@ public class TakeCommand : BaseCommand
     private int? _quantity = null;
 
     public TakeCommand(
+        IGameResponse response,
         IInventoryRepository inventoryRepository,
         IItemRepository itemRepository,
         IPlayerState state
@@ -34,13 +36,18 @@ public class TakeCommand : BaseCommand
     {
         _inventoryRepository = inventoryRepository;
         _itemRepository = itemRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var errorMessage = await Validate();
-        if (errorMessage is not null) return errorMessage;
+        if (errorMessage is not null)
+        {
+            _response.AddText(errorMessage);
+            return;
+        }
 
         var currentRoom = await _state.GetRoom();
         // Populate room inventory
@@ -52,12 +59,19 @@ public class TakeCommand : BaseCommand
         {
             var being = await _state.GetBeing();
             await GiveItemsFromRoom(being, roomInventory);
-            return $"{being.Name} took {MessageStandard.Quantity(_item!.Name, (int)_quantity!)}.";
+            _response.AddText(
+                $"{being.Name} took {MessageStandard.Quantity(
+                    _item!.Name, (int)_quantity!
+                )}."
+            );
+            return;
         }
 
-        return MessageStandard.DoesNotContain(
-            currentRoom.Name,
-            MessageStandard.Quantity(ItemNameInUserInput, (int)_quantity)
+        _response.AddText(
+            MessageStandard.DoesNotContain(
+                currentRoom.Name,
+                MessageStandard.Quantity(ItemNameInUserInput, (int)_quantity)
+            )
         );
     }
 

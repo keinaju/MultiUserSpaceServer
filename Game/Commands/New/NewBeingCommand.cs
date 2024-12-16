@@ -12,14 +12,16 @@ public class NewBeingCommand : BaseCommand
     ];
 
     protected override string Description =>
-        "Creates a new being.";
+    "Creates a new being.";
 
     private readonly IBeingRepository _beingRepository;
+    private readonly IGameResponse _response;
     private readonly IGameSettingsRepository _gameSettingsRepository;
     private readonly ISessionService _session;
 
     public NewBeingCommand(
         IBeingRepository beingRepository,
+        IGameResponse response,
         IGameSettingsRepository gameSettingsRepository,
         ISessionService session
     )
@@ -27,10 +29,11 @@ public class NewBeingCommand : BaseCommand
     {
         _beingRepository = beingRepository;
         _gameSettingsRepository = gameSettingsRepository;
+        _response = response;
         _session = session;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var user = _session.AuthenticatedUser!;
         var settings = await _gameSettingsRepository.GetGameSettings();
@@ -45,6 +48,11 @@ public class NewBeingCommand : BaseCommand
         var savedBeing = await _beingRepository.CreateBeing(newBeing);
         savedBeing.Name = $"b{savedBeing.PrimaryKey}";
         await _beingRepository.UpdateBeing(savedBeing);
-        return MessageStandard.Created("being", savedBeing.Name);
+        
+        _response.AddText(
+            MessageStandard.Created(
+                "being", savedBeing.Name
+            )
+        );
     }
 }

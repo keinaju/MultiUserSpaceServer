@@ -1,5 +1,6 @@
 ﻿using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands;
 
@@ -13,23 +14,26 @@ public class SelectBeingCommand : BaseCommand
         "Selects a being to control.";
 
     private readonly IBeingRepository _beingRepository;
+    private readonly IGameResponse _response;
     private readonly IUserRepository _userRepository;
     private readonly ISessionService _session;
     private string BeingName => GetParameter(1);
 
     public SelectBeingCommand(
         IBeingRepository beingRepository,
+        IGameResponse response,
         IUserRepository userRepository,
         ISessionService session
     )
     : base(regex: @"^select (.+)$")
     {
         _beingRepository = beingRepository;
+        _response = response;
         _userRepository = userRepository;
         _session = session;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var user = _session.AuthenticatedUser!;
         var beings = await _beingRepository.FindBeingsByUser(user);
@@ -37,11 +41,14 @@ public class SelectBeingCommand : BaseCommand
         var being = beings.Find(being => being.Name == BeingName);
         if (being is null)
         {
-            return $"'{BeingName}' does not exist.";
+            _response.AddText(
+                MessageStandard.DoesNotExist("Being", BeingName)
+            );
+            return;
         }
 
         user.SelectedBeing = being;
         await _userRepository.UpdateUser(user);
-        return $"You selected {being.Name}.";
+        _response.AddText($"You selected {being.Name}.");
     }
 }

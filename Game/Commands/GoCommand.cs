@@ -13,6 +13,7 @@ public class GoCommand : BaseCommand
     ];
 
     private readonly IBeingRepository _beingRepository;
+    private readonly IGameResponse _response;
     private readonly IRoomRepository _roomRepository;
     private readonly IPlayerState _state;
 
@@ -24,17 +25,19 @@ public class GoCommand : BaseCommand
 
     public GoCommand(
         IBeingRepository beingRepository,
+        IGameResponse response,
         IRoomRepository roomRepository,
         IPlayerState state
     )
     : base(regex: @"^go (global |connected |being )?(.+)$")
     {
         _beingRepository = beingRepository;
+        _response = response;
         _roomRepository = roomRepository;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         Room current = await _state.GetRoom();
         Room? destination = null;
@@ -71,30 +74,42 @@ public class GoCommand : BaseCommand
 
         if(destination is null)
         {
-            return MessageStandard.DoesNotExist("Room", RoomNameInUserInput);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Room", RoomNameInUserInput)
+            );
+            return;
         }
 
         // Populate
-        destination = await _roomRepository.FindRoom(destination.PrimaryKey);
+        destination = await _roomRepository
+        .FindRoom(destination!.PrimaryKey);
 
         var being = await _state.GetBeing();
 
         if(destination.PrimaryKey == current.PrimaryKey)
         {
-            return $"{being.Name} is in {destination.Name}.";
+            _response.AddText(
+                $"{being.Name} is in {destination.Name}."
+            );
+            return;
         }
 
         foreach(var requiredFeature in destination.BeingMustHaveFeatures)
         {
             if(!being.Features.Contains(requiredFeature))
             {
-                return $"{being.Name} can not enter {destination.Name} " +
-                $"without {requiredFeature.Name} feature.";
+                _response.AddText(
+                    $"{being.Name} can not enter {destination.Name} " +
+                    $"without {requiredFeature.Name} feature."
+                );
+                return;
             }
         }
 
         await _state.Move(destination);
-        return $"{being.Name} moved to {destination.Name}.";
+        _response.AddText(
+            $"{being.Name} moved to {destination.Name}."
+        );
     }
 
     private async Task<Room?> FindGlobalRoom()

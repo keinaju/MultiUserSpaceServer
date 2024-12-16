@@ -10,6 +10,7 @@ public class SetItemDescriptionCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
+    private readonly IGameResponse _response;
     private readonly IItemRepository _itemRepository;
     private string ItemName => GetParameter(1);
     private string ItemDescription => GetParameter(2);
@@ -17,23 +18,32 @@ public class SetItemDescriptionCommand : BaseCommand
     protected override string Description =>
         "Sets a description for an item.";
 
-    public SetItemDescriptionCommand(IItemRepository itemRepository)
+    public SetItemDescriptionCommand(
+        IGameResponse response,
+        IItemRepository itemRepository
+    )
     : base(regex: @"^set item (.+) description (.+)$")
     {
         _itemRepository = itemRepository;
+        _response = response;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var item = await _itemRepository.FindItem(ItemName);
         if(item is null)
         {
-            return MessageStandard.DoesNotExist("Item", ItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Item", ItemName)
+            );
+            return;
         }
 
         item.Description = ItemDescription;
         await _itemRepository.UpdateItem(item);
 
-        return MessageStandard.Set($"{ItemName}'s description", ItemDescription);
+        _response.AddText(
+            MessageStandard.Set($"{ItemName}'s description", ItemDescription)
+        );
     }
 }

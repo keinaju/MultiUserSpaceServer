@@ -15,6 +15,7 @@ public class AddFeatureInBeingCommand : BaseCommand
 
     private readonly IBeingRepository _beingRepository;
     private readonly IFeatureRepository _featureRepository;
+    private readonly IGameResponse _response;
     private readonly IPlayerState _state;
 
     protected override string Description =>
@@ -25,33 +26,43 @@ public class AddFeatureInBeingCommand : BaseCommand
     public AddFeatureInBeingCommand(
         IBeingRepository beingRepository,
         IFeatureRepository featureRepository,
+        IGameResponse response,
         IPlayerState state
     )
     : base(regex: @"^add feature (.+) in being$")
     {
         _beingRepository = beingRepository;
         _featureRepository = featureRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var feature = await _featureRepository
             .FindFeature(FeatureName);
         if(feature is null)
         {
-            return MessageStandard.DoesNotExist("Feature", FeatureName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Feature", FeatureName)
+            );
+            return;
         }
 
         var being = await _state.GetBeing();
         if(being.Features.Contains(feature))
         {
-            return $"{being.Name} already has the feature {FeatureName}.";
+            _response.AddText(
+                $"{being.Name} already has the feature {FeatureName}."
+            );
+            return;
         }
 
         being.Features.Add(feature);
         await _beingRepository.UpdateBeing(being);
 
-        return $"{being.Name} now has the feature {feature.Name}.";
+        _response.AddText(
+            $"{feature.Name} feature was added to {being.Name}."
+        );
     }
 }

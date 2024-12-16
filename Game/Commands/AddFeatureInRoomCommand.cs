@@ -14,6 +14,7 @@ public class AddFeatureInRoomCommand : BaseCommand
     ];
 
     private readonly IFeatureRepository _featureRepository;
+    private readonly IGameResponse _response;
     private readonly IPlayerState _state;
     private readonly IRoomRepository _roomRepository;
 
@@ -24,33 +25,43 @@ public class AddFeatureInRoomCommand : BaseCommand
 
     public AddFeatureInRoomCommand(
         IFeatureRepository featureRepository,
+        IGameResponse response,
         IPlayerState state,
         IRoomRepository roomRepository
     )
     : base(regex: @"^add feature (.+) in room$")
     {
         _featureRepository = featureRepository;
+        _response = response;
         _state = state;
         _roomRepository = roomRepository;
     }
 
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var feature = await _featureRepository.FindFeature(FeatureName);
         if(feature is null)
         {
-            return MessageStandard.DoesNotExist("Feature", FeatureName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Feature", FeatureName)
+            );
+            return;
         }
 
         var room = await _state.GetRoom();
         if(room.BeingMustHaveFeatures.Contains(feature))
         {
-            return $"{room.Name} already has the feature {FeatureName}.";
+            _response.AddText(
+                $"{room.Name} already has the feature {FeatureName}."
+            );
+            return;
         }
 
         room.BeingMustHaveFeatures.Add(feature);
         await _roomRepository.UpdateRoom(room);
-        return $"{FeatureName} was added to {room.Name}'s must-have features.";
+        _response.AddText(
+            $"{FeatureName} was added to {room.Name}'s must-have features."
+        );
     }
 }

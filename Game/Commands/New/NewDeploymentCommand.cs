@@ -14,17 +14,19 @@ public class NewDeploymentCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
-    private readonly IDeploymentRepository _deploymentRepository;
-    private readonly IItemRepository _itemRepository;
-    private readonly IPlayerState _state;
+    protected override string Description =>
+    "Creates a new deployment to convert an item into the current being.";
 
     private string ItemName => GetParameter(1);
 
-    protected override string Description =>
-        "Creates a new deployment to convert an item into the current being.";
+    private readonly IDeploymentRepository _deploymentRepository;
+    private readonly IGameResponse _response;
+    private readonly IItemRepository _itemRepository;
+    private readonly IPlayerState _state;
 
     public NewDeploymentCommand(
         IDeploymentRepository deploymentRepository,
+        IGameResponse response,
         IItemRepository itemRepository,
         IPlayerState state
     )
@@ -32,23 +34,30 @@ public class NewDeploymentCommand : BaseCommand
     {
         _deploymentRepository = deploymentRepository;
         _itemRepository = itemRepository;
+        _response = response;
         _state = state;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var item = await _itemRepository.FindItem(ItemName);
         if(item is null)
         {
-            return MessageStandard.DoesNotExist("Item", ItemName);
+            _response.AddText(
+                MessageStandard.DoesNotExist("Item", ItemName)
+            );
+            return;
         }
 
         var deploymentInDb = await _deploymentRepository
             .FindDeploymentByItem(item);
         if(deploymentInDb is not null)
         {
-            return $"{item.Name} already has a deployment to "
-            + $"{deploymentInDb.Prototype.Name}.";
+            _response.AddText(
+                $"{item.Name} already has a deployment to "
+                + $"{deploymentInDb.Prototype.Name}."
+            );
+            return; 
         }
 
         var being = await _state.GetBeing();
@@ -57,8 +66,10 @@ public class NewDeploymentCommand : BaseCommand
             new Deployment() { Item = item, Prototype = being }
         );
 
-        return MessageStandard.Created(
-            $"deployment from {item.Name} to {being.Name}"
+        _response.AddText(
+            MessageStandard.Created(
+                $"deployment from {item.Name} to {being.Name}"
+            )
         );
     }
 }

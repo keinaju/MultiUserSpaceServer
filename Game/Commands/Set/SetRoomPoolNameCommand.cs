@@ -10,6 +10,7 @@ public class SetRoomPoolNameCommand : BaseCommand
         Prerequisite.UserIsBuilder
     ];
 
+    private readonly IGameResponse _response;
     private readonly IRoomPoolRepository _roomPoolRepository;
     private string OldRoomPoolName => GetParameter(1);
     private string NewRoomPoolName => GetParameter(2);
@@ -18,24 +19,35 @@ public class SetRoomPoolNameCommand : BaseCommand
         "Sets a name for a room pool.";
 
     public SetRoomPoolNameCommand(
+        IGameResponse response,
         IRoomPoolRepository roomPoolRepository
     )
     : base(regex: @"^set room pool (.+) name (.+)$")
     {
+        _response = response;
         _roomPoolRepository = roomPoolRepository;
     }
 
-    public override async Task<string> Invoke()
+    public override async Task Invoke()
     {
         var roomPool = await _roomPoolRepository.FindRoomPool(OldRoomPoolName);
         if(roomPool is null)
         {
-            return MessageStandard.DoesNotExist("Room pool", OldRoomPoolName);
+            _response.AddText(
+                MessageStandard.DoesNotExist(
+                    "Room pool", OldRoomPoolName
+                )
+            );
+            return;
         }
 
         roomPool.Name = NewRoomPoolName;
         await _roomPoolRepository.UpdateRoomPool(roomPool);
 
-        return MessageStandard.Renamed(OldRoomPoolName, NewRoomPoolName);
+        _response.AddText(
+            MessageStandard.Renamed(
+                OldRoomPoolName, NewRoomPoolName
+            )
+        );
     }
 }
