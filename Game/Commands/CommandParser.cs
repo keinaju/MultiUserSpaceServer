@@ -1,22 +1,34 @@
-﻿namespace MUS.Game.Commands;
+using System;
+using MUS.Game.Commands;
+
+namespace MUS.Game.Commands;
 
 public class CommandParser : ICommandParser
 {
     private readonly IEnumerable<IGameCommand> _commands;
+    private readonly IUserInput _userInput;
 
-    public CommandParser(IEnumerable<IGameCommand> commands)
+    public CommandParser(
+        IEnumerable<IGameCommand> commands,
+        IUserInput userInput
+    )
     {
         _commands = commands;
+        _userInput = userInput;
     }
 
-    public IGameCommand? Parse(string userInput)
+    public IEnumerable<IGameCommand> GetMatchingCommands()
     {
-        foreach (var command in _commands)
+        var matchingCommands = new List<IGameCommand>();
+        foreach(var command in _commands)
         {
-            if (command.IsMatch(userInput)) return command;
+            var match = command.Regex.Match(_userInput.Text);
+            if(match.Success)
+            {
+                matchingCommands.Add(command);
+            }
         }
 
-        //Unknown command
-        return null;
+        return matchingCommands;
     }
 }

@@ -50,14 +50,16 @@ public class ItemHatcherListener : IGameClockListener
     /// <returns>Task</returns>
     private async Task GenerateItem(ItemHatcher hatcher)
     {
+        if (hatcher.Inventories.Count == 0) return;
+
         // Choose one random inventory from hatcher
         var randomIndex = new Random().Next(0, hatcher.Inventories.Count);
         var randomInventory = hatcher.Inventories.ElementAt(randomIndex);
 
         // Randomize amount of items
         var randomQuantity = new Random().Next(
-            hatcher.MinQuantity,
-            hatcher.MaxQuantity + 1
+            hatcher.MinimumQuantity,
+            hatcher.MaximumQuantity + 1
         );
 
         // Populate item stacks

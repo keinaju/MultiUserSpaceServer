@@ -1,41 +1,46 @@
 using System;
-using MUS.Game.Utilities;
+using System.Text.RegularExpressions;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowCommandsCommand : BaseCommand
+public class ShowCommandsCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [];
+    public string HelpText => "Shows all commands.";
 
-    protected override string Description =>
-        "Shows all commands in the application.";
+    public Condition[] Conditions => [];
 
-    private readonly IGameResponse _response;
+    public Regex Regex => new("^(help|show commands)$");
+
+    private readonly IResponsePayload _response;
     private readonly IServiceProvider _serviceProvider;
 
     public ShowCommandsCommand(
-        IGameResponse response,
+        IResponsePayload response,
         IServiceProvider serviceProvider
     )
-    : base(regex: $"^show commands$")
     {
         _response = response;
-        _serviceProvider = serviceProvider;
+        _serviceProvider = serviceProvider;        
     }
 
-    public override async Task Invoke()
+    public Task Run()
     {
-        var commands = _serviceProvider.GetServices<IGameCommand>();
+        var commands = _serviceProvider
+        .GetServices<IGameCommand>();
         
         var commandsList = new List<string>();
-
         foreach(var command in commands)
         {
-            commandsList.Add(command.HelpText);
+            commandsList.Add(
+                $"{command.Regex} = {command.HelpText}"
+            );
         }
+        commandsList.Sort();
 
-        _response.AddText(
-            MessageStandard.List(commandsList)
-        );
+        _response.AddText("All commands are:");
+
+        _response.AddList(commandsList);
+
+        return Task.CompletedTask;
     }
 }

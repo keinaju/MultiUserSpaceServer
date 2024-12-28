@@ -1,46 +1,57 @@
 using System;
+using System.Text.RegularExpressions;
+using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowGlobalRoomsCommand : BaseCommand
+public class ShowGlobalRoomsCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [];
+    public string HelpText => "Shows all globally accessible rooms.";
 
-    private readonly IGameResponse _response;
-    private readonly IRoomRepository _roomRepository;
+    public Condition[] Conditions => [];
 
-    protected override string Description =>
-        "Shows all rooms that can be accessed from anywhere.";
-    
+    public Regex Regex => new("^show global rooms$");
+
+    private readonly IResponsePayload _response;
+    private readonly IRoomRepository _roomRepo;
+
     public ShowGlobalRoomsCommand(
-        IGameResponse response,
-        IRoomRepository roomRepository
+        IResponsePayload response,
+        IRoomRepository roomRepo
     )
-    : base(regex: @"^show global rooms$")
     {
         _response = response;
-        _roomRepository = roomRepository;
+        _roomRepo = roomRepo;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var rooms = await _roomRepository.FindGlobalRooms();
+        var rooms = await _roomRepo.FindGlobalRooms();
+
         if(rooms.Count == 0)
         {
             _response.AddText("There are no global rooms.");
             return;
         }
 
+        _response.AddText("All global rooms are:");
+
+        _response.AddText(GetRoomNames(rooms));
+    }
+
+    private string GetRoomNames(IEnumerable<Room> rooms)
+    {
         var roomNames = new List<string>();
+
         foreach(var room in rooms)
         {
             roomNames.Add(room.Name);
         }
 
-        _response.AddText(
-            $"Global rooms are: {MessageStandard.List(roomNames)}."
-        );
+        roomNames.Sort();
+
+        return Message.List(roomNames);
     }
 }

@@ -16,8 +16,8 @@ public class DeploymentRepository : IDeploymentRepository
 
     public async Task<Deployment> CreateDeployment(Deployment deployment)
     {
-        EntityEntry<Deployment> entry
-            = await _context.Deployments.AddAsync(deployment);
+        EntityEntry<Deployment> entry =
+        await _context.Deployments.AddAsync(deployment);
 
         await _context.SaveChangesAsync();
 
@@ -29,8 +29,8 @@ public class DeploymentRepository : IDeploymentRepository
         try
         {
             return await _context.Deployments
-                .Where(deployment => deployment.Item.PrimaryKey == item.PrimaryKey)
-                .SingleAsync();
+            .Where(deploy => deploy.Item.PrimaryKey == item.PrimaryKey)
+            .SingleAsync();
         }
         catch(InvalidOperationException)
         {

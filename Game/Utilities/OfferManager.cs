@@ -1,19 +1,21 @@
+using System.Collections;
+using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 
 namespace MUS.Game.Utilities;
 
 public class OfferManager : IOfferManager
 {
-    private readonly IOfferRepository _offerRepository;
+    private readonly IOfferRepository _offerRepo;
 
-    public OfferManager(IOfferRepository offerRepository)
+    public OfferManager(IOfferRepository offerRepo)
     {
-        _offerRepository = offerRepository;
+        _offerRepo = offerRepo;
     }
 
     public async Task<string> FindOffers(string regex)
     {
-        var offers = await _offerRepository.FindOffers(regex);
+        var offers = await _offerRepo.FindOffers(regex);
         
         if(offers.Count == 0)
         {
@@ -28,7 +30,7 @@ public class OfferManager : IOfferManager
 
         return 
             "Active offers are: "
-            + MessageStandard.List(offersAsStrings)
+            + Message.List(offersAsStrings)
             + ".";
     }
 }

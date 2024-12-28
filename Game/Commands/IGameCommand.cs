@@ -1,12 +1,15 @@
-﻿namespace MUS.Game.Commands;
+using System;
+using System.Text.RegularExpressions;
+
+namespace MUS.Game.Commands;
 
 public interface IGameCommand
 {
-    Prerequisite[] Prerequisites { get; }
-
     string HelpText { get; }
 
-    bool IsMatch(string userInput);
+    Condition[] Conditions { get; }
+    
+    Regex Regex { get; }
 
-    Task Invoke();
+    Task Run();
 }

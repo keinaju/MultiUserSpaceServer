@@ -1,6 +1,9 @@
-﻿namespace MUS.Game.Commands;
+using System;
+using MUS.Game.Commands;
+
+namespace MUS.Game.Commands;
 
 public interface ICommandParser
 {
-    IGameCommand? Parse(string command);
+    IEnumerable<IGameCommand> GetMatchingCommands();
 }

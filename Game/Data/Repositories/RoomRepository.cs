@@ -15,32 +15,25 @@ public class RoomRepository : IRoomRepository
 
     public async Task<Room> CreateRoom(Room room)
     {
-        EntityEntry<Room> entry = await _context.Rooms.AddAsync(room);
+        EntityEntry<Room> entry =
+        await _context.Rooms.AddAsync(room);
+
         await _context.SaveChangesAsync();
+
         return entry.Entity;
     }
 
     public async Task<ICollection<Room>> FindGlobalRooms()
     {
         return await _context.Rooms
-            .Where(room => room.GlobalAccess == true)
-            .ToListAsync();
+        .Where(room => room.GlobalAccess == true)
+        .ToListAsync();
     }
 
     public async Task<Room> FindRoom(int primaryKey)
     {
         return await _context.Rooms
-            .Include(room => room.ConnectedToRooms)
-            .Include(room => room.Inventory)
-            .ThenInclude(inventory => inventory.ItemStacks)
-            .ThenInclude(itemStack => itemStack.Item)
-            .Include(room => room.Inventory)
-            .ThenInclude(inventory => inventory.ItemHatchers)
-            .ThenInclude(itemHatcher => itemHatcher.Item)
-            .Include(room => room.Curiosity)
-            .Include(room => room.BeingsHere)
-            .Include(room => room.BeingMustHaveFeatures)
-            .SingleAsync(room => room.PrimaryKey == primaryKey);
+        .SingleAsync(room => room.PrimaryKey == primaryKey);
     }
 
     public async Task<Room?> FindRoom(string roomName)
@@ -48,12 +41,7 @@ public class RoomRepository : IRoomRepository
         try
         {
             return await _context.Rooms
-                .Include(room => room.ConnectedToRooms)
-                .Include(room => room.Inventory)
-                .Include(room => room.Curiosity)
-                .Include(room => room.BeingsHere)
-                .Include(room => room.BeingMustHaveFeatures)
-                .SingleAsync(room => room.Name == roomName);
+            .SingleAsync(room => room.Name == roomName);
         }
         catch (InvalidOperationException)
         {
@@ -77,7 +65,9 @@ public class RoomRepository : IRoomRepository
     public async Task DeleteRoom(int primaryKey)
     {
         var roomInDb = await FindRoom(primaryKey);
+
         _context.Rooms.Remove(roomInDb);
+
         await _context.SaveChangesAsync();
     }
 
@@ -85,7 +75,9 @@ public class RoomRepository : IRoomRepository
     public async Task UpdateRoom(Room updatedRoom)
     {
         var roomInDb = await FindRoom(updatedRoom.PrimaryKey);
+
         roomInDb = updatedRoom;
+        
         await _context.SaveChangesAsync();
     }
 }

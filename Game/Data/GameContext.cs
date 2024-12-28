@@ -28,7 +28,7 @@ namespace MUS.Game.Data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<ItemStack>()
-                .HasKey(table => new { table.ItemPrimaryKey, table.InventoryPrimaryKey });
+            .HasKey(table => new { table.ItemPrimaryKey, table.InventoryPrimaryKey });
         }
     }
 }

@@ -15,25 +15,24 @@ public class ItemHatcherRepository : IItemHatcherRepository
 
     public async Task<ItemHatcher> CreateItemHatcher(ItemHatcher itemHatcher)
     {
-        EntityEntry<ItemHatcher> entry = await _context.ItemHatchers.AddAsync(itemHatcher);
+        EntityEntry<ItemHatcher> entry =
+        await _context.ItemHatchers.AddAsync(itemHatcher);
+
         await _context.SaveChangesAsync();
+
         return entry.Entity;
     }
 
     public async Task<List<ItemHatcher>> FindAllItemHatchers()
     {
-        return await _context.ItemHatchers
-            .Include(hatcher => hatcher.Inventories)
-            .Include(hatcher => hatcher.Item)
-            .ToListAsync();
+        return await _context.ItemHatchers.ToListAsync();
     }
 
-    public async Task<List<ItemHatcher>> FindItemHatchersByInventory(Inventory inventory)
+    public async Task<List<ItemHatcher>>
+    FindItemHatchersByInventory(Inventory inventory)
     {
         return await _context.ItemHatchers
             .Where(hatcher => hatcher.Inventories.Contains(inventory))
-            .Include(hatcher => hatcher.Item)
-            .Include(hatcher => hatcher.Inventories)
             .ToListAsync();
     }
 

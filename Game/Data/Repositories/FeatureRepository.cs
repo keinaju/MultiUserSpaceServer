@@ -17,7 +17,7 @@ public class FeatureRepository : IFeatureRepository
     public async Task<Feature> CreateFeature(Feature feature)
     {
         EntityEntry<Feature> entry = 
-            await _context.Features.AddAsync(feature);
+        await _context.Features.AddAsync(feature);
 
         await _context.SaveChangesAsync();
 
@@ -28,17 +28,34 @@ public class FeatureRepository : IFeatureRepository
     {
         return await _context.Features.ToListAsync();
     }
+    
+    public async Task<Feature?> FindFeature(int primaryKey)
+    {
+        return await _context.Features.SingleAsync(
+            feature => feature.PrimaryKey == primaryKey
+        );
+    }
 
     public async Task<Feature?> FindFeature(string featureName)
     {
         try
         {
             return await _context.Features
-                .SingleAsync(feature => feature.Name == featureName);
+            .SingleAsync(feature => feature.Name == featureName);
         }
         catch(InvalidOperationException)
         {
             return null;
         }
+    }
+
+    public async Task UpdateFeature(Feature updatedFeature)
+    {
+        var featureInDb =
+        await FindFeature(updatedFeature.PrimaryKey);
+
+        featureInDb = updatedFeature;
+
+        await _context.SaveChangesAsync();
     }
 }

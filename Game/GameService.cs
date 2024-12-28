@@ -5,37 +5,57 @@ namespace MUS.Game;
 public class GameService : IGameService
 {
     private readonly ICommandParser _parser;
-    private readonly IGameResponse _response;
-    private readonly IPrerequisiteFilter _prerequisiteFilter;
+    private readonly IConditionFilter _filter;
+    private readonly IResponsePayload _response;
+    private readonly IUserInput _userInput;
 
     public GameService(
         ICommandParser parser,
-        IGameResponse response,
-        IPrerequisiteFilter prerequisiteFilter
+        IConditionFilter filter,
+        IResponsePayload response,
+        IUserInput userInput
     )
     {
+        _filter = filter;
         _parser = parser;
-        _prerequisiteFilter = prerequisiteFilter;
         _response = response;
+        _userInput = userInput;
     }
 
-    public async Task<IGameResponse> Respond(string userInput)
+    public async Task<IResponsePayload> Respond()
     {
-        var command = _parser.Parse(userInput);
-        if(command is null)
-        {
-            _response.AddText($"'{userInput}' does not match any known command.");
-            return _response;
-        }
+        // Test all commands for matches
+        var commands = _parser.GetMatchingCommands();
 
-        string? complainText = _prerequisiteFilter.Complain(command.Prerequisites);
-        if (complainText is not null) 
+        if(commands.Count() == 0)
         {
-            _response.AddText(complainText);
-            return _response;
+            _response.AddText(
+                $"'{_userInput.Text}' does not match any known command."
+            );
         }
+        else if(commands.Count() == 1)
+        {
+            var command = commands.First();
 
-        await command.Invoke();
+            if(_filter.MeetsConditions(command.Conditions))
+            {
+                await command.Run();
+            }
+        }
+        else
+        {
+            _response.AddText(
+                $"'{_userInput.Text}' matches with " +
+                $"{commands.Count()} different commands:"
+            );
+            foreach(var command in commands)
+            {
+                _response.AddText(
+                    $"{command.Regex} = {command.HelpText}"
+                );
+            }
+        }
+        
         return _response;
     }
 }

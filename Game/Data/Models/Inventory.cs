@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
@@ -8,11 +9,34 @@ public class Inventory
     [Key]
     public int PrimaryKey { get; set; }
 
-    public ICollection<ItemStack> ItemStacks { get; } = new HashSet<ItemStack>();
+    public ICollection<ItemHatcher> ItemHatchers
+    {
+        get => _lazyLoader.Load(this, ref _itemHatchers);
+        set => _itemHatchers = value;
+    }
 
-    public ICollection<ItemHatcher> ItemHatchers { get; } = new HashSet<ItemHatcher>();
+    public ICollection<ItemStack> ItemStacks
+    {
+        get => _lazyLoader.Load(this, ref _itemStacks);
+        set => _itemStacks = value;
+    }
 
     public bool IsEmpty => ItemStacks.Count == 0;
+
+    private readonly ILazyLoader _lazyLoader;
+    private ICollection<ItemHatcher> _itemHatchers;
+    private ICollection<ItemStack> _itemStacks;
+
+    public Inventory()
+    {
+        ItemStacks = new List<ItemStack>();
+        ItemHatchers = new List<ItemHatcher>();
+    }
+
+    private Inventory(ILazyLoader lazyLoader)
+    {
+        _lazyLoader = lazyLoader;
+    }
 
     public void AddItems(Item item, int quantity)
     {
@@ -79,21 +103,44 @@ public class Inventory
         return false;
     }
 
-    public string Contents()
+    public string? Contents()
     {
+        if(IsEmpty)
+        {
+            return null;
+        }
+
         var itemQuantities = new List<string>();
         
         foreach(var stack in ItemStacks)
         {
             itemQuantities.Add(
-                MessageStandard.Quantity(
+                Message.Quantity(
                     stack.Item.Name,
                     stack.Quantity
                 )
             );
         }
 
-        return MessageStandard.List(itemQuantities);
+        return Message.List(itemQuantities);
+    }
+
+    /// <summary>
+    /// Returns a matching item hatcher if inventory has
+    /// subscribed to one.
+    /// </summary>
+    /// <param name="item">Item type to search for.</param>
+    public ItemHatcher? GetItemHatcher(Item item)
+    {
+        foreach(var hatcher in ItemHatchers)
+        {
+            if(hatcher.Item == item)
+            {
+                return hatcher;
+            }
+        }
+
+        return null;
     }
 
     public void RemoveItems(Item item, int quantity)
@@ -111,7 +158,11 @@ public class Inventory
         stack.Quantity -= quantity;
     }
 
-    public void TransferTo(Inventory inventory, Item item, int quantity)
+    public void TransferTo(
+        Inventory inventory,
+        Item item,
+        int quantity
+    )
     {
         this.RemoveItems(item, quantity);
         inventory.AddItems(item, quantity);

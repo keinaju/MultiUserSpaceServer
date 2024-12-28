@@ -16,7 +16,7 @@ public class RoomPoolRepository : IRoomPoolRepository
     public async Task<RoomPool> CreateRoomPool(RoomPool roomPool)
     {
         EntityEntry<RoomPool> roomPoolEntry =
-            await _context.RoomPools.AddAsync(roomPool);
+        await _context.RoomPools.AddAsync(roomPool);
 
         await _context.SaveChangesAsync();
 
@@ -31,10 +31,7 @@ public class RoomPoolRepository : IRoomPoolRepository
     public async Task<RoomPool> FindRoomPool(int primaryKey)
     {
         return await _context.RoomPools
-            .Include(roomPool => roomPool.RoomsInPool)
-            .ThenInclude(roomsInPool => roomsInPool.Room)
-            .Include(roomPool => roomPool.ItemToExplore)
-            .SingleAsync(rp => rp.PrimaryKey == primaryKey);
+        .SingleAsync(rp => rp.PrimaryKey == primaryKey);
     }
 
     public async Task<RoomPool?> FindRoomPool(string roomPoolName)
@@ -42,10 +39,7 @@ public class RoomPoolRepository : IRoomPoolRepository
         try
         {
             return await _context.RoomPools
-                .Include(rp => rp.RoomsInPool)
-                .ThenInclude(rooms => rooms.Room)
-                .Include(roomPool => roomPool.ItemToExplore)
-                .SingleAsync(rp => rp.Name == roomPoolName);
+            .SingleAsync(rp => rp.Name == roomPoolName);
         }
         catch(InvalidOperationException)
         {
@@ -56,7 +50,9 @@ public class RoomPoolRepository : IRoomPoolRepository
     public async Task UpdateRoomPool(RoomPool updatedRoomPool)
     {
         var rpInDb = await FindRoomPool(updatedRoomPool.PrimaryKey);
+
         rpInDb = updatedRoomPool;
+
         await _context.SaveChangesAsync();
     }
 }

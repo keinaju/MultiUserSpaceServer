@@ -16,11 +16,10 @@ public class ItemStackRepository : IItemStackRepository
     {
         try
         {
-            return await _context.ItemsStacks
-                .SingleAsync(stack =>
-                    stack.InventoryPrimaryKey == inventoryPrimaryKey
-                    && stack.ItemPrimaryKey == itemPrimaryKey
-                );
+            return await _context.ItemsStacks.SingleAsync(stack =>
+                stack.InventoryPrimaryKey == inventoryPrimaryKey
+                && stack.ItemPrimaryKey == itemPrimaryKey
+            );
         }
         catch (InvalidOperationException)
         {
@@ -30,7 +29,11 @@ public class ItemStackRepository : IItemStackRepository
 
     public async Task SetItemStack(ItemStack itemStack)
     {
-        var itemStackInDb = await FindItemStack(itemStack.Inventory.PrimaryKey, itemStack.Item.PrimaryKey);
+        var itemStackInDb = await FindItemStack(
+            itemStack.Inventory.PrimaryKey,
+            itemStack.Item.PrimaryKey
+        );
+
         if (itemStackInDb is null)
         {
             await _context.ItemsStacks.AddAsync(itemStack);
@@ -39,6 +42,7 @@ public class ItemStackRepository : IItemStackRepository
         {
             itemStackInDb.Quantity += itemStack.Quantity;
         }
+        
         await _context.SaveChangesAsync();
     }
 }

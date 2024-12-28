@@ -1,58 +1,77 @@
-﻿using MUS.Game.Session;
+using System;
+using System.Text.RegularExpressions;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Session;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewBeingCommand : BaseCommand
+public class NewBeingCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn
+    public string HelpText => "Creates a new being.";
+
+    public Regex Regex => new("^new being$");
+
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn
     ];
 
-    protected override string Description =>
-    "Creates a new being.";
-
-    private readonly IBeingRepository _beingRepository;
-    private readonly IGameResponse _response;
-    private readonly IGameSettingsRepository _gameSettingsRepository;
+    private readonly IBeingRepository _beingRepo;
+    private readonly IGameSettingsRepository _settingsRepo;
+    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public NewBeingCommand(
-        IBeingRepository beingRepository,
-        IGameResponse response,
-        IGameSettingsRepository gameSettingsRepository,
+        IBeingRepository beingRepo,
+        IGameSettingsRepository settingsRepo,
+        IResponsePayload response,
         ISessionService session
     )
-    : base(regex: @"^new being$")
     {
-        _beingRepository = beingRepository;
-        _gameSettingsRepository = gameSettingsRepository;
+        _beingRepo = beingRepo;
+        _settingsRepo = settingsRepo;
         _response = response;
         _session = session;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var user = _session.AuthenticatedUser!;
-        var settings = await _gameSettingsRepository.GetGameSettings();
-        var defaultSpawnRoom = settings!.DefaultSpawnRoom;
-        var newBeing = new Being()
+        var being = await CreateBeing();
+
+        await SetBeingName(being);
+
+        _response.AddText(
+            Message.Created("being", being.Name)
+        );
+    }
+
+    private async Task<Being> CreateBeing()
+    {
+        var being = new Being()
         {
             Name = string.Empty,
-            CreatedByUser = user,
+            CreatedByUser = _session.AuthenticatedUser!,
             Inventory = new Inventory(),
-            InRoom = defaultSpawnRoom
+            InRoom = await GetSpawnRoom()
         };
-        var savedBeing = await _beingRepository.CreateBeing(newBeing);
-        savedBeing.Name = $"b{savedBeing.PrimaryKey}";
-        await _beingRepository.UpdateBeing(savedBeing);
-        
-        _response.AddText(
-            MessageStandard.Created(
-                "being", savedBeing.Name
-            )
-        );
+
+        return await _beingRepo.CreateBeing(being);
+    }
+
+    private async Task<Room> GetSpawnRoom()
+    {
+        var settings =
+        await _settingsRepo.GetGameSettings();
+
+        return settings!.DefaultSpawnRoom;
+    }
+
+    private async Task SetBeingName(Being being)
+    {
+        being.Name = $"b{being.PrimaryKey}";
+
+        await _beingRepo.UpdateBeing(being);
     }
 }

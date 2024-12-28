@@ -11,5 +11,10 @@ public interface ISessionService
     /// Returns information about user if user is authenticated in some point of request pipeline.
     /// Returns null if user is not authenticated.
     /// </summary>
-    User? AuthenticatedUser { get; set; }
+    User? AuthenticatedUser { get; }
+
+    /// <summary>
+    /// Validates token and sets user in session.
+    /// </summary>
+    Task AuthenticateUser(string token);
 }

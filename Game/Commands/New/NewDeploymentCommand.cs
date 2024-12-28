@@ -1,4 +1,5 @@
 using System;
+using System.Text.RegularExpressions;
 using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
@@ -6,70 +7,83 @@ using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewDeploymentCommand : BaseCommand
+public class NewDeploymentCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserHasSelectedBeing,
-        Prerequisite.UserIsBuilder
+    public string HelpText =>
+    "Creates a new deployment from the current being to an item.";
+
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn,
+        Condition.UserIsBuilder,
+        Condition.UserHasSelectedBeing
     ];
 
-    protected override string Description =>
-    "Creates a new deployment to convert an item into the current being.";
+    private string ItemNameInInput =>
+    _userInput.GetGroup(this.Regex, 1);
 
-    private string ItemName => GetParameter(1);
+    public Regex Regex => new("^new deploy (.+)$");
 
-    private readonly IDeploymentRepository _deploymentRepository;
-    private readonly IGameResponse _response;
-    private readonly IItemRepository _itemRepository;
-    private readonly IPlayerState _state;
+    private Being CurrentBeing => _player.GetSelectedBeing();
+
+    private readonly IDeploymentRepository _deployRepo;
+    private readonly IItemRepository _itemRepo;
+    private readonly IPlayerState _player;
+    private readonly IResponsePayload _response;
+    private readonly IUserInput _userInput;
 
     public NewDeploymentCommand(
-        IDeploymentRepository deploymentRepository,
-        IGameResponse response,
-        IItemRepository itemRepository,
-        IPlayerState state
+        IDeploymentRepository deployRepo,
+        IItemRepository itemRepo,
+        IPlayerState player,
+        IResponsePayload response,
+        IUserInput userInput
     )
-    : base(regex: @"^new deploy (.+)$")
     {
-        _deploymentRepository = deploymentRepository;
-        _itemRepository = itemRepository;
+        _deployRepo = deployRepo;
+        _itemRepo = itemRepo;
+        _player = player;
         _response = response;
-        _state = state;
+        _userInput = userInput;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var item = await _itemRepository.FindItem(ItemName);
+        var item = await _itemRepo.FindItem(ItemNameInInput);
         if(item is null)
         {
             _response.AddText(
-                MessageStandard.DoesNotExist("Item", ItemName)
+                Message.DoesNotExist("Item", ItemNameInInput)
             );
             return;
         }
 
-        var deploymentInDb = await _deploymentRepository
-            .FindDeploymentByItem(item);
-        if(deploymentInDb is not null)
+        var deploy = await _deployRepo.FindDeploymentByItem(item);
+        if(deploy is not null)
         {
             _response.AddText(
-                $"{item.Name} already has a deployment to "
-                + $"{deploymentInDb.Prototype.Name}."
+                $"{item.Name} already has a deployment to {deploy.Prototype.Name}."
             );
-            return; 
+            return;
         }
 
-        var being = await _state.GetBeing();
-
-        var deploy = await _deploymentRepository.CreateDeployment(
-            new Deployment() { Item = item, Prototype = being }
-        );
+        await CreateDeployment(item);
 
         _response.AddText(
-            MessageStandard.Created(
-                $"deployment from {item.Name} to {being.Name}"
+            Message.Created(
+                $"deployment from {item.Name} to {CurrentBeing.Name}"
             )
+        );
+    }
+
+    private async Task CreateDeployment(Item item)
+    {
+        await _deployRepo.CreateDeployment(
+            new Deployment()
+            {
+                Item = item,
+                Prototype = CurrentBeing
+            }
         );
     }
 }

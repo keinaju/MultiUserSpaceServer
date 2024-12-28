@@ -17,8 +17,7 @@ public class GameSettingsRepository : IGameSettingsRepository
         try
         {
             return await _context.GameSettings
-                .Include(settings => settings.DefaultSpawnRoom)
-                .FirstAsync();
+            .FirstAsync();
         }
         catch (InvalidOperationException)
         {
@@ -29,6 +28,7 @@ public class GameSettingsRepository : IGameSettingsRepository
     public async Task SetGameSettings(GameSettings settings)
     {
         var settingsInDb = await GetGameSettings();
+
         if (settingsInDb is null)
         {
             await _context.GameSettings.AddAsync(settings);
@@ -37,6 +37,7 @@ public class GameSettingsRepository : IGameSettingsRepository
         {
             settingsInDb = settings;
         }
+        
         await _context.SaveChangesAsync();
     }
 }

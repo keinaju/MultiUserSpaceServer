@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
@@ -12,54 +13,83 @@ public class CraftPlan
     /// <summary>
     /// Item to produce if all components are present.
     /// </summary>
-    public required Item Product { get; set; }
+    public int ProductPrimaryKey { get; set; }
+    public required Item Product
+    {
+        get => _lazyLoader.Load(this, ref _product);
+        set => _product = value;
+    }
 
     /// <summary>
-    /// Collection of items and quantities needed to produce item of craft plan.
+    /// Collection of items and quantities needed to
+    /// produce the item of the craft plan.
     /// </summary>
-    public ICollection<CraftComponent> Components { get; }
-        = new HashSet<CraftComponent>();
-    
-    public void AddComponent(Item item, int quantity)
+    public ICollection<CraftComponent> Components
     {
-        // Strategy 1:
-        // If craft plan already has this component,
-        // add quantity to existing craft component quantity.
-        foreach(var componentInPlan in this.Components)
+        get => _lazyLoader.Load(this, ref _components);
+        set => _components = value;
+    }
+
+    private readonly ILazyLoader _lazyLoader;
+    private ICollection<CraftComponent> _components;
+    private Item _product;
+
+    public CraftPlan() {}
+
+    private CraftPlan(ILazyLoader lazyLoader)
+    {
+        _lazyLoader = lazyLoader;
+    }
+    
+    public void SetComponent(Item item, int quantity)
+    {
+        foreach(var component in Components)
         {
-            if(item.PrimaryKey == componentInPlan.Item.PrimaryKey)
+            if(component.Item == item)
             {
-                // The plan has already this component.
-                // Add quantity to existing component:
-                componentInPlan.Quantity += quantity;
+                // Craft plan already has this component
+                if(quantity == 0)
+                {
+                    Components.Remove(component);
+                }
+                else
+                {
+                    component.Quantity = quantity;
+                }
                 return;
             }
         }
 
-        // Strategy 2:
-        // If craft plan does not have this component,
-        // create a new craft component.
-        this.Components.Add(
-            new CraftComponent()
-            {
+        if(quantity == 0)
+        {
+            return;
+        }
+        else
+        {
+            Components.Add(new CraftComponent() {
                 Item = item,
                 Quantity = quantity
-            }
-        );
+            });
+        }
     }
 
-    public string IsMadeOf()
+    public string? MadeOf()
     {
+        if(Components.Count == 0)
+        {
+            return null;
+        }
+
         var componentQuantities = new List<string>();
 
         foreach(var craftComponent in Components)
         {
-            componentQuantities.Add(MessageStandard.Quantity(
+            componentQuantities.Add(Message.Quantity(
                 craftComponent.Item.Name,
                 craftComponent.Quantity
             ));
         }
 
-        return MessageStandard.List(componentQuantities);
+        return Message.List(componentQuantities);
     }
 }

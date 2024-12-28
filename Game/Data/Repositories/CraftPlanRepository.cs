@@ -17,7 +17,7 @@ public class CraftPlanRepository : ICraftPlanRepository
     public async Task<CraftPlan> CreateCraftPlan(CraftPlan craftPlan)
     {
         EntityEntry<CraftPlan> entry =
-            await _context.CraftPlans.AddAsync(craftPlan);
+        await _context.CraftPlans.AddAsync(craftPlan);
 
         await _context.SaveChangesAsync();
 
@@ -27,9 +27,7 @@ public class CraftPlanRepository : ICraftPlanRepository
     public async Task<CraftPlan> FindCraftPlan(int primaryKey)
     {
         return await _context.CraftPlans
-            .Include(craftPlan => craftPlan.Components)
-            .ThenInclude(craftComponent =>  craftComponent.Item)
-            .SingleAsync(craftPlan => craftPlan.PrimaryKey == primaryKey);
+        .SingleAsync(craftPlan => craftPlan.PrimaryKey == primaryKey);
     }
 
     public async Task<CraftPlan?> FindCraftPlanByProduct(Item product)
@@ -37,11 +35,9 @@ public class CraftPlanRepository : ICraftPlanRepository
         try
         {
             return await _context.CraftPlans
-                .Include(craftPlan => craftPlan.Components)
-                .ThenInclude(craftComponent =>  craftComponent.Item)
-                .SingleAsync(craftPlan => 
-                    craftPlan.Product.PrimaryKey == product.PrimaryKey
-                );
+            .SingleAsync(craftPlan => 
+                craftPlan.Product.PrimaryKey == product.PrimaryKey
+            );
         }
         catch(InvalidOperationException)
         {
@@ -51,8 +47,11 @@ public class CraftPlanRepository : ICraftPlanRepository
 
     public async Task UpdateCraftPlan(CraftPlan updatedCraftPlan)
     {
-        var cpInDb = await FindCraftPlan(updatedCraftPlan.PrimaryKey);
+        var cpInDb =
+        await FindCraftPlan(updatedCraftPlan.PrimaryKey);
+
         cpInDb = updatedCraftPlan;
+        
         await _context.SaveChangesAsync();
     }
 }

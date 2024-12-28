@@ -16,29 +16,33 @@ public class OfferRepository : IOfferRepository
 
     public async Task<Offer> CreateOffer(Offer offer)
     {
-        EntityEntry<Offer> entry = await _context.Offers
-            .AddAsync(offer);
+        EntityEntry<Offer> entry =
+        await _context.Offers.AddAsync(offer);
+
         await _context.SaveChangesAsync();
+
         return entry.Entity;
     }
 
     public async Task DeleteOffer(int primaryKey)
     {
         var offer = await _context.Offers.FindAsync(primaryKey);
+
         _context.Offers.Remove(offer);
+
         await _context.SaveChangesAsync();
     }
 
-    public async Task<ICollection<Offer>> FindOffers(string regex = "")
+    public async Task<ICollection<Offer>> FindOffers(
+        string regex = ""
+    )
     {
         return await _context.Offers
-            .Include(offer => offer.ItemToSell)
-            .Include(offer => offer.ItemToBuy)
-            .Where(offer => regex == "" ?
-                true :
-                Regex.IsMatch(offer.ItemToSell.Name, regex)
-            )
-            .ToListAsync();
+        .Where(offer => regex == "" ?
+            true :
+            Regex.IsMatch(offer.ItemToSell.Name, regex)
+        )
+        .ToListAsync();
     }
 
     public async Task<ICollection<Offer>> FindMatchingOffers(Offer newOffer)
@@ -50,7 +54,6 @@ public class OfferRepository : IOfferRepository
             && (offerInDb.QuantityToSell == newOffer.QuantityToBuy)
             && (offerInDb.Inventory.PrimaryKey != newOffer.Inventory.PrimaryKey)
         )
-        .Include(offer => offer.Inventory)
         .ToListAsync();
 
         return offers;

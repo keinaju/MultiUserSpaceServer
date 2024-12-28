@@ -1,75 +1,83 @@
-﻿using MUS.Game.Data;
+using System;
+using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewRoomCommand : BaseCommand
+public class NewRoomCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserIsBuilder,
-        Prerequisite.UserHasSelectedBeing,
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn,
+        Condition.UserHasSelectedBeing,
+        Condition.UserIsBuilder
     ];
 
-    protected override string Description =>
+    public string HelpText =>
     "Creates a new room and connects it to the current room.";
 
-    private readonly IBeingRepository _beingRepository;
-    private readonly IGameResponse _response;
-    private readonly IPlayerState _state;
-    private readonly IRoomRepository _roomRepository;
+    public Regex Regex => new("^new room$");
+
+    private Room CurrentRoom => _player.GetCurrentRoom();
+
+    private readonly IPlayerState _player;
+    private readonly IResponsePayload _response;
+    private readonly IRoomRepository _roomRepo;
 
     public NewRoomCommand(
-        IBeingRepository beingRepository,
-        IGameResponse response,
-        IPlayerState state,
-        IRoomRepository roomRepository
+        IPlayerState player,
+        IResponsePayload response,
+        IRoomRepository roomRepo
     )
-    : base(regex: @"^new room$")
     {
-        _beingRepository = beingRepository;
+        _player = player;
         _response = response;
-        _state = state;
-        _roomRepository = roomRepository;
+        _roomRepo = roomRepo;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var selectedBeing = await _state.GetBeing();
+        var newRoom = await CreateRoom();
 
-        var oldRoom = await _roomRepository.FindRoom(
-            selectedBeing.InRoom.PrimaryKey
-        );
+        await SetRoomName(newRoom);
 
-        // Initialize an empty room
-        var newRoom = new Room()
-        {
-            GlobalAccess = false,
-            Name = string.Empty,
-            Inventory = new Inventory()
-        };
-
-        //Connect new room to room it was created from
-        newRoom.ConnectedToRooms.Add(oldRoom);
-        newRoom = await _roomRepository.CreateRoom(newRoom);
-        newRoom.Name = $"r{newRoom.PrimaryKey}";
-        await _roomRepository.UpdateRoom(newRoom);
-
-        //Connect old room to new room
-        oldRoom.ConnectedToRooms.Add(newRoom);
-        await _roomRepository.UpdateRoom(oldRoom);
-
-        //Move being to new room
-        selectedBeing.InRoom = newRoom;
-        await _beingRepository.UpdateBeing(selectedBeing);
+        await SetBidirectionalConnection(newRoom, CurrentRoom);
 
         _response.AddText(
-            $"{MessageStandard.Created("room", newRoom.Name)}"
+            Message.Created("room", newRoom.Name)
         );
-        _response.AddText(
-            $"{selectedBeing.Name} moved to {newRoom.Name}."
+    }
+
+    private async Task<Room> CreateRoom()
+    {
+        return await _roomRepo.CreateRoom(
+            new Room()
+            {
+                GlobalAccess = false,
+                Name = string.Empty,
+                Inventory = new Inventory(),
+                InBeing = null
+            }
         );
+    }
+
+    private async Task SetRoomName(Room room)
+    {
+        room.Name = $"r{room.PrimaryKey}";
+
+        await _roomRepo.UpdateRoom(room);
+    }
+
+    private async Task SetBidirectionalConnection(
+        Room from, Room to
+    )
+    {
+        from.ConnectBidirectionally(to);
+
+        await _roomRepo.UpdateRoom(from);
+        await _roomRepo.UpdateRoom(to);
     }
 }

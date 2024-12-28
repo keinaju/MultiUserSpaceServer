@@ -2,5 +2,5 @@
 
 public interface IGameService
 {
-    Task<IGameResponse> Respond(string userInput);
+    Task<IResponsePayload> Respond();
 }

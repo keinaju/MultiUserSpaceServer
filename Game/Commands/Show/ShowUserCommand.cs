@@ -1,67 +1,40 @@
-﻿using MUS.Game.Data.Models;
+using System;
+using System.Text.RegularExpressions;
+using MUS.Game.Data.Models;
 using MUS.Game.Session;
-using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowUserCommand : BaseCommand
+public class ShowUserCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [];
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn
+    ];
 
-    protected override string Description =>
-        "Shows information for the currently logged in user.";
+    public string HelpText =>
+    "Shows information about the user that is signed in.";
 
-    private readonly IGameResponse _response;
-    private readonly ISessionService _session;
+    public Regex Regex => new("^show user$");
+
+    private User User => _session.AuthenticatedUser!;
+
+    private IResponsePayload _response;
+    private ISessionService _session;
 
     public ShowUserCommand(
-        IGameResponse response,
+        IResponsePayload response,
         ISessionService session
     )
-    : base(regex: @"^show user$")
     {
         _response = response;
         _session = session;
     }
 
-    public override async Task Invoke()
+    public Task Run()
     {
-        var user = _session.AuthenticatedUser;
-        if (user is null)
-        {
-            _response.AddText("You are not logged in.");
-            return;
-        }
+        _response.AddList(User.Show());
 
-        string output = $"You are logged in, {user.Username}. ";
-        output += GetRoleText(user);
-        output += GetBeingNames(user.CreatedBeings);
-
-        _response.AddText(output);
-    }
-
-    private string GetRoleText(User user)
-    {
-        if(user.IsBuilder)
-        {
-            return "Your user has access to builder commands. ";
-        }
-
-        return string.Empty;
-    }
-
-    private string GetBeingNames(IEnumerable<Being> beings)
-    {
-        if(beings.Count() == 0)
-        {
-            return MessageStandard.DoesNotContain("Your user", "beings");
-        }
-
-        var names = new List<string>();
-        foreach (var being in beings)
-        {
-            names.Add(being.Name!);
-        }
-        return $"Your user contains following beings: {MessageStandard.List(names)}.";
+        return Task.CompletedTask;
     }
 }

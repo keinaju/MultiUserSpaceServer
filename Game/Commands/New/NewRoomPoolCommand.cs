@@ -1,50 +1,62 @@
+using System;
+using System.Text.RegularExpressions;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewRoomPoolCommand : BaseCommand
+public class NewRoomPoolCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserIsBuilder
+    public string HelpText => "Creates a new room pool.";
+
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn,
+        Condition.UserIsBuilder
     ];
 
-    protected override string Description =>
-    "Creates a new room pool to generate cloned rooms.";
+    public Regex Regex => new("^new room pool$");
 
-    private readonly IGameResponse _response;
-    private readonly IRoomPoolRepository _roomPoolRepository;
+    private readonly IResponsePayload _response;
+    private readonly IRoomPoolRepository _roomPoolRepo;
 
     public NewRoomPoolCommand(
-        IGameResponse response,
-        IRoomPoolRepository roomPoolRepository
+        IResponsePayload response,
+        IRoomPoolRepository roomPoolRepo
     )
-    : base(regex: @"^new room pool$")
     {
         _response = response;
-        _roomPoolRepository = roomPoolRepository;
+        _roomPoolRepo = roomPoolRepo;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var newRoomPool = new RoomPool() { 
-            Description = string.Empty,
-            ItemToExplore = null,
-            Name = string.Empty
-        };
+        var roomPool = await CreateRoomPool();
 
-        var roomPoolInDb = await _roomPoolRepository
-        .CreateRoomPool(newRoomPool);
-        roomPoolInDb.Name = $"rp{roomPoolInDb.PrimaryKey}";
-
-        await _roomPoolRepository.UpdateRoomPool(roomPoolInDb);
+        await SetRoomPoolName(roomPool);
 
         _response.AddText(
-            MessageStandard.Created(
-                "room pool", roomPoolInDb.Name
-            )
+            Message.Created("room pool", roomPool.Name)
         );
+    }
+
+    private async Task<RoomPool> CreateRoomPool()
+    {
+        return await _roomPoolRepo.CreateRoomPool(
+            new RoomPool()
+            {
+                Description = string.Empty,
+                FeeItem = null,
+                Name = string.Empty
+            }
+        );
+    }
+
+    private async Task SetRoomPoolName(RoomPool roomPool)
+    {
+        roomPool.Name = $"p{roomPool.PrimaryKey}";
+
+        await _roomPoolRepo.UpdateRoomPool(roomPool);
     }
 }

@@ -1,47 +1,56 @@
 using System;
+using System.Text.RegularExpressions;
+using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowItemsCommand : BaseCommand
+public class ShowItemsCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [];
+    public string HelpText => "Shows all items.";
 
-    protected override string Description =>
-        "Shows all items";
+    public Condition[] Conditions => [];
 
-    private readonly IGameResponse _response;
-    private readonly IItemRepository _itemRepository;
+    public Regex Regex => new("^show items$");
+
+    private readonly IItemRepository _itemRepo;
+    private readonly IResponsePayload _response;
 
     public ShowItemsCommand(
-        IGameResponse response,
-        IItemRepository itemRepository
+        IItemRepository itemRepo,
+        IResponsePayload response
     )
-    : base(regex: @"^show items$")
     {
-        _itemRepository = itemRepository;
+        _itemRepo = itemRepo;
         _response = response;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var items = await _itemRepository.FindItems();
+        var items = await _itemRepo.FindItems();
         if(items.Count == 0)
         {
             _response.AddText("There are no items.");
             return;
         }
 
+        _response.AddText("All items are:");
+
+        _response.AddText(GetItemNames(items));
+    }
+
+    private string GetItemNames(IEnumerable<Item> items)
+    {
         var itemNames = new List<string>();
+
         foreach(var item in items)
         {
             itemNames.Add(item.Name);
         }
+
         itemNames.Sort();
 
-        _response.AddText(
-            $"Items are: {MessageStandard.List(itemNames)}."
-        );
+        return Message.List(itemNames);
     }
 }

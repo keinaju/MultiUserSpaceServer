@@ -1,81 +1,112 @@
-﻿using MUS.Game.Data;
+using System;
+using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewItemHatcherCommand : BaseCommand
+public class NewItemHatcherCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserIsBuilder,
-        Prerequisite.UserHasSelectedBeing,
+    public string HelpText => "Creates a new item hatcher.";
+
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn,
+        Condition.UserIsBuilder
     ];
 
-    protected override string Description =>
-    "Creates a new item hatcher that generates items into inventories.";
+    public Regex Regex => new("^new hatcher (.+)$");
 
-    private string ItemName => GetParameter(1);
+    private string ItemNameInInput =>
+    _userInput.GetGroup(this.Regex, 1);
 
-    private readonly IGameResponse _response;
-    private readonly IItemHatcherRepository _itemHatcherRepository;
-    private readonly IItemRepository _itemRepository;
-    private readonly IPlayerState _state;
+    private Room CurrentRoom => _player.GetCurrentRoom();
+
+    private Inventory RoomInventory => CurrentRoom.Inventory;
+
+    private readonly IItemHatcherRepository _itemHatcherRepo;
+    private readonly IItemRepository _itemRepo;
+    private readonly IPlayerState _player;
+    private readonly IResponsePayload _response;
+    private readonly IUserInput _userInput;
 
     public NewItemHatcherCommand(
-        IGameResponse response,
-        IItemHatcherRepository itemHatcherRepository,
-        IItemRepository itemRepository,
-        IPlayerState state
+        IItemHatcherRepository itemHatcherRepo,
+        IItemRepository itemRepo,
+        IPlayerState player,
+        IResponsePayload response,
+        IUserInput userInput
     )
-    : base(regex: @"^new (.+) item hatcher$")
     {
-        _itemHatcherRepository = itemHatcherRepository;
-        _itemRepository = itemRepository;
+        _itemHatcherRepo = itemHatcherRepo;
+        _itemRepo = itemRepo;
+        _player = player;
         _response = response;
-        _state = state;
+        _userInput = userInput;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var item = await _itemRepository.FindItem(ItemName);
-        if (item is null)
+        if(await IsValid())
         {
+            var itemHatcher = await CreateItemHatcher();
+
+            await AddRoomInventoryInHatcher(itemHatcher);
+
             _response.AddText(
-                MessageStandard.DoesNotExist(
-                    "Item", ItemName
+                Message.Created(
+                    $"{itemHatcher.Item.Name} item hatcher"
                 )
             );
-            return;
+        }
+    }
+
+    private async Task<bool> IsValid()
+    {
+        var item = await _itemRepo.FindItem(ItemNameInInput);
+
+        if(item is null)
+        {
+            _response.AddText(
+                Message.DoesNotExist("item", ItemNameInInput)
+            );
+
+            return false;
         }
 
-        var room = await _state.GetRoom();
-        // Do not allow multiple hatchers of one item in one inventory
-        foreach(var hatcherInRoom in room.Inventory.ItemHatchers)
+        if(RoomInventory.GetItemHatcher(item) is not null)
         {
-            if(hatcherInRoom.Item.PrimaryKey == item.PrimaryKey){
-                _response.AddText(
-                    $"{room.Name} already has a hatcher for {item.Name}."
-                );
-                return;
+            _response.AddText(
+                $"{CurrentRoom.Name} already has a hatcher for {item.Name}."
+            );
+
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task<ItemHatcher> CreateItemHatcher()
+    {
+        var item = await _itemRepo.FindItem(ItemNameInInput);
+
+        return await _itemHatcherRepo.CreateItemHatcher(
+            new ItemHatcher()
+            {
+                Item = item!,
+                MinimumQuantity = 1,
+                MaximumQuantity = 1,
+                IntervalInTicks = 1
             }
-        }
-        
-        var newHatcher = new ItemHatcher()
-        {
-            Item = item,
-            MinQuantity = 1,
-            MaxQuantity = 1,
-            IntervalInTicks = 1
-        };
-        newHatcher.Inventories.Add(room.Inventory);
-
-        await _itemHatcherRepository.CreateItemHatcher(newHatcher);
-
-        _response.AddText(
-            MessageStandard.Created($"item hatcher ({newHatcher.GetDetails()})")
-            + $" {room.Name} is subscribed to this."
         );
+    }
+
+    private async Task AddRoomInventoryInHatcher(ItemHatcher itemHatcher)
+    {
+        itemHatcher.Inventories.Add(RoomInventory);
+
+        await _itemHatcherRepo.UpdateItemHatcher(itemHatcher);
     }
 }

@@ -7,19 +7,16 @@ public class DatabaseSeeder
 {
     private readonly IGameSettingsRepository _gameSettingsRepository;
     private readonly IRoomRepository _roomRepository;
-    private readonly ITickCounterRepository _tickCounterRepository;
     private readonly IUserRepository _userRepository;
 
     public DatabaseSeeder(
         IGameSettingsRepository gameSettingsRepository,
         IRoomRepository roomRepository,
-        ITickCounterRepository tickCounterRepository,
         IUserRepository userRepository
     )
     {
         _gameSettingsRepository = gameSettingsRepository;
         _roomRepository = roomRepository;
-        _tickCounterRepository = tickCounterRepository;
         _userRepository = userRepository;
     }
 
@@ -38,12 +35,14 @@ public class DatabaseSeeder
         {
             string adminPassword = 
                 Environment.GetEnvironmentVariable("MUS_256-BIT_KEY");
+
             var adminUser = new User()
             {
                 IsBuilder = true,
                 Username = "admin",
                 HashedPassword = User.HashPassword(adminPassword)
             };
+            
             await _userRepository.CreateUser(adminUser);
         }
     }
@@ -58,7 +57,8 @@ public class DatabaseSeeder
                 Name = "r1",
                 Description = "Everything starts from one.",
                 GlobalAccess = false,
-                Inventory = new Inventory()
+                Inventory = new Inventory(),
+                InBeing = null
             };
             await _roomRepository.CreateRoom(roomOne);
         }
@@ -69,9 +69,10 @@ public class DatabaseSeeder
         var settingsInDb = await _gameSettingsRepository.GetGameSettings();
         if (settingsInDb is null)
         {
+            var firstRoom = await _roomRepository.GetFirstRoom();
             var gameSettings = new GameSettings()
             {
-                DefaultSpawnRoom = await _roomRepository.GetFirstRoom(),
+                DefaultSpawnRoom = firstRoom!
             };
 
             await _gameSettingsRepository.SetGameSettings(gameSettings);

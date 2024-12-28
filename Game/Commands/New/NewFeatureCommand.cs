@@ -1,53 +1,58 @@
 using System;
+using System.Text.RegularExpressions;
+using Microsoft.VisualBasic;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewFeatureCommand : BaseCommand
+public class NewFeatureCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserIsBuilder
+    public string HelpText => "Creates a new feature.";
+
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn,
+        Condition.UserIsBuilder
     ];
 
-    protected override string Description => "Creates a new feature.";
-
-    private string FeatureName => GetParameter(1);
-
-    private readonly IGameResponse _response;
-    private readonly IFeatureRepository _featureRepository;
+    public Regex Regex => new("^new feature$");
+    
+    private readonly IFeatureRepository _featureRepo;
+    private readonly IResponsePayload _response;
 
     public NewFeatureCommand(
-        IFeatureRepository featureRepository,
-        IGameResponse response
+        IFeatureRepository featureRepo,
+        IResponsePayload response
     )
-    : base(regex: @"^new feature (.+)$")
     {
-        _featureRepository = featureRepository;
+        _featureRepo = featureRepo;
         _response = response;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var featureInDb = await _featureRepository
-            .FindFeature(FeatureName);
-        if(featureInDb is not null)
-        {
-            _response.AddText(
-                $"{featureInDb.Name} feature already exists."
-            );
-            return;
-        }
+        var feature = await CreateFeature();
 
-        var newFeature = await _featureRepository
-        .CreateFeature(
-            new Feature() { Name = FeatureName }
-        );
+        await SetFeatureName(feature);
 
         _response.AddText(
-            MessageStandard.Created("feature", newFeature.Name)
+            Message.Created("feature", feature.Name)
         );
+    }
+
+    private async Task<Feature> CreateFeature()
+    {
+        return await _featureRepo.CreateFeature(
+            new Feature() { Name = string.Empty }
+        );
+    }
+
+    private async Task SetFeatureName(Feature feature)
+    {
+        feature.Name = $"f{feature.PrimaryKey}";
+
+        await _featureRepo.UpdateFeature(feature);
     }
 }

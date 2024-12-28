@@ -16,22 +16,26 @@ public class ItemRepository : IItemRepository
     public async Task<Item> CreateItem(Item item)
     {
         EntityEntry<Item> entry = await _context.Items.AddAsync(item);
+
         await _context.SaveChangesAsync();
+
         return entry.Entity;
     }
 
     public async Task<Item> FindItem(int primaryKey)
     {
-        return await _context.Items
-            .SingleAsync(item => item.PrimaryKey == primaryKey);
+        return await _context.Items.SingleAsync(
+            item => item.PrimaryKey == primaryKey
+        );
     }
 
     public async Task<Item?> FindItem(string itemName)
     {
         try
         {
-            return await _context.Items
-                .SingleAsync(item => item.Name == itemName);
+            return await _context.Items.SingleAsync(
+                item => item.Name == itemName
+            );
         }
         catch (InvalidOperationException)
         {
@@ -47,7 +51,9 @@ public class ItemRepository : IItemRepository
     public async Task UpdateItem(Item updatedItem)
     {
         var itemInDb = await FindItem(updatedItem.PrimaryKey);
+
         itemInDb = updatedItem;
+        
         await _context.SaveChangesAsync();
     }
 }

@@ -1,36 +1,43 @@
 using System;
-using Microsoft.VisualBasic;
+using System.Text.RegularExpressions;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowOffersCommand : BaseCommand
+public class ShowOffersCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [];
+    public string HelpText =>
+    "Shows offers.";
 
-    private readonly IGameResponse _response;
+    public Condition[] Conditions => [];
+
+    public Regex Regex => new("^show (.*) offers$");
+
+    private string ItemNameInInput =>
+    _userInput.GetGroup(this.Regex, 1);
+
     private readonly IOfferManager _offerManager;
-
-    private string ItemName => GetParameter(1);
-
-    protected override string Description =>
-        "Shows offers. Pass * to show all offers. "
-        + "Pass an item name to show only offers that sell those items.";
+    private readonly IResponsePayload _response;
+    private readonly IUserInput _userInput;
 
     public ShowOffersCommand(
-        IGameResponse response,
-        IOfferManager offerManager
+        IOfferManager offerManager,
+        IResponsePayload response,
+        IUserInput userInput
     )
-    : base(regex: @"^show (.*) offers$")
     {
         _offerManager = offerManager;
         _response = response;
+        _userInput = userInput;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
         _response.AddText(
-            await _offerManager.FindOffers(ItemName == "*" ? "" : ItemName)
+            await _offerManager.FindOffers(
+                ItemNameInInput == "*" ?
+                "" : ItemNameInInput
+            )
         );
     }
 }

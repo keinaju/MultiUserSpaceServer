@@ -1,46 +1,56 @@
 using System;
+using System.Text.RegularExpressions;
+using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowRoomPoolsCommand : BaseCommand
+public class ShowRoomPoolsCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [];
+    public string HelpText => "Shows all room pools.";
 
-    private readonly IGameResponse _response;
-    private readonly IRoomPoolRepository _roomPoolRepository;
+    public Condition[] Conditions => [];
 
-    protected override string Description =>
-        "Shows all room pools.";
+    public Regex Regex => new("^show room pools$");
+
+    private readonly IResponsePayload _response;
+    private readonly IRoomPoolRepository _ropoRepo;
 
     public ShowRoomPoolsCommand(
-        IGameResponse response,
-        IRoomPoolRepository roomPoolRepository
+        IResponsePayload response,
+        IRoomPoolRepository ropoRepo
     )
-    : base(regex: @"^show room pools$")
     {
         _response = response;
-        _roomPoolRepository = roomPoolRepository;
+        _ropoRepo = ropoRepo;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var pools = await _roomPoolRepository.FindRoomPools();
-        if(pools.Count == 0)
+        var roomPools = await _ropoRepo.FindRoomPools();
+        if(roomPools.Count == 0)
         {
             _response.AddText("There are no room pools.");
             return;
         }
 
-        var poolNames = new List<string>();
-        foreach(var pool in pools)
+        _response.AddText("Room pools are:");
+
+        _response.AddText(GetRoomPoolNames(roomPools));
+    }
+
+    private string GetRoomPoolNames(IEnumerable<RoomPool> roomPools)
+    {
+        var roomPoolNames = new List<string>();
+
+        foreach(var pool in roomPools)
         {
-            poolNames.Add(pool.Name);
+            roomPoolNames.Add(pool.Name);
         }
 
-        _response.AddText(
-            $"Room pools are: {MessageStandard.List(poolNames)}."
-        );
+        roomPoolNames.Sort();
+
+        return Message.List(roomPoolNames);
     }
 }

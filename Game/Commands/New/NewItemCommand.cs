@@ -1,43 +1,62 @@
-﻿using MUS.Game.Data.Models;
+using System;
+using System.Text.RegularExpressions;
+using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Commands.New;
 
-public class NewItemCommand : BaseCommand
+public class NewItemCommand : IGameCommand
 {
-    public override Prerequisite[] Prerequisites => [
-        Prerequisite.UserIsLoggedIn,
-        Prerequisite.UserIsBuilder
+    public string HelpText => "Creates a new item.";
+
+    public Condition[] Conditions =>
+    [
+        Condition.UserIsSignedIn,
+        Condition.UserIsBuilder
     ];
 
-    protected override string Description => "Creates a new item.";
-
-    private readonly IGameResponse _response;
-    private readonly IItemRepository _itemRepository;
+    public Regex Regex => new("^new item$");
+    
+    private readonly IItemRepository _itemRepo;
+    private readonly IResponsePayload _response;
 
     public NewItemCommand(
-        IGameResponse response,
-        IItemRepository itemRepository
+        IItemRepository itemRepo,
+        IResponsePayload response
     )
-    : base(regex: @"^new item$")
     {
+        _itemRepo = itemRepo;
         _response = response;
-        _itemRepository = itemRepository;
     }
 
-    public override async Task Invoke()
+    public async Task Run()
     {
-        var newItem = new Item() { Name = string.Empty };
+        var item = await CreateItem();
 
-        var itemInDb = await _itemRepository.CreateItem(newItem);
-        itemInDb.Name = $"i{itemInDb.PrimaryKey}";
-        await _itemRepository.UpdateItem(itemInDb);
+        await SetItemName(item);
 
         _response.AddText(
-            MessageStandard.Created(
-                "item", itemInDb.Name
-            )
+            Message.Created("item", item.Name)
         );
+    }
+
+    private async Task<Item> CreateItem()
+    {
+        return await _itemRepo.CreateItem(
+            new Item()
+            {
+                Name = string.Empty,
+                Description = null,
+                CraftPlan = null
+            }
+        );
+    }
+
+    private async Task SetItemName(Item item)
+    {
+        item.Name = $"i{item.PrimaryKey}";
+
+        await _itemRepo.UpdateItem(item);
     }
 }

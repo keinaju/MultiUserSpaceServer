@@ -13,8 +13,13 @@ public class TokenService : ITokenService
 
     public string CreateToken(string userId)
     {
-        var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret));
-        var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+        var securityKey = new SymmetricSecurityKey(
+            Encoding.UTF8.GetBytes(_secret)
+        );
+        var credentials = new SigningCredentials(
+            securityKey,
+            SecurityAlgorithms.HmacSha256
+        );
 
         var token = new JwtSecurityToken(
             issuer: "MUS",
@@ -41,7 +46,9 @@ public class TokenService : ITokenService
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
             ValidIssuer = "MUS",
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_secret))
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(_secret)
+            )
         };
         var result = await handler.ValidateTokenAsync(token, parameters);
         if (result.IsValid)

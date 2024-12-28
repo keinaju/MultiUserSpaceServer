@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MUS.Game.Data;
-using MUS.Middleware;
 
 namespace MUS.Startup;
 
@@ -43,8 +42,6 @@ public class StartupProcess
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
-        app.UseMiddleware<AuthenticationMiddleware>();
-
         app.UseRouting();
         app.UseCors();
 
