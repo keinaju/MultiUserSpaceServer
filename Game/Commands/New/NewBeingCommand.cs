@@ -40,8 +40,6 @@ public class NewBeingCommand : IGameCommand
     {
         var being = await CreateBeing();
 
-        await SetBeingName(being);
-
         _response.AddText(
             Message.Created("being", being.Name)
         );
@@ -51,7 +49,7 @@ public class NewBeingCommand : IGameCommand
     {
         var being = new Being()
         {
-            Name = string.Empty,
+            Name = "being #",
             CreatedByUser = _session.AuthenticatedUser!,
             Inventory = new Inventory(),
             InRoom = await GetSpawnRoom()
@@ -66,12 +64,5 @@ public class NewBeingCommand : IGameCommand
         await _settingsRepo.GetGameSettings();
 
         return settings!.DefaultSpawnRoom;
-    }
-
-    private async Task SetBeingName(Being being)
-    {
-        being.Name = $"b{being.PrimaryKey}";
-
-        await _beingRepo.UpdateBeing(being);
     }
 }

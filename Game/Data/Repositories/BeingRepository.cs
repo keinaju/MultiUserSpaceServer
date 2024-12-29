@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MUS.Game.Data.Models;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Repositories;
 
@@ -13,8 +14,22 @@ public class BeingRepository : IBeingRepository
         _context = context;
     }
 
+    public async Task<bool> BeingNameIsReserved(string beingName)
+    {
+        if(await FindBeing(beingName) is not null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
     public async Task<Being> CreateBeing(Being being)
     {
+        being.Name = await GetUniqueName(being.Name);
+
         EntityEntry<Being> entry =
         await _context.Beings.AddAsync(being);
 
@@ -80,5 +95,15 @@ public class BeingRepository : IBeingRepository
         beingInDb = updatedBeing;
 
         await _context.SaveChangesAsync();
+    }
+
+    private async Task<string> GetUniqueName(string name)
+    {
+        while(await BeingNameIsReserved(name))
+        {
+            name += StringUtilities.GetRandomCharacter();
+        }
+
+        return name;
     }
 }
