@@ -88,14 +88,14 @@ public class BeingRepository : IBeingRepository
         .ToListAsync();
     }
 
-    public async Task<string> GetUniqueBeingName(string name)
+    public async Task<string> GetUniqueBeingName(string beingName)
     {
-        while(await BeingNameIsReserved(name))
+        while(await BeingNameIsReserved(beingName))
         {
-            name += StringUtilities.GetRandomCharacter();
+            beingName += StringUtilities.GetRandomCharacter();
         }
 
-        return name;
+        return beingName;
     }
 
     public async Task UpdateBeing(Being updatedBeing)
