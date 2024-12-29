@@ -16,6 +16,8 @@ public interface IRoomRepository
 
     Task<Room?> GetFirstRoom();
 
+    Task<string> GetUniqueRoomName(string roomName);
+
     Task<bool> RoomNameIsReserved(string roomName);
 
     Task UpdateRoom(Room room);

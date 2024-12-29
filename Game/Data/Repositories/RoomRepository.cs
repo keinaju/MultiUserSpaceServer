@@ -16,7 +16,7 @@ public class RoomRepository : IRoomRepository
 
     public async Task<Room> CreateRoom(Room room)
     {
-        room.Name = await GetUniqueName(room.Name);
+        room.Name = await GetUniqueRoomName(room.Name);
         
         EntityEntry<Room> entry =
         await _context.Rooms.AddAsync(room);
@@ -53,7 +53,7 @@ public class RoomRepository : IRoomRepository
         try
         {
             return await _context.Rooms
-            .SingleAsync(room => room.Name == roomName);
+            .FirstAsync(room => room.Name == roomName);
         }
         catch (InvalidOperationException)
         {
@@ -72,6 +72,16 @@ public class RoomRepository : IRoomRepository
         {
             return null;
         }
+    }
+
+    public async Task<string> GetUniqueRoomName(string name)
+    {
+        while(await RoomNameIsReserved(name))
+        {
+            name += StringUtilities.GetRandomCharacter();
+        }
+
+        return name;
     }
 
     public async Task<bool> RoomNameIsReserved(string roomName)
@@ -93,15 +103,5 @@ public class RoomRepository : IRoomRepository
         roomInDb = updatedRoom;
         
         await _context.SaveChangesAsync();
-    }
-
-    private async Task<string> GetUniqueName(string name)
-    {
-        while(await RoomNameIsReserved(name))
-        {
-            name += StringUtilities.GetRandomCharacter();
-        }
-
-        return name;
     }
 }

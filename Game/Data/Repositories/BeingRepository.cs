@@ -28,7 +28,7 @@ public class BeingRepository : IBeingRepository
 
     public async Task<Being> CreateBeing(Being being)
     {
-        being.Name = await GetUniqueName(being.Name);
+        being.Name = await GetUniqueBeingName(being.Name);
 
         EntityEntry<Being> entry =
         await _context.Beings.AddAsync(being);
@@ -36,6 +36,15 @@ public class BeingRepository : IBeingRepository
         await _context.SaveChangesAsync();
         
         return entry.Entity;
+    }
+
+    public async Task DeleteBeing(int primaryKey)
+    {
+        var beingInDb = await FindBeing(primaryKey);
+        
+        _context.Beings.Remove(beingInDb);
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task<Being> FindBeing(int primaryKey)
@@ -79,13 +88,14 @@ public class BeingRepository : IBeingRepository
         .ToListAsync();
     }
 
-    public async Task DeleteBeing(int primaryKey)
+    public async Task<string> GetUniqueBeingName(string name)
     {
-        var beingInDb = await FindBeing(primaryKey);
-        
-        _context.Beings.Remove(beingInDb);
+        while(await BeingNameIsReserved(name))
+        {
+            name += StringUtilities.GetRandomCharacter();
+        }
 
-        await _context.SaveChangesAsync();
+        return name;
     }
 
     public async Task UpdateBeing(Being updatedBeing)
@@ -95,15 +105,5 @@ public class BeingRepository : IBeingRepository
         beingInDb = updatedBeing;
 
         await _context.SaveChangesAsync();
-    }
-
-    private async Task<string> GetUniqueName(string name)
-    {
-        while(await BeingNameIsReserved(name))
-        {
-            name += StringUtilities.GetRandomCharacter();
-        }
-
-        return name;
     }
 }

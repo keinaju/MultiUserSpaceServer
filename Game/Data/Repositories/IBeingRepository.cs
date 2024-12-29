@@ -18,5 +18,7 @@ public interface IBeingRepository
 
     Task<List<Being>> FindBeingsByUser(User user);
 
+    Task<string> GetUniqueBeingName(string beingName);
+
     Task UpdateBeing(Being being);
 }
