@@ -37,6 +37,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, CuriosityIsCommand>();
         services.AddScoped<IGameCommand, DeployCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
+        services.AddScoped<IGameCommand, FeatureNameIsCommand>();
         services.AddScoped<IGameCommand, GoCommand>();
         services.AddScoped<IGameCommand, ItemDescriptionIsCommand>();
         services.AddScoped<IGameCommand, ItemHatcherIntervalIsCommand>();

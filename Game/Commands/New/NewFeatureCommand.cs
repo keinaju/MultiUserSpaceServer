@@ -35,8 +35,6 @@ public class NewFeatureCommand : IGameCommand
     {
         var feature = await CreateFeature();
 
-        await SetFeatureName(feature);
-
         _response.AddText(
             Message.Created("feature", feature.Name)
         );
@@ -45,14 +43,10 @@ public class NewFeatureCommand : IGameCommand
     private async Task<Feature> CreateFeature()
     {
         return await _featureRepo.CreateFeature(
-            new Feature() { Name = string.Empty }
+            new Feature()
+            {
+                Name = "feature #"
+            }
         );
-    }
-
-    private async Task SetFeatureName(Feature feature)
-    {
-        feature.Name = $"f{feature.PrimaryKey}";
-
-        await _featureRepo.UpdateFeature(feature);
     }
 }
