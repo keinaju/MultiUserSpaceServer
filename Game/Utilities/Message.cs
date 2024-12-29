@@ -8,8 +8,7 @@ static public class Message
 
     static public string Created(
         string type, string name = ""
-    ) =>
-    name == "" ? 
+    ) => name == "" ? 
     $"New {type} has been created." :
     $"New {type} (named '{name}') has been created.";
 
@@ -49,7 +48,11 @@ static public class Message
         string old, string @new
     ) => $"{old} is renamed {@new}.";
 
+    static public string Reserved(
+        string name
+    ) => $"'{name}' is reserved.";
+
     static public string Set(
         string type, string to
-    ) => $"{type} is now set to {to}.";
+    ) => $"{type} is now set to '{to}'.";
 }
