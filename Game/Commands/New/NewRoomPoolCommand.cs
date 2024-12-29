@@ -46,7 +46,7 @@ public class NewRoomPoolCommand : IGameCommand
             {
                 Description = string.Empty,
                 FeeItem = null,
-                Name = "pool #"
+                Name = await _roomPoolRepo.GetUniqueRoomPoolName("pool #")
             }
         );
     }

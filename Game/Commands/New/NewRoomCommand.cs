@@ -55,9 +55,9 @@ public class NewRoomCommand : IGameCommand
             new Room()
             {
                 GlobalAccess = false,
-                Name = "room #",
                 Inventory = new Inventory(),
-                InBeing = null
+                InBeing = null,
+                Name = await _roomRepo.GetUniqueRoomName("room #"),
             }
         );
     }

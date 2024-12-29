@@ -45,7 +45,7 @@ public class NewFeatureCommand : IGameCommand
         return await _featureRepo.CreateFeature(
             new Feature()
             {
-                Name = "feature #"
+                Name = await _featureRepo.GetUniqueFeatureName("feature #")
             }
         );
     }

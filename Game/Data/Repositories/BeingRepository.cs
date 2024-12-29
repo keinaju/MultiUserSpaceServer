@@ -28,8 +28,6 @@ public class BeingRepository : IBeingRepository
 
     public async Task<Being> CreateBeing(Being being)
     {
-        being.Name = await GetUniqueBeingName(being.Name);
-
         EntityEntry<Being> entry =
         await _context.Beings.AddAsync(being);
 

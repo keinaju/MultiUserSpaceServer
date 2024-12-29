@@ -49,7 +49,7 @@ public class NewBeingCommand : IGameCommand
     {
         var being = new Being()
         {
-            Name = "being #",
+            Name = await _beingRepo.GetUniqueBeingName("being #"),
             CreatedByUser = _session.AuthenticatedUser!,
             Inventory = new Inventory(),
             InRoom = await GetSpawnRoom()

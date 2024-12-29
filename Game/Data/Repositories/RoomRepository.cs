@@ -16,8 +16,6 @@ public class RoomRepository : IRoomRepository
 
     public async Task<Room> CreateRoom(Room room)
     {
-        room.Name = await GetUniqueRoomName(room.Name);
-        
         EntityEntry<Room> entry =
         await _context.Rooms.AddAsync(room);
 
@@ -52,8 +50,9 @@ public class RoomRepository : IRoomRepository
     {
         try
         {
-            return await _context.Rooms
-            .FirstAsync(room => room.Name == roomName);
+            return await _context.Rooms.SingleAsync(
+                room => room.Name == roomName
+            );
         }
         catch (InvalidOperationException)
         {

@@ -16,8 +16,6 @@ public class ItemRepository : IItemRepository
 
     public async Task<Item> CreateItem(Item item)
     {
-        item.Name = await GetUniqueItemName(item.Name);
-        
         EntityEntry<Item> entry = await _context.Items.AddAsync(item);
 
         await _context.SaveChangesAsync();

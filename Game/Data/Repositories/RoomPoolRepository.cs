@@ -16,8 +16,6 @@ public class RoomPoolRepository : IRoomPoolRepository
 
     public async Task<RoomPool> CreateRoomPool(RoomPool roomPool)
     {
-        roomPool.Name = await GetUniqueRoomPoolName(roomPool.Name);
-
         EntityEntry<RoomPool> roomPoolEntry =
         await _context.RoomPools.AddAsync(roomPool);
 

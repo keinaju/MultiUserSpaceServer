@@ -17,8 +17,6 @@ public class FeatureRepository : IFeatureRepository
 
     public async Task<Feature> CreateFeature(Feature feature)
     {
-        feature.Name = await GetUniqueFeatureName(feature.Name);
-
         EntityEntry<Feature> entry = 
         await _context.Features.AddAsync(feature);
 
