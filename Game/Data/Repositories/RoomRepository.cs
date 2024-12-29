@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MUS.Game.Data.Models;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Repositories;
 
@@ -15,6 +16,8 @@ public class RoomRepository : IRoomRepository
 
     public async Task<Room> CreateRoom(Room room)
     {
+        room.Name = await GetUniqueName(room.Name);
+        
         EntityEntry<Room> entry =
         await _context.Rooms.AddAsync(room);
 
@@ -23,6 +26,15 @@ public class RoomRepository : IRoomRepository
         return entry.Entity;
     }
 
+    public async Task DeleteRoom(int primaryKey)
+    {
+        var roomInDb = await FindRoom(primaryKey);
+
+        _context.Rooms.Remove(roomInDb);
+
+        await _context.SaveChangesAsync();
+    }
+    
     public async Task<ICollection<Room>> FindGlobalRooms()
     {
         return await _context.Rooms
@@ -62,15 +74,17 @@ public class RoomRepository : IRoomRepository
         }
     }
 
-    public async Task DeleteRoom(int primaryKey)
+    public async Task<bool> RoomNameIsReserved(string roomName)
     {
-        var roomInDb = await FindRoom(primaryKey);
-
-        _context.Rooms.Remove(roomInDb);
-
-        await _context.SaveChangesAsync();
+        if(await FindRoom(roomName) is not null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
-
 
     public async Task UpdateRoom(Room updatedRoom)
     {
@@ -79,5 +93,15 @@ public class RoomRepository : IRoomRepository
         roomInDb = updatedRoom;
         
         await _context.SaveChangesAsync();
+    }
+
+    private async Task<string> GetUniqueName(string name)
+    {
+        while(await RoomNameIsReserved(name))
+        {
+            name += StringUtilities.GetRandomCharacter();
+        }
+
+        return name;
     }
 }
