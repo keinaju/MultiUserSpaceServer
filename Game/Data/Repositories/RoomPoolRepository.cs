@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MUS.Game.Data.Models;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Repositories;
 
@@ -15,6 +16,8 @@ public class RoomPoolRepository : IRoomPoolRepository
 
     public async Task<RoomPool> CreateRoomPool(RoomPool roomPool)
     {
+        roomPool.Name = await GetUniqueRoomPoolName(roomPool.Name);
+
         EntityEntry<RoomPool> roomPoolEntry =
         await _context.RoomPools.AddAsync(roomPool);
 
@@ -44,6 +47,28 @@ public class RoomPoolRepository : IRoomPoolRepository
         catch(InvalidOperationException)
         {
             return null;
+        }
+    }
+
+    public async Task<string> GetUniqueRoomPoolName(string roomPoolName)
+    {
+        while(await RoomPoolNameIsReserved(roomPoolName))
+        {
+            roomPoolName += StringUtilities.GetRandomCharacter();
+        }
+
+        return roomPoolName;
+    }
+
+    public async Task<bool> RoomPoolNameIsReserved(string roomPoolName)
+    {
+        if(await FindRoomPool(roomPoolName) is null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
         }
     }
 

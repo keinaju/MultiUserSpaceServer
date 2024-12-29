@@ -34,8 +34,6 @@ public class NewRoomPoolCommand : IGameCommand
     {
         var roomPool = await CreateRoomPool();
 
-        await SetRoomPoolName(roomPool);
-
         _response.AddText(
             Message.Created("room pool", roomPool.Name)
         );
@@ -48,15 +46,8 @@ public class NewRoomPoolCommand : IGameCommand
             {
                 Description = string.Empty,
                 FeeItem = null,
-                Name = string.Empty
+                Name = "pool #"
             }
         );
-    }
-
-    private async Task SetRoomPoolName(RoomPool roomPool)
-    {
-        roomPool.Name = $"p{roomPool.PrimaryKey}";
-
-        await _roomPoolRepo.UpdateRoomPool(roomPool);
     }
 }

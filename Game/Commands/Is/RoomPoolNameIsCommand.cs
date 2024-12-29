@@ -41,6 +41,15 @@ public class RoomPoolNameIsCommand : IGameCommand
 
     public async Task Run()
     {
+        if(await IsValid())
+        {
+            await RenameRoomPool();
+            Respond();
+        }
+    }
+
+    private async Task<bool> IsValid()
+    {
         var roomPool = await _roomPoolRepo
         .FindRoomPool(OldRoomPoolNameInInput);
         if(roomPool is null)
@@ -51,23 +60,43 @@ public class RoomPoolNameIsCommand : IGameCommand
                 )
             );
 
-            return;
+            return false;
         }
 
-        await SetRoomPoolName(roomPool);
+        if(await _roomPoolRepo.RoomPoolNameIsReserved(
+            NewRoomPoolNameInInput
+        ))
+        {
+            _response.AddText(
+                Message.Reserved(
+                    "room pool name",
+                    NewRoomPoolNameInInput
+                )
+            );
 
+            return false;
+        }
+
+        return true;
+    }
+
+    private async Task RenameRoomPool()
+    {
+        var roomPool = await _roomPoolRepo
+        .FindRoomPool(OldRoomPoolNameInInput);
+
+        roomPool!.Name = NewRoomPoolNameInInput;
+
+        await _roomPoolRepo.UpdateRoomPool(roomPool);
+    }
+
+    private void Respond()
+    {
         _response.AddText(
             Message.Renamed(
                 OldRoomPoolNameInInput,
                 NewRoomPoolNameInInput
             )
         );
-    }
-
-    private async Task SetRoomPoolName(RoomPool roomPool)
-    {
-        roomPool.Name = NewRoomPoolNameInInput;
-
-        await _roomPoolRepo.UpdateRoomPool(roomPool);
     }
 }
