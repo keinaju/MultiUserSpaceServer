@@ -45,15 +45,35 @@ public class BeingNameIsCommand : IGameCommand
 
     public async Task Run()
     {
-        string responseText =
-        Message.Renamed(CurrentBeing.Name, NewNameInInput);
-
-        await SetBeingName();
-
-        _response.AddText(responseText);
+        if(await IsValid())
+        {
+            Respond();
+            await RenameBeing();
+        }
     }
 
-    private async Task SetBeingName()
+    private async Task<bool> IsValid()
+    {
+        if(await _beingRepo
+        .BeingNameIsReserved(NewNameInInput))
+        {
+            _response.AddText(
+                Message.Reserved("being name", NewNameInInput)
+            );
+            return false;
+        }
+
+        return true;
+    }
+
+    private void Respond()
+    {
+        _response.AddText(
+            Message.Renamed(CurrentBeing.Name, NewNameInInput)
+        );
+    }
+
+    private async Task RenameBeing()
     {
         CurrentBeing.Name = NewNameInInput;
 
