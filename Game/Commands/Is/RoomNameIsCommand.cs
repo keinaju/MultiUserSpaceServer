@@ -45,17 +45,34 @@ public class RoomNameIsCommand : IGameCommand
 
     public async Task Run()
     {
-        var responseText =
-        Message.Renamed(CurrentRoom.Name, NewNameInInput);
+        if(await IsValid())
+        {
+            Respond();
+            await RenameRoom();
+        }
+    }
 
-        await SetRoomName();
+    private async Task<bool> IsValid()
+    {
+        if(await _roomRepo.RoomNameIsReserved(NewNameInInput))
+        {
+            _response.AddText(
+                Message.Reserved(NewNameInInput)
+            );
+            return false;
+        }
 
+        return true;
+    }
+
+    private void Respond()
+    {
         _response.AddText(
-            responseText
+            Message.Renamed(CurrentRoom.Name, NewNameInInput)
         );
     }
 
-    private async Task SetRoomName()
+    private async Task RenameRoom()
     {
         CurrentRoom.Name = NewNameInInput;
 
