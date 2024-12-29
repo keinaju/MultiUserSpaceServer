@@ -42,8 +42,6 @@ public class NewRoomCommand : IGameCommand
     {
         var newRoom = await CreateRoom();
 
-        await SetRoomName(newRoom);
-
         await SetBidirectionalConnection(newRoom, CurrentRoom);
 
         _response.AddText(
@@ -57,18 +55,11 @@ public class NewRoomCommand : IGameCommand
             new Room()
             {
                 GlobalAccess = false,
-                Name = string.Empty,
+                Name = "room #",
                 Inventory = new Inventory(),
                 InBeing = null
             }
         );
-    }
-
-    private async Task SetRoomName(Room room)
-    {
-        room.Name = $"r{room.PrimaryKey}";
-
-        await _roomRepo.UpdateRoom(room);
     }
 
     private async Task SetBidirectionalConnection(
