@@ -65,7 +65,7 @@ public class FeatureNameIsCommand : IGameCommand
         ))
         {
             _response.AddText(
-                Message.Reserved("feature", NewFeatureNameInInput)
+                Message.Reserved("feature name", NewFeatureNameInInput)
             );
             return false;
         }
