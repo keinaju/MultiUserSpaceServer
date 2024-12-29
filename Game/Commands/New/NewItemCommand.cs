@@ -34,8 +34,6 @@ public class NewItemCommand : IGameCommand
     {
         var item = await CreateItem();
 
-        await SetItemName(item);
-
         _response.AddText(
             Message.Created("item", item.Name)
         );
@@ -46,17 +44,10 @@ public class NewItemCommand : IGameCommand
         return await _itemRepo.CreateItem(
             new Item()
             {
-                Name = string.Empty,
+                Name = "item #",
                 Description = null,
                 CraftPlan = null
             }
         );
-    }
-
-    private async Task SetItemName(Item item)
-    {
-        item.Name = $"i{item.PrimaryKey}";
-
-        await _itemRepo.UpdateItem(item);
     }
 }

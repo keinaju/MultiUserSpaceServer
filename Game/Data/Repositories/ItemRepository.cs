@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MUS.Game.Data.Models;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Repositories;
 
@@ -15,6 +16,8 @@ public class ItemRepository : IItemRepository
 
     public async Task<Item> CreateItem(Item item)
     {
+        item.Name = await GetUniqueItemName(item.Name);
+        
         EntityEntry<Item> entry = await _context.Items.AddAsync(item);
 
         await _context.SaveChangesAsync();
@@ -46,6 +49,28 @@ public class ItemRepository : IItemRepository
     public async Task<ICollection<Item>> FindItems()
     {
         return await _context.Items.ToListAsync();
+    }
+
+    public async Task<string> GetUniqueItemName(string itemName)
+    {
+        while(await ItemNameIsReserved(itemName))
+        {
+            itemName += StringUtilities.GetRandomCharacter();
+        }
+
+        return itemName;
+    }
+
+    public async Task<bool> ItemNameIsReserved(string itemName)
+    {
+        if(await FindItem(itemName) is null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public async Task UpdateItem(Item updatedItem)
