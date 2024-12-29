@@ -34,6 +34,7 @@ public class DeployCommand : IGameCommand
     private readonly IItemRepository _itemRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
+    private readonly IRoomRepository _roomRepo;
     private readonly IUserInput _userInput;
 
     public DeployCommand(
@@ -43,6 +44,7 @@ public class DeployCommand : IGameCommand
         IItemRepository itemRepo,
         IPlayerState player,
         IResponsePayload response,
+        IRoomRepository roomRepo,
         IUserInput userInput
     )
     {
@@ -52,6 +54,7 @@ public class DeployCommand : IGameCommand
         _itemRepo = itemRepo;
         _player = player;
         _response = response;
+        _roomRepo = roomRepo;
         _userInput = userInput;
     }
 
@@ -108,9 +111,21 @@ public class DeployCommand : IGameCommand
         clone.InRoom = CurrentRoom;
         clone = await _beingRepo.CreateBeing(clone);
 
-        clone.Name = $"{clone.Name}{clone.PrimaryKey}";
-        await _beingRepo.UpdateBeing(clone);
+        await RenameInsideRoom(clone);
 
         return clone;
+    }
+
+    private async Task RenameInsideRoom(Being being)
+    {
+        var insideRoom = being.RoomInside;
+
+        if(insideRoom is not null)
+        {
+            insideRoom.Name = await _roomRepo
+            .GetUniqueRoomName(insideRoom.Name);
+
+            await _roomRepo.UpdateRoom(insideRoom);
+        }
     }
 }
