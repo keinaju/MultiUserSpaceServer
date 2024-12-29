@@ -9,6 +9,7 @@ Logs/
 # Generated files
 project.lock.json
 .vs/
+.VSCodeCounter/
 
 # mstest test results
 TestResults
