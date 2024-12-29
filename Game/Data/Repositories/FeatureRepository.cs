@@ -2,6 +2,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MUS.Game.Data.Models;
+using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Repositories;
 
@@ -16,12 +17,26 @@ public class FeatureRepository : IFeatureRepository
 
     public async Task<Feature> CreateFeature(Feature feature)
     {
+        feature.Name = await GetUniqueFeatureName(feature.Name);
+
         EntityEntry<Feature> entry = 
         await _context.Features.AddAsync(feature);
 
         await _context.SaveChangesAsync();
 
         return entry.Entity;
+    }
+
+    public async Task<bool> FeatureNameIsReserved(string featureName)
+    {
+        if(await FindFeature(featureName) is not null)
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     public async Task<ICollection<Feature>> FindFeatures()
@@ -47,6 +62,16 @@ public class FeatureRepository : IFeatureRepository
         {
             return null;
         }
+    }
+
+    public async Task<string> GetUniqueFeatureName(string featureName)
+    {
+        while(await FeatureNameIsReserved(featureName))
+        {
+            featureName += StringUtilities.GetRandomCharacter();
+        }
+
+        return featureName;
     }
 
     public async Task UpdateFeature(Feature updatedFeature)
