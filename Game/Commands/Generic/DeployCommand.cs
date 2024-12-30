@@ -107,6 +107,7 @@ public class DeployCommand : IGameCommand
     private async Task<Being> CreateClone(Deployment deployment)
     {
         var clone = deployment.Prototype.Clone();
+        clone.Name = await _beingRepo.GetUniqueBeingName(clone.Name);
         clone.CreatedByUser = CurrentBeing.CreatedByUser;
         clone.InRoom = CurrentRoom;
         clone = await _beingRepo.CreateBeing(clone);
