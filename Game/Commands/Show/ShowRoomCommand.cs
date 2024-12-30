@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Show;
 
@@ -16,6 +17,10 @@ public class ShowRoomCommand : IGameCommand
 
     public Regex Regex => new("^(look|show room)$");
 
+    private Being CurrentBeing => _player.GetSelectedBeing();
+
+    private Room CurrentRoom => _player.GetCurrentRoom();
+
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
 
@@ -30,6 +35,10 @@ public class ShowRoomCommand : IGameCommand
 
     public Task Run()
     {
+        _response.AddText(
+            $"{CurrentBeing.Name} looks at the {CurrentRoom.Name}."
+        );
+
         _response.AddList(
             _player.GetCurrentRoom().Show()
         );
