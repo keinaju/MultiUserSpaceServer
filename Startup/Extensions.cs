@@ -37,6 +37,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, CraftCommand>();
         services.AddScoped<IGameCommand, CuriosityIsCommand>();
         services.AddScoped<IGameCommand, DeleteBeingCommand>();
+        services.AddScoped<IGameCommand, DeleteFeatureCommand>();
         services.AddScoped<IGameCommand, DeleteItemCommand>();
         services.AddScoped<IGameCommand, DeleteRoomCommand>();
         services.AddScoped<IGameCommand, DeployCommand>();

@@ -25,6 +25,15 @@ public class FeatureRepository : IFeatureRepository
         return entry.Entity;
     }
 
+    public async Task DeleteFeature(int primaryKey)
+    {
+        var featureInDb = await FindFeature(primaryKey);
+        
+        _context.Features.Remove(featureInDb);
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<bool> FeatureNameIsReserved(string featureName)
     {
         if(await FindFeature(featureName) is not null)
@@ -42,7 +51,7 @@ public class FeatureRepository : IFeatureRepository
         return await _context.Features.ToListAsync();
     }
     
-    public async Task<Feature?> FindFeature(int primaryKey)
+    public async Task<Feature> FindFeature(int primaryKey)
     {
         return await _context.Features.SingleAsync(
             feature => feature.PrimaryKey == primaryKey
