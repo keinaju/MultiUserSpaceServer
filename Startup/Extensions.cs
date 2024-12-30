@@ -3,6 +3,7 @@ using MUS.Game;
 using MUS.Game.Clock;
 using MUS.Game.Commands;
 using MUS.Game.Commands.Add;
+using MUS.Game.Commands.Delete;
 using MUS.Game.Commands.Generic;
 using MUS.Game.Commands.Is;
 using MUS.Game.Commands.Make;
@@ -35,6 +36,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, BreakCommand>();
         services.AddScoped<IGameCommand, CraftCommand>();
         services.AddScoped<IGameCommand, CuriosityIsCommand>();
+        services.AddScoped<IGameCommand, DeleteRoomCommand>();
         services.AddScoped<IGameCommand, DeployCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, FeatureNameIsCommand>();
