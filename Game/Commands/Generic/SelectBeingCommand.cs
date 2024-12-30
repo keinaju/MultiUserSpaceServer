@@ -19,7 +19,7 @@ public class SelectBeingCommand : IGameCommand
     public Regex Regex => new("^select (.+)$");
 
     private string BeingNameInUserInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _userInput.GetGroup(this.Regex, 1);
 
     private User UserInSession => _session.AuthenticatedUser!;
 

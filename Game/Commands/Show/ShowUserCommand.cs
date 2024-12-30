@@ -15,7 +15,7 @@ public class ShowUserCommand : IGameCommand
     public string HelpText =>
     "Shows information about the user that is signed in.";
 
-    public Regex Regex => new("^show user$");
+    public Regex Regex => new("^(show|s) (user|u)$");
 
     private User User => _session.AuthenticatedUser!;
 

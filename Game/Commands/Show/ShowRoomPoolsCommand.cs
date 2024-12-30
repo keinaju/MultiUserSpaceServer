@@ -12,7 +12,7 @@ public class ShowRoomPoolsCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^show room pools$");
+    public Regex Regex => new("^(show|s) room pools$");
 
     private readonly IResponsePayload _response;
     private readonly IRoomPoolRepository _ropoRepo;

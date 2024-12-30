@@ -12,7 +12,7 @@ public class ShowGlobalRoomsCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^show global rooms$");
+    public Regex Regex => new("^(show|s) global rooms$");
 
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;

@@ -11,9 +11,9 @@ public class ShowItemCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^show item (.+)$");
+    public Regex Regex => new("^(show|s) item (.+)$");
 
-    private string ItemName => _userInput.GetGroup(this.Regex, 1);
+    private string ItemName => _userInput.GetGroup(this.Regex, 2);
 
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;

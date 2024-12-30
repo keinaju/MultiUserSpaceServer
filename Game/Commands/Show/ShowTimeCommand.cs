@@ -10,7 +10,7 @@ public class ShowTimeCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^show time$");
+    public Regex Regex => new("^(show|s) time$");
 
     private readonly IResponsePayload _response;
     private readonly ITickCounterRepository _tickRepo;

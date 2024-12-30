@@ -11,10 +11,10 @@ public class ShowOffersCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^show (.*) offers$");
+    public Regex Regex => new("^(show|s) (.*) offers$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _userInput.GetGroup(this.Regex, 2);
 
     private readonly IOfferManager _offerManager;
     private readonly IResponsePayload _response;

@@ -16,7 +16,7 @@ public class ShowBeingCommand : IGameCommand
         Condition.UserHasSelectedBeing
     ];
 
-    public Regex Regex => new("^show being$");
+    public Regex Regex => new("^(show|s) being$");
 
     private Being SelectedBeing => _player.GetSelectedBeing();
 

@@ -12,7 +12,7 @@ public class ShowFeaturesCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^show features$");
+    public Regex Regex => new("^(show|s) features$");
 
     private readonly IFeatureRepository _featureRepo;
     private readonly IResponsePayload _response;

@@ -12,7 +12,7 @@ public class ShowItemsCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^show items$");
+    public Regex Regex => new("^(show|s) items$");
 
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;

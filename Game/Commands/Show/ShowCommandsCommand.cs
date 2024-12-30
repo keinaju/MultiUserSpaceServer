@@ -9,7 +9,7 @@ public class ShowCommandsCommand : IGameCommand
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^(help|show commands)$");
+    public Regex Regex => new("^(help|show commands|s commands)$");
 
     private readonly IResponsePayload _response;
     private readonly IServiceProvider _serviceProvider;

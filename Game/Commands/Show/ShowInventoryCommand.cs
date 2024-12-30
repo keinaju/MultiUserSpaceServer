@@ -16,7 +16,7 @@ public class ShowInventoryCommand : IGameCommand
         Condition.UserHasSelectedBeing
     ];
 
-    public Regex Regex => new("^(i|show inventory)$");
+    public Regex Regex => new("^(show|s) (inventory|i)$");
 
     private string BeingName =>
     _player.GetSelectedBeing().Name;
