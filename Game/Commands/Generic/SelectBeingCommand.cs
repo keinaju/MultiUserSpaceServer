@@ -16,7 +16,7 @@ public class SelectBeingCommand : IGameCommand
 
     public string HelpText => "Selects a being to use.";
 
-    public Regex Regex => new("^(s|select) (.+)$");
+    public Regex Regex => new("^select (.+)$");
 
     private string BeingNameInUserInput =>
     _userInput.GetGroup(this.Regex, 2);
