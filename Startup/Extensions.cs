@@ -72,6 +72,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, ShowItemsCommand>();
         services.AddScoped<IGameCommand, ShowOffersCommand>();
         services.AddScoped<IGameCommand, ShowRoomCommand>();
+        services.AddScoped<IGameCommand, ShowRoomPoolCommand>();
         services.AddScoped<IGameCommand, ShowRoomPoolsCommand>();
         services.AddScoped<IGameCommand, ShowTimeCommand>();
         services.AddScoped<IGameCommand, ShowUserCommand>();

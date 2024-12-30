@@ -80,6 +80,17 @@ public class RoomPool
         return false;
     }
 
+    public ICollection<string> GetDetails()
+    {
+        return new List<string>
+        {
+            GetDescriptionText(),
+            GetFeeItemText(),
+            GetPrototypesText(),
+            GetCuriosityCountText()
+        };
+    }
+
     public string Show()
     {
         var texts = new List<string>();
@@ -97,5 +108,53 @@ public class RoomPool
         }
 
         return string.Join(" ", texts);
+    }
+
+    private string GetDescriptionText()
+    {
+        if(Description is null)
+        {
+            return Message.DoesNotHave(Name, "a description");
+        }
+        else
+        {
+            return  $"{Name} has a description '{Description}'.";
+        }
+    }
+
+    private string GetFeeItemText()
+    {
+        if(FeeItem is null)
+        {
+            return Message.DoesNotHave(Name, "a fee item");
+        }
+        else
+        {
+            return $"{Name}'s fee item is {FeeItem.Name}.";
+        }
+    }
+
+    private string GetPrototypesText()
+    {
+        if(Prototypes.Count == 0)
+        {
+            return Message.DoesNotHave(Name, "prototype rooms");
+        }
+        else
+        {
+            var roomNames = new List<string>();
+
+            foreach(var room in Prototypes)
+            {
+                roomNames.Add(room.Name);
+            }
+
+            return $"{Name} uses following rooms as prototypes: {Message.List(roomNames)}.";
+        }
+    }
+
+    private string GetCuriosityCountText()
+    {
+        return $"{Name} is used as a curiosity in {Curiosities.Count} rooms.";
     }
 }
