@@ -9,7 +9,7 @@ namespace MUS.Game.Commands.Delete;
 
 public class DeleteBeingCommand : IGameCommand
 {
-    public string HelpText => "Deletes the selected being.";
+    public string HelpText => "Deletes a being.";
 
     public Condition[] Conditions =>
     [
