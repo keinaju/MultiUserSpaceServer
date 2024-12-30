@@ -24,6 +24,15 @@ public class RoomPoolRepository : IRoomPoolRepository
         return roomPoolEntry.Entity;
     }
 
+    public async Task DeleteRoomPool(int primaryKey)
+    {
+        var roomPoolInDb = await FindRoomPool(primaryKey);
+
+        _context.RoomPools.Remove(roomPoolInDb);
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<ICollection<RoomPool>> FindRoomPools()
     {
         return await _context.RoomPools.ToListAsync();

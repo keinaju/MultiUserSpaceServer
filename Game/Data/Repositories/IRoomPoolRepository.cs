@@ -6,6 +6,8 @@ public interface IRoomPoolRepository
 {
     Task<RoomPool> CreateRoomPool(RoomPool roomPool);
 
+    Task DeleteRoomPool(int primaryKey);
+
     Task<RoomPool> FindRoomPool(int primaryKey);
 
     Task<RoomPool?> FindRoomPool(string roomPoolName);

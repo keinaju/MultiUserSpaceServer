@@ -40,6 +40,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, DeleteFeatureCommand>();
         services.AddScoped<IGameCommand, DeleteItemCommand>();
         services.AddScoped<IGameCommand, DeleteRoomCommand>();
+        services.AddScoped<IGameCommand, DeleteRoomPoolCommand>();
         services.AddScoped<IGameCommand, DeployCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, FeatureNameIsCommand>();
