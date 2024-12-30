@@ -6,6 +6,8 @@ public interface IRoomRepository
 {
     Task<Room> CreateRoom(Room room);
 
+    Task DeleteCuriosities(RoomPool roomPool);
+
     Task DeleteRoom(int roomId);
 
     Task<ICollection<Room>> FindGlobalRooms();

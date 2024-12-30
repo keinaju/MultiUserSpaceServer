@@ -32,6 +32,20 @@ public class RoomRepository : IRoomRepository
 
         await _context.SaveChangesAsync();
     }
+
+    public async Task DeleteCuriosities(RoomPool roomPool)
+    {
+        var rooms = await _context.Rooms.Where(
+            room => room.Curiosity == roomPool
+        ).ToListAsync();
+
+        foreach(var room in rooms)
+        {
+            room.Curiosity = null;
+        }
+        
+        await _context.SaveChangesAsync();
+    }
     
     public async Task<ICollection<Room>> FindGlobalRooms()
     {
