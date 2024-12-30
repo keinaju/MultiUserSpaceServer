@@ -44,7 +44,7 @@ public class NewRoomPoolCommand : IGameCommand
         return await _roomPoolRepo.CreateRoomPool(
             new RoomPool()
             {
-                Description = string.Empty,
+                Description = null,
                 FeeItem = null,
                 Name = await _roomPoolRepo.GetUniqueRoomPoolName("pool #")
             }
