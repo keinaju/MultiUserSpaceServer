@@ -23,6 +23,15 @@ public class ItemRepository : IItemRepository
         return entry.Entity;
     }
 
+    public async Task DeleteItem(int primaryKey)
+    {
+        var itemInDb = await FindItem(primaryKey);
+        
+        _context.Items.Remove(itemInDb);
+
+        await _context.SaveChangesAsync();
+    }
+
     public async Task<Item> FindItem(int primaryKey)
     {
         return await _context.Items.SingleAsync(

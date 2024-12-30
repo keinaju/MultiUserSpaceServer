@@ -6,6 +6,8 @@ public interface IItemRepository
 {
     Task<Item> CreateItem(Item item);
 
+    Task DeleteItem(int primaryKey);
+
     Task<Item> FindItem(int primaryKey);
 
     Task<Item?> FindItem(string itemName);
