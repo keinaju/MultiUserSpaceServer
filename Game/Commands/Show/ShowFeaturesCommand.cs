@@ -36,9 +36,9 @@ public class ShowFeaturesCommand : IGameCommand
             return;
         }
 
-        _response.AddText("All features are:");
-
-        _response.AddText(GetFeatureNames(features));
+        _response.AddText(
+            $"All features are: {GetFeatureNames(features)}."
+        );
     }
 
     private string GetFeatureNames(IEnumerable<Feature> features)

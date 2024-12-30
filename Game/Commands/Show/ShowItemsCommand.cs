@@ -35,9 +35,7 @@ public class ShowItemsCommand : IGameCommand
             return;
         }
 
-        _response.AddText("All items are:");
-
-        _response.AddText(GetItemNames(items));
+        _response.AddText($"All items are: {GetItemNames(items)}.");
     }
 
     private string GetItemNames(IEnumerable<Item> items)

@@ -39,7 +39,7 @@ public class ShowInventoryCommand : IGameCommand
     public Task Run()
     {
         _response.AddText(
-            $"{BeingName} has {GetInventoryText()}."
+            $"{BeingName} has: {GetInventoryText()}."
         );
 
         return Task.CompletedTask;

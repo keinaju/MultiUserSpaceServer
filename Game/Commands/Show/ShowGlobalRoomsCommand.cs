@@ -36,9 +36,7 @@ public class ShowGlobalRoomsCommand : IGameCommand
             return;
         }
 
-        _response.AddText("All global rooms are:");
-
-        _response.AddText(GetRoomNames(rooms));
+        _response.AddText($"All global rooms are: {GetRoomNames(rooms)}.");
     }
 
     private string GetRoomNames(IEnumerable<Room> rooms)

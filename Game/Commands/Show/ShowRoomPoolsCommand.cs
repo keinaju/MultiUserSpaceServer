@@ -35,9 +35,7 @@ public class ShowRoomPoolsCommand : IGameCommand
             return;
         }
 
-        _response.AddText("Room pools are:");
-
-        _response.AddText(GetRoomPoolNames(roomPools));
+        _response.AddText($"Room pools are: {GetRoomPoolNames(roomPools)}.");
     }
 
     private string GetRoomPoolNames(IEnumerable<RoomPool> roomPools)
