@@ -9,12 +9,14 @@ static public class Message
     static public string Created(
         string type, string name = ""
     ) => name == "" ? 
-    $"New {type} has been created." :
-    $"New {type} (named '{name}') has been created.";
+    $"A new {type} has been created." :
+    $"A new {type} (named '{name}') has been created.";
 
-    static public string Exists(
-        string type, string input
-    ) => $"{type} '{input}' exists.";
+    static public string Deleted(
+        string type, string name = ""
+    ) => name == "" ?
+    $"{type} has been deleted." : 
+    $"{type} (named '{name}') has been deleted.";
 
     static public string DoesNotContain(
         string container, string content
@@ -27,6 +29,10 @@ static public class Message
     static public string DoesNotHave(
         string container, string content
     ) => $"{container} does not have {content}.";
+
+    static public string Exists(
+        string type, string input
+    ) => $"{type} '{input}' exists.";
 
     static public string Has(
         string container, string content
