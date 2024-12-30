@@ -18,7 +18,7 @@ public class RoomPoolDescriptionIsCommand : IGameCommand
     ];
 
     public Regex Regex =>
-    new("^room pool (.+) description is (.+)$");
+    new("^pool (.+) description is (.+)$");
 
     private string RoomPoolNameInInput =>
     _userInput.GetGroup(this.Regex, 1);

@@ -15,7 +15,7 @@ public class ShowRoomPoolCommand : IGameCommand
         Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^(show|s) room pool (.+)$");
+    public Regex Regex => new("^(show|s) pool (.+)$");
 
     private string RoomPoolNameInInput =>
     _userInput.GetGroup(this.Regex, 2);

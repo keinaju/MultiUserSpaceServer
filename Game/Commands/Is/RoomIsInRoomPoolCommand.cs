@@ -19,7 +19,7 @@ public class RoomIsInRoomPoolCommand : IGameCommand
         Condition.UserHasSelectedBeing
     ];
 
-    public Regex Regex => new("^room is in room pool (.+)$");
+    public Regex Regex => new("^room is in pool (.+)$");
 
     private string RoomPoolNameInInput =>
     _userInput.GetGroup(this.Regex, 1);

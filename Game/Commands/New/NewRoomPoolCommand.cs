@@ -16,7 +16,7 @@ public class NewRoomPoolCommand : IGameCommand
         Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^new room pool$");
+    public Regex Regex => new("^new pool$");
 
     private readonly IResponsePayload _response;
     private readonly IRoomPoolRepository _roomPoolRepo;

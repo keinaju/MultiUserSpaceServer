@@ -16,7 +16,7 @@ public class RoomPoolFeeIsCommand : IGameCommand
         Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^room pool (.+) fee is (.+)$");
+    public Regex Regex => new("^pool (.+) fee is (.+)$");
 
     private string RoomPoolNameInInput =>
     _userInput.GetGroup(this.Regex, 1);
