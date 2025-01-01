@@ -21,26 +21,26 @@ public class RoomNameIsCommand : IGameCommand
     public Regex Regex => new("^room name is (.+)$");
 
     private string NewNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private Room CurrentRoom => _player.GetCurrentRoom();
 
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public RoomNameIsCommand(
         IPlayerState player,
         IResponsePayload response,
         IRoomRepository roomRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _player = player;
         _response = response;
         _roomRepo = roomRepo;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

@@ -20,16 +20,16 @@ public class SellCommand : IGameCommand
     public Regex Regex => new(@"^sell (\d+) (.+) for (\d+) (.+)$");
 
     private string SellQuantityInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private string SellItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private string BuyQuantityInInput =>
-    _userInput.GetGroup(this.Regex, 3);
+    _input.GetGroup(this.Regex, 3);
 
     private string BuyItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 4);
+    _input.GetGroup(this.Regex, 4);
 
     private Inventory CurrentInventory =>
     _player.GetSelectedBeing().Inventory;
@@ -39,7 +39,7 @@ public class SellCommand : IGameCommand
     private readonly IOfferRepository _offerRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     private int _validSellQuantity;
     private int _validBuyQuantity;
@@ -52,7 +52,7 @@ public class SellCommand : IGameCommand
         IOfferRepository offerRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _inventoryRepo = inventoryRepo;
@@ -60,7 +60,7 @@ public class SellCommand : IGameCommand
         _offerRepo = offerRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

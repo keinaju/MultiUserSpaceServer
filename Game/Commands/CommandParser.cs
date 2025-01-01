@@ -6,15 +6,15 @@ namespace MUS.Game.Commands;
 public class CommandParser : ICommandParser
 {
     private readonly IEnumerable<IGameCommand> _commands;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public CommandParser(
         IEnumerable<IGameCommand> commands,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _commands = commands;
-        _userInput = userInput;
+        _input = input;
     }
 
     public IEnumerable<IGameCommand> GetMatchingCommands()
@@ -22,7 +22,7 @@ public class CommandParser : ICommandParser
         var matchingCommands = new List<IGameCommand>();
         foreach(var command in _commands)
         {
-            var match = command.Regex.Match(_userInput.Text);
+            var match = command.Regex.Match(_input.Text);
             if(match.Success)
             {
                 matchingCommands.Add(command);

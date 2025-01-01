@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace MUS.Game;
 
-public class UserInput : IUserInput
+public class InputCommand : IInputCommand
 {
     public string Text { get; set; } = string.Empty;
 

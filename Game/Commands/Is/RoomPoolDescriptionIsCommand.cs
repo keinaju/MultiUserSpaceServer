@@ -21,24 +21,24 @@ public class RoomPoolDescriptionIsCommand : IGameCommand
     new("^pool (.+) description is (.+)$");
 
     private string RoomPoolNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
     
     private string RoomPoolDescriptionInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private readonly IResponsePayload _response;
     private readonly IRoomPoolRepository _roomPoolRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public RoomPoolDescriptionIsCommand(
         IResponsePayload response,
         IRoomPoolRepository roomPoolRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _response = response;
         _roomPoolRepo = roomPoolRepo;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

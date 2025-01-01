@@ -13,21 +13,21 @@ public class ShowItemCommand : IGameCommand
 
     public Regex Regex => new("^(show|s) item (.+)$");
 
-    private string ItemName => _userInput.GetGroup(this.Regex, 2);
+    private string ItemName => _input.GetGroup(this.Regex, 2);
 
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public ShowItemCommand(
         IItemRepository itemRepo,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemRepo = itemRepo;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

@@ -22,7 +22,7 @@ public class RoomIsGlobalCommand : IGameCommand
     public Regex Regex => new("^room (is|is not) global$");
 
     private string IsOrIsNotInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private bool TrueOrFalse =>
     IsOrIsNotInInput == "is" ? true : false;
@@ -32,19 +32,19 @@ public class RoomIsGlobalCommand : IGameCommand
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public RoomIsGlobalCommand(
         IPlayerState player,
         IResponsePayload response,
         IRoomRepository roomRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _player = player;
         _response = response;        
         _roomRepo = roomRepo;        
-        _userInput = userInput;        
+        _input = input;        
     }
 
     public async Task Run()

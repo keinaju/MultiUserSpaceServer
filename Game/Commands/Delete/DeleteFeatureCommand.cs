@@ -17,21 +17,21 @@ public class DeleteFeatureCommand : IGameCommand
 
     public Regex Regex => new("^delete feature (.+)$");
 
-    private string FeatureNameInInput => _userInput.GetGroup(this.Regex, 1);
+    private string FeatureNameInInput => _input.GetGroup(this.Regex, 1);
 
     private readonly IFeatureRepository _featureRepo;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public DeleteFeatureCommand(
         IFeatureRepository featureRepo,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _featureRepo = featureRepo;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

@@ -21,7 +21,7 @@ public class GoCommand : IGameCommand
     public Regex Regex => new("^go (.+)$");
 
     private string RoomNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private Being SelectedBeing => _player.GetSelectedBeing();
 
@@ -31,21 +31,21 @@ public class GoCommand : IGameCommand
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public GoCommand(
         IBeingRepository beingRepo,
         IPlayerState player,
         IResponsePayload response,
         IRoomRepository roomRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _beingRepo = beingRepo;
         _player = player;
         _response = response;
         _roomRepo = roomRepo;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

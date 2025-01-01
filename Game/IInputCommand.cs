@@ -3,7 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace MUS.Game;
 
-public interface IUserInput
+public interface IInputCommand
 {
     string GetGroup(Regex regex, int index);
     

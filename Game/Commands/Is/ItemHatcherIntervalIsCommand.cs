@@ -21,10 +21,10 @@ public class ItemHatcherIntervalIsCommand : IGameCommand
     public Regex Regex => new(@"^hatcher (.+) interval is (\d+)$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private string IntervalInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private Room CurrentRoom => _player.GetCurrentRoom();
 
@@ -32,21 +32,21 @@ public class ItemHatcherIntervalIsCommand : IGameCommand
     private readonly IItemHatcherRepository _itemHatcherRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public ItemHatcherIntervalIsCommand(
         IItemRepository itemRepo,
         IItemHatcherRepository itemHatcherRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemRepo = itemRepo;
         _itemHatcherRepo = itemHatcherRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

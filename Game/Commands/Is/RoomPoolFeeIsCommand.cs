@@ -19,27 +19,27 @@ public class RoomPoolFeeIsCommand : IGameCommand
     public Regex Regex => new("^pool (.+) fee is (.+)$");
 
     private string RoomPoolNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;
     private readonly IRoomPoolRepository _roomPoolRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public RoomPoolFeeIsCommand(
         IItemRepository itemRepo,
         IResponsePayload response,
         IRoomPoolRepository roomPoolRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemRepo = itemRepo;
         _response = response;
         _roomPoolRepo = roomPoolRepo;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

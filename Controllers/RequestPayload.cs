@@ -4,12 +4,12 @@ namespace MUS.Controllers
 {
     public class RequestPayload
     {
-        [MinLength(0)]
-        [MaxLength(500)]
-        public string UserInput { get; set; }
+        [MinLength(1)]
+        [MaxLength(1000)]
+        public string[] Commands { get; set; }
         
         [MinLength(0)]
-        [MaxLength(500)]
+        [MaxLength(1000)]
         public string Token { get; set; }
     }
 }

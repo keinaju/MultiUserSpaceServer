@@ -15,23 +15,23 @@ public class SignUpCommand : IGameCommand
     public Regex Regex => new("^sign up (.+) (.+)$");
 
     private string UsernameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private string PasswordInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
     private readonly IUserRepository _userRepo;
 
     public SignUpCommand(
         IResponsePayload response,
-        IUserInput userInput,
+        IInputCommand input,
         IUserRepository userRepo
     )
     {
         _response = response;
-        _userInput = userInput;
+        _input = input;
         _userRepo = userRepo;
     }
 

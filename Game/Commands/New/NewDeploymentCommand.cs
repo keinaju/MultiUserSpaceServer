@@ -20,7 +20,7 @@ public class NewDeploymentCommand : IGameCommand
     ];
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     public Regex Regex => new("^new deploy (.+)$");
 
@@ -30,21 +30,21 @@ public class NewDeploymentCommand : IGameCommand
     private readonly IItemRepository _itemRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public NewDeploymentCommand(
         IDeploymentRepository deployRepo,
         IItemRepository itemRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _deployRepo = deployRepo;
         _itemRepo = itemRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

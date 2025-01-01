@@ -24,27 +24,27 @@ public class AddFeatureInRoomCommand : IGameCommand
     private Room CurrentRoom => _player.GetCurrentRoom();
 
     private string FeatureNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private readonly IFeatureRepository _featureRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
     
     public AddFeatureInRoomCommand(
         IFeatureRepository featureRepo,
         IPlayerState player,
         IResponsePayload response,
         IRoomRepository roomRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _featureRepo = featureRepo;
         _player = player;
         _response = response;
         _roomRepo = roomRepo;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

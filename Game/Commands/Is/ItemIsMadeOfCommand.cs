@@ -18,23 +18,23 @@ public class ItemIsMadeOfCommand : IGameCommand
 
     public Regex Regex => new(@"^(.+) is made of (\d+) (.+)$");
 
-    private string ProductNameInInput => _userInput.GetGroup(this.Regex, 1);
-    private string QuantityInInput => _userInput.GetGroup(this.Regex, 2);
-    private string ComponentNameInInput => _userInput.GetGroup(this.Regex, 3);
+    private string ProductNameInInput => _input.GetGroup(this.Regex, 1);
+    private string QuantityInInput => _input.GetGroup(this.Regex, 2);
+    private string ComponentNameInInput => _input.GetGroup(this.Regex, 3);
 
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public ItemIsMadeOfCommand(
         IItemRepository itemRepo,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemRepo = itemRepo;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

@@ -20,7 +20,7 @@ public class DeployCommand : IGameCommand
     public Regex Regex => new("^deploy (.+)$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private Being CurrentBeing => _player.GetSelectedBeing();
 
@@ -35,7 +35,7 @@ public class DeployCommand : IGameCommand
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public DeployCommand(
         IBeingRepository beingRepo,
@@ -45,7 +45,7 @@ public class DeployCommand : IGameCommand
         IPlayerState player,
         IResponsePayload response,
         IRoomRepository roomRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _beingRepo = beingRepo;
@@ -55,7 +55,7 @@ public class DeployCommand : IGameCommand
         _player = player;
         _response = response;
         _roomRepo = roomRepo;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

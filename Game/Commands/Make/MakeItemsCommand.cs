@@ -22,10 +22,10 @@ public class MakeItemsCommand : IGameCommand
     public Regex Regex => new(@"^make (\d+) (.+)$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private string QuantityInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private string BeingName =>
     _player.GetSelectedBeing().Name;
@@ -37,21 +37,21 @@ public class MakeItemsCommand : IGameCommand
     private readonly IItemRepository _itemRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public MakeItemsCommand(
         IInventoryRepository inventoryRepo,
         IItemRepository itemRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _inventoryRepo = inventoryRepo;
         _itemRepo = itemRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

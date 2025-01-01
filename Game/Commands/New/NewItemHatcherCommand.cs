@@ -20,7 +20,7 @@ public class NewItemHatcherCommand : IGameCommand
     public Regex Regex => new("^new hatcher (.+)$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private Room CurrentRoom => _player.GetCurrentRoom();
 
@@ -30,21 +30,21 @@ public class NewItemHatcherCommand : IGameCommand
     private readonly IItemRepository _itemRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public NewItemHatcherCommand(
         IItemHatcherRepository itemHatcherRepo,
         IItemRepository itemRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemHatcherRepo = itemHatcherRepo;
         _itemRepo = itemRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

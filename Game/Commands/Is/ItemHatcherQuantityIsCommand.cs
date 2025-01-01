@@ -23,13 +23,13 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
     );
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private string MinimumQuantityInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private string MaximumQuantityInInput =>
-    _userInput.GetGroup(this.Regex, 3);
+    _input.GetGroup(this.Regex, 3);
 
     private Room CurrentRoom => _player.GetCurrentRoom();
 
@@ -37,21 +37,21 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
     private readonly IItemRepository _itemRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public ItemHatcherQuantityIsCommand(
         IItemHatcherRepository itemHatcherRepo,
         IItemRepository itemRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemHatcherRepo = itemHatcherRepo;
         _itemRepo = itemRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

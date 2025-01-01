@@ -22,7 +22,7 @@ public class BeingIsFeatureCommand : IGameCommand
     public Regex Regex => new("^being is (.+)$");
 
     private string FeatureNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private Being CurrentBeing => _player.GetSelectedBeing();
 
@@ -30,21 +30,21 @@ public class BeingIsFeatureCommand : IGameCommand
     private readonly IFeatureRepository _featureRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public BeingIsFeatureCommand(
         IBeingRepository beingRepo,
         IFeatureRepository featureRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _beingRepo = beingRepo;
         _featureRepo = featureRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

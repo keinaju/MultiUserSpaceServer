@@ -14,21 +14,21 @@ public class ShowOffersCommand : IGameCommand
     public Regex Regex => new("^(show|s) (.*) offers$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private readonly IOfferManager _offerManager;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public ShowOffersCommand(
         IOfferManager offerManager,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _offerManager = offerManager;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

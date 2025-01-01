@@ -20,7 +20,7 @@ public class CraftCommand : IGameCommand
     public Regex Regex => new("^craft (.+)$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private Being CurrentBeing =>
     _player.GetSelectedBeing();
@@ -32,7 +32,7 @@ public class CraftCommand : IGameCommand
     private readonly IItemRepository _itemRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
     private Item? _validItem = null;
 
     public CraftCommand(
@@ -40,14 +40,14 @@ public class CraftCommand : IGameCommand
         IItemRepository itemRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _inventoryRepo = inventoryRepo;
         _itemRepo = itemRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

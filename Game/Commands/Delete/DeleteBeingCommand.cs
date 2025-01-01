@@ -18,26 +18,26 @@ public class DeleteBeingCommand : IGameCommand
 
     public Regex Regex => new("^delete being (.+)$");
 
-    private string BeingNameInInput => _userInput.GetGroup(this.Regex, 1);
+    private string BeingNameInInput => _input.GetGroup(this.Regex, 1);
 
     private User CurrentUser => _session.AuthenticatedUser!;
 
     private readonly IBeingRepository _beingRepo;
     private readonly IResponsePayload _response;
     private readonly ISessionService _session;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public DeleteBeingCommand(
         IBeingRepository beingRepo,
         IResponsePayload response,
         ISessionService session,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _beingRepo = beingRepo;
         _response = response;
         _session = session;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

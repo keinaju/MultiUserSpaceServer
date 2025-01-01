@@ -17,26 +17,26 @@ public class SignInCommand : IGameCommand
     public Regex Regex => new("^sign in (.+) (.+)$");
 
     private string UsernameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
     
     private string PasswordInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
     
     private readonly IResponsePayload _response;
     private readonly ITokenService _tokenService;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
     private readonly IUserRepository _userRepo;
 
     public SignInCommand(
         IResponsePayload response,
         ITokenService tokenService,
-        IUserInput userInput,
+        IInputCommand input,
         IUserRepository userRepo
     )
     {
         _response = response;
         _tokenService = tokenService;
-        _userInput = userInput;
+        _input = input;
         _userRepo = userRepo;
     }
     

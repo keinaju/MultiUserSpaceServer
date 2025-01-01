@@ -110,7 +110,7 @@ public static class Extensions
     {
         services.AddScoped<IResponsePayload, ResponsePayload>();
         services.AddScoped<IGameService, GameService>();
-        services.AddScoped<IUserInput, UserInput>();
+        services.AddScoped<IInputCommand, InputCommand>();
     }
 
     private static void AddSessions(this IServiceCollection services)

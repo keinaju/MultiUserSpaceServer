@@ -7,22 +7,22 @@ public class GameService : IGameService
     private readonly ICommandParser _parser;
     private readonly IConditionFilter _filter;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public GameService(
         ICommandParser parser,
         IConditionFilter filter,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _filter = filter;
         _parser = parser;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
-    public async Task<IResponsePayload> Respond()
+    public async Task Respond()
     {
         // Test all commands for matches
         var commands = _parser.GetMatchingCommands();
@@ -30,7 +30,7 @@ public class GameService : IGameService
         if(commands.Count() == 0)
         {
             _response.AddText(
-                $"'{_userInput.Text}' does not match any known command."
+                $"'{_input.Text}' does not match any known command."
             );
         }
         else if(commands.Count() == 1)
@@ -45,7 +45,7 @@ public class GameService : IGameService
         else
         {
             _response.AddText(
-                $"'{_userInput.Text}' matches with " +
+                $"'{_input.Text}' matches with " +
                 $"{commands.Count()} different commands:"
             );
             foreach(var command in commands)
@@ -55,7 +55,5 @@ public class GameService : IGameService
                 );
             }
         }
-        
-        return _response;
     }
 }

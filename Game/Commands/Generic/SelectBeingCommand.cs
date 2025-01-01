@@ -18,29 +18,29 @@ public class SelectBeingCommand : IGameCommand
 
     public Regex Regex => new("^select (.+)$");
 
-    private string BeingNameInUserInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    private string BeingNameInInput =>
+    _input.GetGroup(this.Regex, 1);
 
     private User UserInSession => _session.AuthenticatedUser!;
 
     private readonly IBeingRepository _beingRepo;
     private readonly IResponsePayload _response;
     private readonly ISessionService _session;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
     private readonly IUserRepository _userRepo;
 
     public SelectBeingCommand(
         IBeingRepository beingRepo,
         IResponsePayload response,
         ISessionService session,
-        IUserInput userInput,
+        IInputCommand input,
         IUserRepository userRepo
     )
     {
         _beingRepo = beingRepo;
         _response = response;
         _session = session;
-        _userInput = userInput;
+        _input = input;
         _userRepo = userRepo;
     }
 
@@ -60,7 +60,7 @@ public class SelectBeingCommand : IGameCommand
         {
             _response.AddText(
                 Message.DoesNotExist(
-                    "being", BeingNameInUserInput
+                    "being", BeingNameInInput
                 )
             );
         }
@@ -72,7 +72,7 @@ public class SelectBeingCommand : IGameCommand
         .FindBeingsByUser(_session.AuthenticatedUser!);
 
         return beings.Find(
-            being => being.Name == BeingNameInUserInput
+            being => being.Name == BeingNameInInput
         );
     }
 

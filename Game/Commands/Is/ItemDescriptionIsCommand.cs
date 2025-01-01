@@ -20,24 +20,24 @@ public class ItemDescriptionIsCommand : IGameCommand
     public Regex Regex => new("^item (.+) description is (.+)$");
 
     private string ItemNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
     
     private string DescriptionInInput =>
-    _userInput.GetGroup(this.Regex, 2);
+    _input.GetGroup(this.Regex, 2);
 
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public ItemDescriptionIsCommand(
         IItemRepository itemRepo,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemRepo = itemRepo;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

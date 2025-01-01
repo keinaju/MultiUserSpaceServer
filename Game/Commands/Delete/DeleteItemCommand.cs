@@ -17,21 +17,21 @@ public class DeleteItemCommand : IGameCommand
 
     public Regex Regex => new("^delete item (.+)$");
 
-    private string ItemNameInInput => _userInput.GetGroup(this.Regex, 1);
+    private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
 
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public DeleteItemCommand(
         IItemRepository itemRepo,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _itemRepo = itemRepo;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

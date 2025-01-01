@@ -17,21 +17,21 @@ public class DeleteRoomCommand : IGameCommand
 
     public Regex Regex => new("^delete room (.+)$");
 
-    private string RoomNameInInput => _userInput.GetGroup(this.Regex, 1);
+    private string RoomNameInInput => _input.GetGroup(this.Regex, 1);
 
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public DeleteRoomCommand(
         IResponsePayload response,
         IRoomRepository roomRepo,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _response = response;
         _roomRepo = roomRepo;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()

@@ -21,26 +21,26 @@ public class BeingNameIsCommand : IGameCommand
     public Regex Regex => new("^being name is (.+)$");
 
     private string NewNameInInput =>
-    _userInput.GetGroup(this.Regex, 1);
+    _input.GetGroup(this.Regex, 1);
 
     private Being CurrentBeing => _player.GetSelectedBeing();
 
     private readonly IBeingRepository _beingRepo;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
-    private readonly IUserInput _userInput;
+    private readonly IInputCommand _input;
 
     public BeingNameIsCommand(
         IBeingRepository beingRepo,
         IPlayerState player,
         IResponsePayload response,
-        IUserInput userInput
+        IInputCommand input
     )
     {
         _beingRepo = beingRepo;
         _player = player;
         _response = response;
-        _userInput = userInput;
+        _input = input;
     }
 
     public async Task Run()
