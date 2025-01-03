@@ -1,10 +1,13 @@
 using System;
+using MUS.Game.Commands;
 
 namespace MUS.Game;
 
 public interface IResponsePayload
 {
     void AddList(IEnumerable<string> list);
+
+    void AddResult(CommandResult result);
 
     void AddText(string text);
 

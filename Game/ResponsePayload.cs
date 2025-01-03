@@ -1,4 +1,5 @@
 using System;
+using MUS.Game.Commands;
 
 namespace MUS.Game;
 
@@ -18,6 +19,18 @@ public class ResponsePayload : IResponsePayload
         }
     }
 
+    public void AddResult(CommandResult result)
+    {
+        AddList(result.GetMessages());
+
+        if(result.GetStatus() == CommandResult.StatusCode.Fail)
+        {
+            // If a command has failed, prevent further processing
+            AddText("A command has failed.");
+            Break();
+        }
+    }
+
     public void AddText(string text)
     {
         _texts.Add(text);
@@ -25,7 +38,10 @@ public class ResponsePayload : IResponsePayload
 
     public void Break()
     {
-        AddText("The command process has been breaked.");
+        AddText(
+            "The command process has been breaked. " +
+            "Further commands of this request will not be executed."
+        );
 
         _isBreaked = true;
     }
