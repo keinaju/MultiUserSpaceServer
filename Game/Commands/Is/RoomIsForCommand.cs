@@ -3,14 +3,13 @@ using System.Text.RegularExpressions;
 using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands.Add;
+namespace MUS.Game.Commands.Is;
 
-public class AddFeatureInRoomCommand : IGameCommand
+public class RoomIsForCommand : IGameCommand
 {
     public string HelpText =>
-    "Adds a requirement for a feature in the current room.";
+    "Sets a requirement for a feature in the current room.";
 
     public Condition[] Conditions =>
     [
@@ -19,7 +18,7 @@ public class AddFeatureInRoomCommand : IGameCommand
         Condition.UserHasSelectedBeing
     ];
 
-    public Regex Regex => new("^add room feature (.+)$");
+    public Regex Regex => new("^room is for (.+)$");
 
     private Room CurrentRoom => _player.GetCurrentRoom();
 
@@ -27,13 +26,15 @@ public class AddFeatureInRoomCommand : IGameCommand
     _input.GetGroup(this.Regex, 1);
 
     private readonly IFeatureRepository _featureRepo;
+    private readonly IGameCommandValidation _validation;
     private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
     private readonly IInputCommand _input;
     
-    public AddFeatureInRoomCommand(
+    public RoomIsForCommand(
         IFeatureRepository featureRepo,
+        IGameCommandValidation validation,
         IPlayerState player,
         IResponsePayload response,
         IRoomRepository roomRepo,
@@ -41,6 +42,7 @@ public class AddFeatureInRoomCommand : IGameCommand
     )
     {
         _featureRepo = featureRepo;
+        _validation = validation;
         _player = player;
         _response = response;
         _roomRepo = roomRepo;
@@ -49,32 +51,27 @@ public class AddFeatureInRoomCommand : IGameCommand
 
     public async Task Run()
     {
-        var feature =
-        await _featureRepo.FindFeature(FeatureNameInInput);
+        var feature = await _featureRepo
+        .FindFeature(FeatureNameInInput);
 
-        if(feature is null)
+        if(IsValid(feature))
         {
-            _response.AddText(
-                Message.DoesNotExist("feature", FeatureNameInInput)
-            );
+            await AddFeatureInRoom(feature!);
 
-            return;
+            _response.AddText(
+                $"{feature!.Name} was added to {CurrentRoom.Name}."
+            );
         }
 
-        if(CurrentRoom.RequiredFeatures.Contains(feature))
-        {
-            _response.AddText(
-                $"{CurrentRoom.Name} already has requirement for {feature.Name}."
-            );
+    }
 
-            return;
-        }
-
-        await AddFeatureInRoom(feature);
-
-        _response.AddText(
-            $"{feature.Name} was added to {CurrentRoom.Name}."
-        );
+    private bool IsValid(Feature? feature)
+    {
+        return _validation.UserIsSignedIn()
+        && _validation.CurrentUserIsBuilder()
+        && _validation.CurrentUserHasSelectedBeing()
+        && _validation.FeatureIsNotNull(feature, FeatureNameInInput)
+        && _validation.CurrentRoomDoesNotHaveFeature(feature!, FeatureNameInInput);
     }
 
     private async Task AddFeatureInRoom(Feature feature)
