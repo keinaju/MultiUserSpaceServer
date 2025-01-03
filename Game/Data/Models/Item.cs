@@ -22,8 +22,15 @@ public class Item
         set => _craftPlan = value;
     }
 
+    public required Deployment? Deployment
+    {
+        get => _lazyLoader.Load(this, ref _deployment);
+        set => _deployment = value;
+    }
+
     private readonly ILazyLoader _lazyLoader;
     private CraftPlan? _craftPlan;
+    private Deployment? _deployment;
 
     public Item() {}
 
@@ -55,6 +62,7 @@ public class Item
             texts.Add(Description);
         }
         texts.Add(GetCraftPlanText());
+        texts.Add(GetDeploymentText());
 
         return texts;
     }
@@ -79,6 +87,18 @@ public class Item
         else
         {
             return $"{Name} is not an item that can be crafted.";
+        }
+    }
+
+    private string GetDeploymentText()
+    {
+        if(Deployment is null)
+        {
+            return $"{Name} is not deployable.";
+        }
+        else
+        {
+            return $"{Name} can be deployed.";
         }
     }
 }
