@@ -2,7 +2,6 @@
 using MUS.Game;
 using MUS.Game.Clock;
 using MUS.Game.Commands;
-using MUS.Game.Commands.Add;
 using MUS.Game.Commands.Delete;
 using MUS.Game.Commands.Generic;
 using MUS.Game.Commands.Is;
@@ -29,8 +28,8 @@ public static class Extensions
     {
         services.AddScoped<ICommandParser, CommandParser>();
         services.AddScoped<IConditionFilter, ConditionFilter>();
+        services.AddScoped<IGameCommandValidation, GameCommandValidation>();
 
-        services.AddScoped<IGameCommand, AddFeatureInRoomCommand>();
         services.AddScoped<IGameCommand, BeingIsFeatureCommand>();
         services.AddScoped<IGameCommand, BeingNameIsCommand>();
         services.AddScoped<IGameCommand, BreakCommand>();
@@ -60,6 +59,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, NewRoomPoolCommand>();
         services.AddScoped<IGameCommand, PingCommand>();
         services.AddScoped<IGameCommand, RoomDescriptionIsCommand>();
+        services.AddScoped<IGameCommand, RoomIsForCommand>();
         services.AddScoped<IGameCommand, RoomIsGlobalCommand>();
         services.AddScoped<IGameCommand, RoomIsInBeingCommand>();
         services.AddScoped<IGameCommand, RoomIsInRoomPoolCommand>();
