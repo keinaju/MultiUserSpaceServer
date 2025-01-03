@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MUS.Game.Commands;
 using MUS.Game.Utilities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -49,6 +50,31 @@ public class User
     /// </summary>
     public required string Username { get; set; }
 
+    private readonly ILazyLoader _lazyLoader;
+    private Being _selectedBeing;
+    private ICollection<Being> _createdBeings;
+
+    public User() {}
+
+    private User(ILazyLoader lazyLoader)
+    {
+        _lazyLoader = lazyLoader;
+    }
+
+    public async Task<CommandResult> Explore()
+    {
+        if(SelectedBeing is null)
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage($"{Username} has not selected a being.");
+        }
+        else
+        {
+            return await SelectedBeing.Explore();
+        }
+    }
+
     /// <summary>
     /// Static method for a hash function.
     /// </summary>
@@ -75,17 +101,6 @@ public class User
         );
         
         return isValid;
-    }
-
-    private readonly ILazyLoader _lazyLoader;
-    private Being _selectedBeing;
-    private ICollection<Being> _createdBeings;
-
-    public User() {}
-
-    private User(ILazyLoader lazyLoader)
-    {
-        _lazyLoader = lazyLoader;
     }
 
     public List<string> Show()
