@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MUS.Game.Commands;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
@@ -93,6 +95,8 @@ public class Room
     }
 
     private readonly ILazyLoader _lazyLoader;
+    private readonly GameContext _context;
+
     private ICollection<Being> _beingsHere;
     private ICollection<Feature> _requiredFeatures;
     private ICollection<Room> _connectedFromRooms;
@@ -104,8 +108,9 @@ public class Room
 
     public Room() {}
 
-    private Room(ILazyLoader lazyLoader)
+    private Room(GameContext context, ILazyLoader lazyLoader)
     {
+        _context = context;
         _lazyLoader = lazyLoader;
     }
 
@@ -134,6 +139,39 @@ public class Room
         this.ConnectedToRooms.Add(destination);
         
         destination.ConnectedToRooms.Add(this);
+    }
+
+    public async Task<CommandResult> Expand(Being being)
+    {
+        if(Curiosity is null)
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage(Message.DoesNotHave(Name, "a curiosity"));
+        }
+        else
+        {
+            if(Curiosity.FeeItem is not null)
+            {
+                if(being.HasItems(1, Curiosity.FeeItem))
+                {
+                    being.RemoveItems(1, Curiosity.FeeItem);
+                }
+                else
+                {
+                    return new CommandResult(
+                        CommandResult.StatusCode.Fail
+                    ).AddMessage(
+                        Message.DoesNotHave(
+                            being.Name,
+                            Message.Quantity(Curiosity.FeeItem.Name, 1)
+                        )
+                    );
+                }
+            }
+
+            return await Curiosity.CreateExpansion(from: this);            
+        }
     }
 
     public ICollection<ItemHatcher> GetItemHatchers()
@@ -168,6 +206,16 @@ public class Room
         }
 
         return leads;
+    }
+
+    public async Task SetUniqueName()
+    {
+        if(await _context.Rooms.AnyAsync(
+            room => room.Name == this.Name
+        ))
+        {
+            this.Name += StringUtilities.GetRandomCharacter();
+        }
     }
 
     public bool HasAccessTo(Room destination)

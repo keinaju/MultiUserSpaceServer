@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MUS.Game.Commands;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
@@ -47,24 +48,43 @@ public class RoomPool
     }
 
     private readonly ILazyLoader _lazyLoader;
+    private readonly GameContext _context;
+
     private Item? _feeItem;
     private ICollection<Room> _prototypes;
     private ICollection<Room> _curiosities;
 
     public RoomPool() {}
 
-    private RoomPool(ILazyLoader lazyLoader)
+    private RoomPool(GameContext context, ILazyLoader lazyLoader)
     {
+        _context = context;
         _lazyLoader = lazyLoader;
     }
 
-    public Room CreateExtensionRoom()
+    public async Task<CommandResult> CreateExpansion(Room from)
     {
-        int random = new Random().Next(0, Prototypes.Count);
+        if(Prototypes.Count == 0)
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage(Message.DoesNotHave(Name, "prototypes"));
+        }
+        else
+        {
+            int randomIndex = new Random().Next(0, Prototypes.Count);
+            var randomPrototype = Prototypes.ToArray()[randomIndex];
+            var expansion = randomPrototype.Clone();
+            await _context.Rooms.AddAsync(expansion);
+            await expansion.SetUniqueName();
+            expansion.ConnectBidirectionally(from);
+            await _context.SaveChangesAsync();
 
-        var randomPrototype = Prototypes.ToArray()[random];
+            return new CommandResult(
+                CommandResult.StatusCode.Success
+            ).AddMessage($"{expansion.Name} has been found.");
+        }
 
-        return randomPrototype.Clone();
     }
 
     public bool HasRoom(Room room)
