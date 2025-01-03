@@ -1,6 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MUS.Game.Commands;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
@@ -93,6 +94,11 @@ public class Being
         _lazyLoader = lazyLoader;
     }
 
+    public async Task<CommandResult> Explore()
+    {
+        return await InRoom.Expand(this);
+    }
+
     public bool HasFeature(Feature feature)
     {
         if(Features.Contains(feature))
@@ -103,6 +109,23 @@ public class Being
         {
             return false;
         }
+    }
+
+    public bool HasItems(int quantity, Item item)
+    {
+        if(Inventory.Contains(item, quantity))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void RemoveItems(int quantity, Item item)
+    {
+        Inventory.RemoveItems(item, quantity);
     }
 
     public List<string> Show()
