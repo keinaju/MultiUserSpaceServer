@@ -4,14 +4,11 @@ namespace MUS.Game;
 
 public class ResponsePayload : IResponsePayload
 {
-    private List<string> _texts;
-    private string _token;
+    private List<string> _texts = [];
+    private string _token = string.Empty;
+    private bool _isBreaked = false;
 
-    public ResponsePayload()
-    {
-        _texts = [];
-        _token = string.Empty;
-    }
+    public ResponsePayload() {}
 
     public void AddList(IEnumerable<string> list)
     {
@@ -26,9 +23,11 @@ public class ResponsePayload : IResponsePayload
         _texts.Add(text);
     }
 
-    public void SetToken(string token)
+    public void Break()
     {
-        _token = token;
+        AddText("The command process has been breaked.");
+
+        _isBreaked = true;
     }
 
     public object GetPayload()
@@ -37,5 +36,15 @@ public class ResponsePayload : IResponsePayload
             Texts = _texts,
             Token = _token
         };
+    }
+
+    public bool IsBreaked()
+    {
+        return _isBreaked;
+    }
+
+    public void SetToken(string token)
+    {
+        _token = token;
     }
 }

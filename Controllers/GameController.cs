@@ -42,9 +42,16 @@ public class GameController : ControllerBase
         for(int i = 0; i < payload.Commands.Length; i++)
         {
             var commandNow = payload.Commands[i];
+
             _response.AddText($"[{i}] {commandNow}:");
+
             _input.Text = commandNow;
             await _game.Respond();
+
+            if(_response.IsBreaked())
+            {
+                break;
+            }
         }
 
         return Ok(_response.GetPayload());

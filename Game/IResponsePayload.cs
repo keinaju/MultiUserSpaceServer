@@ -8,7 +8,11 @@ public interface IResponsePayload
 
     void AddText(string text);
 
+    void Break();
+
     object GetPayload();
 
-    void SetToken(string token);    
+    bool IsBreaked();
+
+    void SetToken(string token);
 }
