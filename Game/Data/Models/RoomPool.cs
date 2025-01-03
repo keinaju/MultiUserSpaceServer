@@ -62,7 +62,7 @@ public class RoomPool
         _lazyLoader = lazyLoader;
     }
 
-    public async Task<CommandResult> CreateExpansion(Room from)
+    public async Task<CommandResult> CreateExpansion(Room from, Being being)
     {
         if(Prototypes.Count == 0)
         {
@@ -72,19 +72,31 @@ public class RoomPool
         }
         else
         {
-            int randomIndex = new Random().Next(0, Prototypes.Count);
-            var randomPrototype = Prototypes.ToArray()[randomIndex];
-            var expansion = randomPrototype.Clone();
-            await _context.Rooms.AddAsync(expansion);
-            await expansion.SetUniqueName();
-            expansion.ConnectBidirectionally(from);
-            await _context.SaveChangesAsync();
+            if(FeeItem is not null)
+            {
+                if(being.HasItems(1, FeeItem))
+                {
+                    being.RemoveItems(1, FeeItem);
+                }
+                else
+                {
+                    return new CommandResult(
+                        CommandResult.StatusCode.Fail
+                    ).AddMessage(
+                        Message.DoesNotHave(
+                            being.Name,
+                            Message.Quantity(FeeItem.Name, 1)
+                        )
+                    );
+                }
+            }
+
+            var expansion = await GenerateExpansion(from);
 
             return new CommandResult(
                 CommandResult.StatusCode.Success
             ).AddMessage($"{expansion.Name} has been found.");
         }
-
     }
 
     public bool HasRoom(Room room)
@@ -128,6 +140,22 @@ public class RoomPool
         }
 
         return string.Join(" ", texts);
+    }
+
+    private async Task<Room> GenerateExpansion(Room from)
+    {
+        int randomIndex = new Random().Next(0, Prototypes.Count);
+        var randomPrototype = Prototypes.ToArray()[randomIndex];
+        var expansion = randomPrototype.Clone();
+
+        await _context.Rooms.AddAsync(expansion);
+
+        await expansion.SetUniqueName();
+        expansion.ConnectBidirectionally(from);
+
+        await _context.SaveChangesAsync();
+
+        return expansion;
     }
 
     private string GetDescriptionText()

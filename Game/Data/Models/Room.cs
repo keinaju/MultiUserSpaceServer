@@ -151,26 +151,7 @@ public class Room
         }
         else
         {
-            if(Curiosity.FeeItem is not null)
-            {
-                if(being.HasItems(1, Curiosity.FeeItem))
-                {
-                    being.RemoveItems(1, Curiosity.FeeItem);
-                }
-                else
-                {
-                    return new CommandResult(
-                        CommandResult.StatusCode.Fail
-                    ).AddMessage(
-                        Message.DoesNotHave(
-                            being.Name,
-                            Message.Quantity(Curiosity.FeeItem.Name, 1)
-                        )
-                    );
-                }
-            }
-
-            return await Curiosity.CreateExpansion(from: this);            
+            return await Curiosity.CreateExpansion(from: this, being: being);            
         }
     }
 
