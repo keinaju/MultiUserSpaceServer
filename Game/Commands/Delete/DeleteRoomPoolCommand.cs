@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Delete;
 
@@ -11,8 +10,6 @@ public class DeleteRoomPoolCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^delete pool (.+)$");
@@ -20,69 +17,37 @@ public class DeleteRoomPoolCommand : IGameCommand
     private string RoomPoolNameInInput => _input.GetGroup(this.Regex, 1);
 
     private readonly IResponsePayload _response;
-    private readonly IRoomRepository _roomRepo;
-    private readonly IRoomPoolRepository _roomPoolRepo;
     private readonly IInputCommand _input;
+    private readonly ISessionService _session;
 
     public DeleteRoomPoolCommand(
         IResponsePayload response,
-        IRoomRepository roomRepo,
-        IRoomPoolRepository roomPoolRepo,
-        IInputCommand input
+        IInputCommand input,
+        ISessionService session
     )
     {
         _response = response;
-        _roomRepo = roomRepo;
-        _roomPoolRepo = roomPoolRepo;
         _input = input;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            await DeleteCuriosities();
-            await DeleteRoomPool();
-            Respond();
-        }
-    }
-
-    private async Task<bool> IsValid()
-    {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(RoomPoolNameInInput);
-        if(roomPool is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("room pool", RoomPoolNameInInput)
-            );
-            return false;
-        }
-        
-        return true;
-    }
-
-    private async Task DeleteCuriosities()
-    {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(RoomPoolNameInInput);
-
-        await _roomRepo.DeleteCuriosities(roomPool!);
-    }
-
-    private async Task DeleteRoomPool()
-    {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(RoomPoolNameInInput);
-
-        await _roomPoolRepo
-        .DeleteRoomPool(roomPool!.PrimaryKey);
-    }
-
-    private void Respond()
-    {
-        _response.AddText(
-            Message.Deleted("room pool", RoomPoolNameInInput)
+        _response.AddResult(
+            await DeleteRoomPool()
         );
+    }
+
+    private async Task<CommandResult> DeleteRoomPool()
+    {
+        if(_session.AuthenticatedUser is null)
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
+        else
+        {
+            return await _session.AuthenticatedUser
+            .DeleteRoomPool(RoomPoolNameInInput);
+        }
     }
 }

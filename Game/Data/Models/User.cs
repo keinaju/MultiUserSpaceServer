@@ -71,8 +71,9 @@ public class User
 
         if (beingExists)
         {
-            var being = CreatedBeings.First(b => b.Name == beingName);
-
+            var being = CreatedBeings.First(
+                being => being.Name == beingName
+            );
             CreatedBeings.Remove(being);
 
             await _context.SaveChangesAsync();
@@ -86,6 +87,147 @@ public class User
             return new CommandResult(
                 CommandResult.StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("being", beingName));
+        }
+    }
+
+    public async Task<CommandResult> DeleteFeature(string featureName)
+    {
+        if(!IsBuilder)
+        {
+            return CommandResult.UserIsNotBuilder();
+        }
+
+        var featureExists = _context.Features.Any(
+            feature => feature.Name == featureName
+        );
+
+        if(featureExists)
+        {
+            var feature = _context.Features.First(
+                feature => feature.Name == featureName
+            );
+            _context.Features.Remove(feature);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(
+                CommandResult.StatusCode.Success
+            ).AddMessage(Message.Deleted("feature", feature.Name));
+        }
+        else
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage(Message.DoesNotExist("feature", featureName));
+        }
+    }
+
+    public async Task<CommandResult> DeleteItem(string itemName)
+    {
+        if(!IsBuilder)
+        {
+            return CommandResult.UserIsNotBuilder();
+        }
+
+        var itemExists = _context.Items.Any(
+            item => item.Name == itemName
+        );
+
+        if(itemExists)
+        {
+            var item = _context.Items.First(
+                item => item.Name == itemName
+            );
+
+            _context.Items.Remove(item);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(
+                CommandResult.StatusCode.Success
+            ).AddMessage(Message.Deleted("item", item.Name));
+        }
+        else
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage(Message.DoesNotExist("item", itemName));
+        }
+    }
+
+    public async Task<CommandResult> DeleteRoom(string roomName)
+    {
+        if(!IsBuilder)
+        {
+            return CommandResult.UserIsNotBuilder();
+        }
+
+        var roomExists = _context.Rooms.Any(
+            room => room.Name == roomName
+        );
+
+        if(roomExists)
+        {
+            var room = _context.Rooms.First(
+                room => room.Name == roomName
+            );
+
+            _context.Rooms.Remove(room);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(
+                CommandResult.StatusCode.Success
+            ).AddMessage(Message.Deleted("room", room.Name));
+        }
+        else
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage(Message.DoesNotExist("room", roomName));
+        }
+    }
+
+    public async Task<CommandResult> DeleteRoomPool(string poolName)
+    {
+        if(!IsBuilder)
+        {
+            return CommandResult.UserIsNotBuilder();
+        }
+
+        var poolExists = _context.RoomPools.Any(
+            pool => pool.Name == poolName
+        );
+
+        if(poolExists)
+        {
+            var pool = _context.RoomPools.First(
+                pool => pool.Name == poolName
+            );
+
+            var roomsWithCuriosity = await _context.Rooms.Where(
+                room => room.Curiosity == pool
+            ).ToListAsync();
+
+            foreach(var room in roomsWithCuriosity)
+            {
+                room.Curiosity = null;
+            }
+
+            _context.RoomPools.Remove(pool);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(
+                CommandResult.StatusCode.Success
+            ).AddMessage(Message.Deleted("room pool", pool.Name));
+
+        }
+        else
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage(Message.DoesNotExist("room pool", poolName));
         }
     }
 

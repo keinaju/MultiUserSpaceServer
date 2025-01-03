@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Delete;
 
@@ -11,63 +10,44 @@ public class DeleteItemCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^delete item (.+)$");
 
     private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
 
-    private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly ISessionService _session;
 
     public DeleteItemCommand(
-        IItemRepository itemRepo,
         IResponsePayload response,
-        IInputCommand input
+        IInputCommand input,
+        ISessionService session
     )
     {
-        _itemRepo = itemRepo;
         _response = response;
         _input = input;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            await DeleteItem();
-            Respond();
-        }
-    }
-
-    private async Task<bool> IsValid()
-    {
-        var item = await _itemRepo.FindItem(ItemNameInInput);
-        if(item is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("item", ItemNameInInput)
-            );
-            return false;
-        }
-
-        return true;
-    }
-
-    private async Task DeleteItem()
-    {
-        var item = await _itemRepo.FindItem(ItemNameInInput);
-
-        await _itemRepo.DeleteItem(item!.PrimaryKey);
-    }
-
-    private void Respond()
-    {
-        _response.AddText(
-            Message.Deleted("item", ItemNameInInput)
+        _response.AddResult(
+            await DeleteItem()
         );
+    }
+
+    private async Task<CommandResult> DeleteItem()
+    {
+        if(_session.AuthenticatedUser is null)
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
+        else
+        {
+            return await _session.AuthenticatedUser
+            .DeleteItem(ItemNameInInput);
+        }
     }
 }
