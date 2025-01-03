@@ -23,7 +23,7 @@ public class ConditionFilter : IConditionFilter
         && _session.AuthenticatedUser is null)
         {
             _response.AddText(
-                "You have to sign in for this command."
+                "Condition: you have to sign in for this command."
             );
 
             return false;
@@ -33,7 +33,7 @@ public class ConditionFilter : IConditionFilter
         && _session.AuthenticatedUser!.IsBuilder == false)
         {
             _response.AddText(
-                "You need a builder role for this command."
+                "Condition: you need a builder role for this command."
             );
 
             return false;
@@ -43,7 +43,7 @@ public class ConditionFilter : IConditionFilter
         && _session.AuthenticatedUser!.SelectedBeing is null)
         {
             _response.AddText(
-                "You have to select a being for this command."
+                "Condition: you have to select a being for this command."
             );
 
             return false;

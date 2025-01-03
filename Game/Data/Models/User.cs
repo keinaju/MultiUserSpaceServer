@@ -50,15 +50,43 @@ public class User
     /// </summary>
     public required string Username { get; set; }
 
+    private readonly GameContext _context;
     private readonly ILazyLoader _lazyLoader;
-    private Being _selectedBeing;
+    private Being? _selectedBeing;
     private ICollection<Being> _createdBeings;
 
     public User() {}
 
-    private User(ILazyLoader lazyLoader)
+    private User(GameContext context, ILazyLoader lazyLoader)
     {
+        _context = context;
         _lazyLoader = lazyLoader;
+    }
+
+    public async Task<CommandResult> DeleteBeing(string beingName)
+    {
+        var beingExists = CreatedBeings.Any(
+            being => being.Name == beingName
+        );
+
+        if (beingExists)
+        {
+            var being = CreatedBeings.First(b => b.Name == beingName);
+
+            CreatedBeings.Remove(being);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(
+                CommandResult.StatusCode.Success
+            ).AddMessage(Message.Deleted("being", being.Name));
+        }
+        else
+        {
+            return new CommandResult(
+                CommandResult.StatusCode.Fail
+            ).AddMessage(Message.DoesNotExist("being", beingName));
+        }
     }
 
     public async Task<CommandResult> Explore()
