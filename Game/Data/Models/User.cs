@@ -4,6 +4,7 @@ using MUS.Game.Commands;
 using MUS.Game.Utilities;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -63,9 +64,21 @@ public class User
         _lazyLoader = lazyLoader;
     }
 
+    public async Task<CommandResult> BreakItem(string itemName)
+    {
+        if(SelectedBeing is null)
+        {
+            return UserHasNotSelectedBeing();
+        }
+        else
+        {
+            return await SelectedBeing.TryBreakItem(itemName);
+        }
+    }
+
     public async Task<CommandResult> DeleteBeing(string beingName)
     {
-        var beingExists = CreatedBeings.Any(
+        bool beingExists = CreatedBeings.Any(
             being => being.Name == beingName
         );
 
@@ -79,13 +92,13 @@ public class User
             await _context.SaveChangesAsync();
 
             return new CommandResult(
-                CommandResult.StatusCode.Success
+                StatusCode.Success
             ).AddMessage(Message.Deleted("being", being.Name));
         }
         else
         {
             return new CommandResult(
-                CommandResult.StatusCode.Fail
+                StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("being", beingName));
         }
     }
@@ -94,10 +107,10 @@ public class User
     {
         if(!IsBuilder)
         {
-            return CommandResult.UserIsNotBuilder();
+            return UserIsNotBuilder();
         }
 
-        var featureExists = _context.Features.Any(
+        bool featureExists = _context.Features.Any(
             feature => feature.Name == featureName
         );
 
@@ -111,13 +124,13 @@ public class User
             await _context.SaveChangesAsync();
 
             return new CommandResult(
-                CommandResult.StatusCode.Success
+                StatusCode.Success
             ).AddMessage(Message.Deleted("feature", feature.Name));
         }
         else
         {
             return new CommandResult(
-                CommandResult.StatusCode.Fail
+                StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("feature", featureName));
         }
     }
@@ -126,10 +139,10 @@ public class User
     {
         if(!IsBuilder)
         {
-            return CommandResult.UserIsNotBuilder();
+            return UserIsNotBuilder();
         }
 
-        var itemExists = _context.Items.Any(
+        bool itemExists = _context.Items.Any(
             item => item.Name == itemName
         );
 
@@ -144,13 +157,13 @@ public class User
             await _context.SaveChangesAsync();
 
             return new CommandResult(
-                CommandResult.StatusCode.Success
+                StatusCode.Success
             ).AddMessage(Message.Deleted("item", item.Name));
         }
         else
         {
             return new CommandResult(
-                CommandResult.StatusCode.Fail
+                StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("item", itemName));
         }
     }
@@ -159,10 +172,10 @@ public class User
     {
         if(!IsBuilder)
         {
-            return CommandResult.UserIsNotBuilder();
+            return UserIsNotBuilder();
         }
 
-        var roomExists = _context.Rooms.Any(
+        bool roomExists = _context.Rooms.Any(
             room => room.Name == roomName
         );
 
@@ -177,13 +190,13 @@ public class User
             await _context.SaveChangesAsync();
 
             return new CommandResult(
-                CommandResult.StatusCode.Success
+                StatusCode.Success
             ).AddMessage(Message.Deleted("room", room.Name));
         }
         else
         {
             return new CommandResult(
-                CommandResult.StatusCode.Fail
+                StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("room", roomName));
         }
     }
@@ -192,10 +205,10 @@ public class User
     {
         if(!IsBuilder)
         {
-            return CommandResult.UserIsNotBuilder();
+            return UserIsNotBuilder();
         }
 
-        var poolExists = _context.RoomPools.Any(
+        bool poolExists = _context.RoomPools.Any(
             pool => pool.Name == poolName
         );
 
@@ -219,14 +232,14 @@ public class User
             await _context.SaveChangesAsync();
 
             return new CommandResult(
-                CommandResult.StatusCode.Success
+                StatusCode.Success
             ).AddMessage(Message.Deleted("room pool", pool.Name));
 
         }
         else
         {
             return new CommandResult(
-                CommandResult.StatusCode.Fail
+                StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("room pool", poolName));
         }
     }
@@ -235,9 +248,7 @@ public class User
     {
         if(SelectedBeing is null)
         {
-            return new CommandResult(
-                CommandResult.StatusCode.Fail
-            ).AddMessage($"{Username} has not selected a being.");
+            return UserHasNotSelectedBeing();
         }
         else
         {
@@ -322,5 +333,19 @@ public class User
         }
 
         return Message.List(beingNames);
+    }
+    
+    private CommandResult UserHasNotSelectedBeing()
+    {
+        return new CommandResult(
+            StatusCode.Fail
+        ).AddMessage($"User {Username} has not selected a being.");
+    }
+
+    private CommandResult UserIsNotBuilder()
+    {
+        return new CommandResult(
+            StatusCode.Fail
+        ).AddMessage($"User {Username} does not have a builder role.");
     }
 }

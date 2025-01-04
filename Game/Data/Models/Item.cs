@@ -34,6 +34,26 @@ public class Item
 
     public Item() {}
 
+    private Item(ILazyLoader lazyLoader)
+    {
+        _lazyLoader = lazyLoader;
+    }
+
+    public bool IsCraftable()
+    {
+        if(CraftPlan is null)
+        {
+            return false;
+        }
+
+        if(CraftPlan.Components.Count == 0)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
     public void SetComponent(Item item, int quantity)
     {
         if(CraftPlan is null)
@@ -46,11 +66,6 @@ public class Item
         }
 
         CraftPlan.SetComponent(item, quantity);
-    }
-
-    private Item(ILazyLoader lazyLoader)
-    {
-        _lazyLoader = lazyLoader;
     }
 
     public List<string> Show()

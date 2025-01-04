@@ -36,13 +36,6 @@ public class CommandResult
         return _status;
     }
 
-    public static CommandResult UserIsNotBuilder()
-    {
-        return new CommandResult(
-            StatusCode.Fail
-        ).AddMessage("You do not have the builder role.");
-    }
-
     public static CommandResult UserIsNotSignedIn()
     {
         return new CommandResult(

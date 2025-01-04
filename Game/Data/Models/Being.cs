@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -60,9 +61,75 @@ public class Being
         set => _roomInside = value;
     }
 
+    private readonly ILazyLoader _lazyLoader;
+    private readonly GameContext _context;
+
+    private ICollection<Feature> _features;
+    private Inventory _inventory;
+    private Room _inRoom;
+    private Room? _roomInside;
+    private User _createdByUser;
+
+    public Being() {}
+
+    private Being(GameContext context, ILazyLoader lazyLoader)
+    {
+        _context = context;
+        _lazyLoader = lazyLoader;
+    }
+
+    public async Task<CommandResult> Explore()
+    {
+        return await InRoom.Expand(this);
+    }
+
+    public async Task<CommandResult> TryBreakItem(string itemName)
+    {
+        bool itemExists = _context.Items.Any(
+            item => item.Name == itemName
+        );
+
+        if(itemExists)
+        {
+            var item = _context.Items.First(
+                item => item.Name == itemName
+            );
+
+            if(item.IsCraftable() && item.CraftPlan is not null)
+            {
+                if(Inventory.Contains(item, 1))
+                {
+                    return await BreakItem(item.CraftPlan);
+                }
+                else
+                {
+                    return new CommandResult(
+                        StatusCode.Fail
+                    ).AddMessage(
+                        Message.DoesNotHave(
+                            Name, Message.Quantity(item.Name, 1)
+                        )
+                    );
+                }
+            }
+            else
+            {
+                return new CommandResult(
+                    StatusCode.Fail
+                ).AddMessage($"{itemName} is not a craftable item.");
+            }
+        }
+        else
+        {
+            return new CommandResult(
+                StatusCode.Fail
+            ).AddMessage(Message.DoesNotExist("item", itemName));
+        }
+    }
+
     public Being Clone()
     {
-        var clone = new Being(_lazyLoader)
+        var clone = new Being(_context, _lazyLoader)
         {
             CreatedByUser = this.CreatedByUser,
             InRoom = this.InRoom,
@@ -78,25 +145,6 @@ public class Being
         }
 
         return clone;
-    }
-
-    private readonly ILazyLoader _lazyLoader;
-    private ICollection<Feature> _features;
-    private Inventory _inventory;
-    private Room _inRoom;
-    private Room? _roomInside;
-    private User _createdByUser;
-
-    public Being() {}
-
-    private Being(ILazyLoader lazyLoader)
-    {
-        _lazyLoader = lazyLoader;
-    }
-
-    public async Task<CommandResult> Explore()
-    {
-        return await InRoom.Expand(this);
     }
 
     public bool HasFeature(Feature feature)
@@ -137,6 +185,22 @@ public class Being
         texts.Add(GetInsideRoomText());
 
         return texts;
+    }
+
+    private async Task<CommandResult> BreakItem(CraftPlan craftPlan)
+    {
+        Inventory.RemoveItems(craftPlan.Product, 1);
+
+        foreach(var component in craftPlan.Components)
+        {
+            Inventory.AddItems(component.Item, component.Quantity);
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(
+            StatusCode.Success
+        ).AddMessage($"{Name} breaked {Message.Quantity(craftPlan.Product.Name, 1)} to {craftPlan.MadeOf()}.");
     }
 
     private string GetRoomText()
