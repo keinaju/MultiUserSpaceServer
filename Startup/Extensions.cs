@@ -122,6 +122,7 @@ public static class Extensions
 
     private static void AddUtilities(this IServiceCollection services)
     {
+        services.AddSingleton<IGameUptime, GameUptime>();
         services.AddScoped<IOfferManager, OfferManager>();
     }
 
