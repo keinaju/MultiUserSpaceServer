@@ -3,12 +3,13 @@ using System.Text.RegularExpressions;
 using MUS.Game.Data.Models;
 using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
 public class SignInCommand : IGameCommand
 {
-    private const string UNSUCCESSFUL_MESSAGE = "Login failed.";
+    private const string UNSUCCESSFUL_MESSAGE = "Sign in failed.";
 
     public Condition[] Conditions => [];
 
@@ -42,6 +43,13 @@ public class SignInCommand : IGameCommand
     
     public async Task Run()
     {
+        _response.AddResult(
+            await TrySignIn()
+        );
+    }
+
+    private async Task<CommandResult> TrySignIn()
+    {
         var user = await _userRepo.FindUser(UsernameInInput);
 
         if(
@@ -49,28 +57,28 @@ public class SignInCommand : IGameCommand
             user.IsCorrectPassword(PasswordInInput)
         )
         {
-            SignInSuccess(user);
+            return SignInSuccess(user);
         }
         else
         {
-            SignInFail();
+            return SignInFail();
         }
     }
 
-    private void SignInSuccess(User user)
+    private CommandResult SignInSuccess(User user)
     {
         var token = _tokenService.CreateToken(
             user.PrimaryKey.ToString()
         );
         _response.SetToken(token);
 
-        _response.AddText(
-            $"You are logged in, {user.Username}."
-        );
+        return new CommandResult(StatusCode.Success)
+        .AddMessage($"You are signed in, {user.Username}.");
     }
 
-    private void SignInFail()
+    private CommandResult SignInFail()
     {
-        _response.AddText(UNSUCCESSFUL_MESSAGE);
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage(UNSUCCESSFUL_MESSAGE);
     }
 }
