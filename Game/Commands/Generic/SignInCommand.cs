@@ -1,7 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
+using Microsoft.EntityFrameworkCore;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
 using static MUS.Game.Commands.CommandResult;
 
@@ -23,22 +24,22 @@ public class SignInCommand : IGameCommand
     private string PasswordInInput =>
     _input.GetGroup(this.Regex, 2);
     
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
     private readonly ITokenService _tokenService;
     private readonly IInputCommand _input;
-    private readonly IUserRepository _userRepo;
 
     public SignInCommand(
+        GameContext context,
         IResponsePayload response,
         ITokenService tokenService,
-        IInputCommand input,
-        IUserRepository userRepo
+        IInputCommand input
     )
     {
+        _context = context;
         _response = response;
         _tokenService = tokenService;
         _input = input;
-        _userRepo = userRepo;
     }
     
     public async Task Run()
@@ -50,19 +51,23 @@ public class SignInCommand : IGameCommand
 
     private async Task<CommandResult> TrySignIn()
     {
-        var user = await _userRepo.FindUser(UsernameInInput);
+        var userExists = _context.Users.Any(
+            user => user.Username == UsernameInInput
+        );
 
-        if(
-            user is not null &&
-            user.IsCorrectPassword(PasswordInInput)
-        )
+        if(userExists)
         {
-            return SignInSuccess(user);
+            var user = await _context.Users.SingleAsync(
+                user => user.Username == UsernameInInput
+            );
+
+            if(user.IsCorrectPassword(PasswordInInput))
+            {
+                return SignInSuccess(user);
+            }
         }
-        else
-        {
-            return SignInFail();
-        }
+
+        return SignInFail();
     }
 
     private CommandResult SignInSuccess(User user)

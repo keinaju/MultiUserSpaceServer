@@ -1,8 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
@@ -20,54 +21,51 @@ public class SignUpCommand : IGameCommand
     private string PasswordInInput =>
     _input.GetGroup(this.Regex, 2);
 
-    private readonly IResponsePayload _response;
+    private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly IUserRepository _userRepo;
+    private readonly IResponsePayload _response;
 
     public SignUpCommand(
-        IResponsePayload response,
+        GameContext context,
         IInputCommand input,
-        IUserRepository userRepo
+        IResponsePayload response
     )
     {
-        _response = response;
+        _context = context;
         _input = input;
-        _userRepo = userRepo;
+        _response = response;
     }
 
     public async Task Run()
     {
-        if(await UsernameIsNotReserved())
-        {
-            await CreateNewUser();
-
-            _response.AddText(
-                Message.Created("user", UsernameInInput)
-            );
-        }
-        else
-        {
-            _response.AddText(
-                $"Username '{UsernameInInput}' is reserved."
-            );
-        }
+        _response.AddResult(
+            await TrySignUp()
+        );
     }
 
-    private async Task<bool> UsernameIsNotReserved()
+    private async Task<CommandResult> TrySignUp()
     {
-        var user = await _userRepo.FindUser(UsernameInInput);
-
-        if(user is null)
+        if(UsernameIsReserved())
         {
-            return true;
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.Reserved("username", UsernameInInput));
         }
         else
         {
-            return false;
+            return await CreateNewUser();
         }
     }
 
-    private async Task CreateNewUser()
+    private bool UsernameIsReserved()
+    {
+        bool userExists = _context.Users.Any(
+            user => user.Username == UsernameInInput
+        );
+
+        return userExists;
+    }
+
+    private async Task<CommandResult> CreateNewUser()
     {
         var newUser = new User()
         {
@@ -76,6 +74,11 @@ public class SignUpCommand : IGameCommand
             HashedPassword = User.HashPassword(PasswordInInput)
         };
 
-        await _userRepo.CreateUser(newUser);
+        await _context.Users.AddAsync(newUser);
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(Message.Created("user", newUser.Username));
     }
 }
