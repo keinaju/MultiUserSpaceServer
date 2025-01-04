@@ -156,6 +156,28 @@ public class Being
         }
     }
 
+    public async Task<CommandResult> Go(string roomName)
+    {
+        bool roomExists = _context.Rooms.Any(
+            room => room.Name == roomName
+        );
+
+        if(roomExists)
+        {
+            var room = _context.Rooms.First(
+                room => room.Name == roomName
+            );
+
+            return await MoveTo(room);
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.DoesNotExist("room", roomName));
+        }
+
+    }
+
     public bool HasFeature(Feature feature)
     {
         if(Features.Contains(feature))
@@ -177,6 +199,38 @@ public class Being
         else
         {
             return false;
+        }
+    }
+
+    public async Task<CommandResult> MoveTo(Room destination)
+    {
+        if(destination == InRoom)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{Name} is in {destination.Name}.");
+        }
+
+        if(destination == RoomInside)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{Name} can not enter itself.");
+        }
+
+        if(!InRoom.HasAccessTo(destination))
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"{destination.Name} can not be accessed from {InRoom.Name}."
+            );
+        }
+        else
+        {
+            InRoom = destination;
+
+            await _context.SaveChangesAsync();
+            
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"{Name} moved in {destination.Name}.");
         }
     }
 
