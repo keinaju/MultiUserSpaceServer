@@ -256,6 +256,18 @@ public class User
         }
     }
 
+    public async Task<CommandResult> DeployItem(string itemName)
+    {
+        if(SelectedBeing is null)
+        {
+            return UserHasNotSelectedBeing();
+        }
+        else
+        {
+            return await SelectedBeing.DeployItem(itemName);
+        }
+    }
+
     public async Task<CommandResult> Explore()
     {
         if(SelectedBeing is null)

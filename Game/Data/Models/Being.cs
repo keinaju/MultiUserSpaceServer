@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
@@ -81,6 +82,128 @@ public class Being
     public async Task<CommandResult> Explore()
     {
         return await InRoom.Expand(this);
+    }
+
+    public Being Clone()
+    {
+        var clone = new Being(_context, _lazyLoader)
+        {
+            CreatedByUser = this.CreatedByUser,
+            InRoom = this.InRoom,
+            Inventory = this.Inventory.Clone(),
+            Name = this.Name,
+            RoomInside = this.RoomInside is null ?
+            null : this.RoomInside.Clone()
+        };
+
+        foreach(var feature in this.Features)
+        {
+            clone.Features.Add(feature);
+        }
+
+        return clone;
+    }
+
+    public async Task<Being> CreateDeployedBeing(Being prototype)
+    {
+        var clone = prototype.Clone();
+        clone.InRoom = this.InRoom;
+        clone.CreatedByUser = this.CreatedByUser;
+        await clone.SetUniqueName();
+
+        await _context.Beings.AddAsync(clone);
+        
+        if(clone.RoomInside is not null)
+        {
+            await clone.RoomInside.SetUniqueName();
+        }
+
+        await _context.SaveChangesAsync();
+
+        return clone;
+    }
+
+    public async Task<CommandResult> DeployItem(string itemName)
+    {
+        bool itemExists = _context.Items.Any(
+            item => item.Name == itemName
+        );
+
+        if(itemExists)
+        {
+            var item = _context.Items.First(
+                item => item.Name == itemName
+            );
+
+            if(Inventory.Contains(item, 1))
+            {
+                return await item.Deploy(being: this);
+            }
+            else
+            {
+                return new CommandResult(StatusCode.Fail)
+                .AddMessage(
+                    Message.DoesNotHave(
+                        Name, Message.Quantity(item.Name, 1)
+                    )
+                );
+            }
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.DoesNotExist("item", itemName));
+        }
+    }
+
+    public bool HasFeature(Feature feature)
+    {
+        if(Features.Contains(feature))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public bool HasItems(int quantity, Item item)
+    {
+        if(Inventory.Contains(item, quantity))
+        {
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
+
+    public void RemoveItems(int quantity, Item item)
+    {
+        Inventory.RemoveItems(item, quantity);
+    }
+
+    public async Task SetUniqueName()
+    {
+        if(await _context.Beings.AnyAsync(
+            being => being.Name == this.Name
+        ))
+        {
+            this.Name += StringUtilities.GetRandomCharacter();
+        }
+    }
+
+    public List<string> Show()
+    {
+        var texts = new List<string>();
+
+        texts.Add(GetRoomText());
+        texts.Add(GetFeaturesText());
+        texts.Add(GetInsideRoomText());
+
+        return texts;
     }
 
     public async Task<CommandResult> TryBreakItem(string itemName)
@@ -169,67 +292,6 @@ public class Being
                 StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("item", itemName));
         }
-
-    }
-
-    public Being Clone()
-    {
-        var clone = new Being(_context, _lazyLoader)
-        {
-            CreatedByUser = this.CreatedByUser,
-            InRoom = this.InRoom,
-            Inventory = this.Inventory.Clone(),
-            Name = this.Name,
-            RoomInside = this.RoomInside is null ?
-            null : this.RoomInside.Clone()
-        };
-
-        foreach(var feature in this.Features)
-        {
-            clone.Features.Add(feature);
-        }
-
-        return clone;
-    }
-
-    public bool HasFeature(Feature feature)
-    {
-        if(Features.Contains(feature))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public bool HasItems(int quantity, Item item)
-    {
-        if(Inventory.Contains(item, quantity))
-        {
-            return true;
-        }
-        else
-        {
-            return false;
-        }
-    }
-
-    public void RemoveItems(int quantity, Item item)
-    {
-        Inventory.RemoveItems(item, quantity);
-    }
-
-    public List<string> Show()
-    {
-        var texts = new List<string>();
-
-        texts.Add(GetRoomText());
-        texts.Add(GetFeaturesText());
-        texts.Add(GetInsideRoomText());
-
-        return texts;
     }
 
     private async Task<CommandResult> BreakItem(CraftPlan craftPlan)

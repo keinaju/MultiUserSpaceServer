@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MUS.Game.Commands;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -28,15 +30,39 @@ public class Item
         set => _deployment = value;
     }
 
+    private readonly GameContext _context;
     private readonly ILazyLoader _lazyLoader;
+
     private CraftPlan? _craftPlan;
     private Deployment? _deployment;
 
     public Item() {}
 
-    private Item(ILazyLoader lazyLoader)
+    private Item(GameContext context, ILazyLoader lazyLoader)
     {
+        _context = context;
         _lazyLoader = lazyLoader;
+    }
+
+    public async Task<CommandResult> Deploy(Being being)
+    {
+        if(Deployment is null)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{Name} is not a deployable item.");
+        }
+        else
+        {
+            var clone = await being
+            .CreateDeployedBeing(Deployment.Prototype);
+
+            being.RemoveItems(1, this);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"{being.Name} deployed {Name} to {clone.Name}.");
+        }
     }
 
     public bool IsCraftable()
@@ -52,6 +78,18 @@ public class Item
         }
 
         return true;
+    }
+
+    public bool IsDeployable()
+    {
+        if(Deployment is null)
+        {
+            return false;
+        }
+        else
+        {
+            return true;
+        }
     }
 
     public void SetComponent(Item item, int quantity)
