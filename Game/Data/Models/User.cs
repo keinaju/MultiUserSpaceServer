@@ -363,6 +363,18 @@ public class User
         return texts;
     }
 
+    public async Task<CommandResult> TakeItem(string itemName)
+    {
+        if(SelectedBeing is null)
+        {
+            return UserHasNotSelectedBeing();
+        }
+        else
+        {
+            return await SelectedBeing.TakeItemFromRoom(itemName);
+        }
+    }
+
     private string GetSelectedBeingText()
     {
         if(SelectedBeing is not null)

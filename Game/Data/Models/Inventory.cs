@@ -1,6 +1,8 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MUS.Game.Commands;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -23,7 +25,9 @@ public class Inventory
 
     public bool IsEmpty => ItemStacks.Count == 0;
 
+    private readonly GameContext _context;
     private readonly ILazyLoader _lazyLoader;
+
     private ICollection<ItemHatcher> _itemHatchers;
     private ICollection<ItemStack> _itemStacks;
 
@@ -33,8 +37,9 @@ public class Inventory
         ItemHatchers = new List<ItemHatcher>();
     }
 
-    private Inventory(ILazyLoader lazyLoader)
+    private Inventory(GameContext context, ILazyLoader lazyLoader)
     {
+        _context = context;
         _lazyLoader = lazyLoader;
     }
 
@@ -158,13 +163,65 @@ public class Inventory
         stack.Quantity -= quantity;
     }
 
-    public void TransferTo(
-        Inventory inventory,
+    public async Task<CommandResult> TakeItem(
+        Item item,
+        Inventory receiver,
+        string takerName,
+        string giverName
+    )
+    {
+        if(this.Contains(item, 1))
+        {
+            var quantity = GetStackSize(item);
+
+            await this.TransferTo(receiver, item, quantity);
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"{takerName} took {Message.Quantity(item.Name, quantity)} from {giverName}.");
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                Message.DoesNotHave(giverName, Message.Quantity(item.Name, 1))
+            );
+        }
+    }
+
+    public async Task TransferTo(
+        Inventory receiver,
         Item item,
         int quantity
     )
     {
         this.RemoveItems(item, quantity);
-        inventory.AddItems(item, quantity);
+
+        receiver.AddItems(item, quantity);
+
+        await _context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Gets the quantity of a given item in this inventory.
+    /// </summary>
+    /// <param name="item">Item to search for.</param>
+    private int GetStackSize(Item item)
+    {
+        bool stackExists = ItemStacks.Any(
+            stack => stack.Item == item
+        );
+
+        if(stackExists)
+        {
+            var stack = ItemStacks.Single(
+                stack => stack.Item == item
+            );
+
+            return stack.Quantity;
+        }
+        else
+        {
+            return 0;
+        }
     }
 }

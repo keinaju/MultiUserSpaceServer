@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -234,6 +235,16 @@ public class Room
         texts.Add(GetFeaturesText());
 
         return texts;
+    }
+
+    public async Task<CommandResult> TakeItem(Item item, Being being)
+    {
+        return await Inventory.TakeItem(
+            item: item,
+            receiver: being.Inventory,
+            takerName: being.Name,
+            giverName: this.Name
+        );
     }
 
     private string GetBeingsText()

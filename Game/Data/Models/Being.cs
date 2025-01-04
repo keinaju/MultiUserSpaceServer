@@ -260,6 +260,30 @@ public class Being
         return texts;
     }
 
+    public async Task<CommandResult> TakeItemFromRoom(string itemName)
+    {
+        bool itemExists = _context.Items.Any(
+            item => item.Name == itemName
+        );
+
+        if(itemExists)
+        {
+            var item = _context.Items.First(
+                item => item.Name == itemName
+            );
+
+            return await InRoom.TakeItem(
+                item: item,
+                being: this
+            );
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.DoesNotExist("item", itemName));
+        }
+    }
+
     public async Task<CommandResult> TryBreakItem(string itemName)
     {
         bool itemExists = _context.Items.Any(
