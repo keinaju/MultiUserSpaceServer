@@ -320,6 +320,34 @@ public class User
         return isValid;
     }
 
+    public async Task<CommandResult> SelectBeing(string beingName)
+    {
+        bool beingExists = CreatedBeings.Any(
+            being => being.Name == beingName
+        );
+
+        if(beingExists)
+        {
+            var being = CreatedBeings.First(
+                being => being.Name == beingName
+            );
+
+            SelectedBeing = being;
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Set("the selected being", SelectedBeing.Name)
+            );
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.DoesNotExist("being", beingName));
+        }
+    }
+
     public List<string> Show()
     {
         var texts = new List<string>();

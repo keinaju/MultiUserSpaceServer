@@ -9,7 +9,7 @@ public class PingCommand : IGameCommand
 {
     public Condition[] Conditions => [];
 
-    public string HelpText => "Tests server response.";
+    public string HelpText => "Generates a response for a ping request.";
     
     public Regex Regex => new("^(ping|test)$");
 

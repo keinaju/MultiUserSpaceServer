@@ -4,7 +4,7 @@ static public class Message
 {
     static public string Contains(
         string container, string content
-    ) => $"{container} contains {content}.";
+    ) => $"{container.FirstCharToUpper()} contains {content}.";
 
     static public string Created(
         string type, string name = ""
@@ -15,28 +15,28 @@ static public class Message
     static public string Deleted(
         string type, string name = ""
     ) => name == "" ?
-    $"{type} has been deleted." : 
-    $"{type} (named '{name}') has been deleted.";
+    $"{type.FirstCharToUpper()} has been deleted." : 
+    $"{type.FirstCharToUpper()} (named '{name}') has been deleted.";
 
     static public string DoesNotContain(
         string container, string content
-    ) => $"{container} does not contain {content}.";
+    ) => $"{container.FirstCharToUpper()} does not contain {content}.";
 
     static public string DoesNotExist(
         string type, string input
-    ) => $"{type} '{input}' does not exist.";
+    ) => $"{type.FirstCharToUpper()} '{input}' does not exist.";
 
     static public string DoesNotHave(
         string container, string content
-    ) => $"{container} does not have {content}.";
+    ) => $"{container.FirstCharToUpper()} does not have {content}.";
 
     static public string Exists(
         string type, string input
-    ) => $"{type} '{input}' exists.";
+    ) => $"{type.FirstCharToUpper()} '{input}' exists.";
 
     static public string Has(
         string container, string content
-    ) => $"{container} has {content}.";
+    ) => $"{container.FirstCharToUpper()} has {content}.";
 
     static public string Invalid(
         string input, string type
@@ -52,7 +52,7 @@ static public class Message
 
     static public string Renamed(
         string old, string @new
-    ) => $"{old} is renamed {@new}.";
+    ) => $"'{old}' is renamed '{@new}'.";
 
     static public string Reserved(
         string type, string input
@@ -60,5 +60,5 @@ static public class Message
 
     static public string Set(
         string type, string to
-    ) => $"{type} is now set to '{to}'.";
+    ) => $"{type.FirstCharToUpper()} is now set to '{to}'.";
 }
