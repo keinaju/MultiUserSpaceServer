@@ -76,6 +76,18 @@ public class User
         }
     }
 
+    public async Task<CommandResult> CraftItem(string itemName)
+    {
+        if(SelectedBeing is null)
+        {
+            return UserHasNotSelectedBeing();
+        }
+        else
+        {
+            return await SelectedBeing.TryCraftItem(itemName);
+        }
+    }
+
     public async Task<CommandResult> DeleteBeing(string beingName)
     {
         bool beingExists = CreatedBeings.Any(

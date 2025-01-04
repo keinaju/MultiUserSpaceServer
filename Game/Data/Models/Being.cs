@@ -103,9 +103,8 @@ public class Being
                 }
                 else
                 {
-                    return new CommandResult(
-                        StatusCode.Fail
-                    ).AddMessage(
+                    return new CommandResult(StatusCode.Fail)
+                    .AddMessage(
                         Message.DoesNotHave(
                             Name, Message.Quantity(item.Name, 1)
                         )
@@ -125,6 +124,52 @@ public class Being
                 StatusCode.Fail
             ).AddMessage(Message.DoesNotExist("item", itemName));
         }
+    }
+
+    public async Task<CommandResult> TryCraftItem(string itemName)
+    {
+        bool itemExists = _context.Items.Any(
+            item => item.Name == itemName
+        );
+
+        if(itemExists)
+        {
+            var item = _context.Items.First(
+                item => item.Name == itemName
+            );
+
+            if (item.IsCraftable() && item.CraftPlan is not null)
+            {
+                // Check that player has each item of craft plan
+                foreach(var comp in item.CraftPlan.Components)
+                {
+                    if(!Inventory.Contains(comp.Item, comp.Quantity))
+                    {
+                        return new CommandResult(StatusCode.Fail)
+                        .AddMessage(
+                            Message.DoesNotHave(
+                                Name, Message.Quantity(comp.Item.Name, comp.Quantity)
+                            )
+                        );
+                    }
+                }
+
+                return await CraftItem(item.CraftPlan);
+            }
+            else
+            {
+                return new CommandResult(
+                    StatusCode.Fail
+                ).AddMessage($"{itemName} is not a craftable item.");
+            }
+        }
+        else
+        {
+            return new CommandResult(
+                StatusCode.Fail
+            ).AddMessage(Message.DoesNotExist("item", itemName));
+        }
+
     }
 
     public Being Clone()
@@ -198,9 +243,27 @@ public class Being
 
         await _context.SaveChangesAsync();
 
-        return new CommandResult(
-            StatusCode.Success
-        ).AddMessage($"{Name} breaked {Message.Quantity(craftPlan.Product.Name, 1)} to {craftPlan.MadeOf()}.");
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            $"{Name} breaked {Message.Quantity(craftPlan.Product.Name, 1)} to {craftPlan.MadeOf()}."
+        );
+    }
+
+    private async Task<CommandResult> CraftItem(CraftPlan craftPlan)
+    {
+        foreach(var component in craftPlan.Components)
+        {
+            Inventory.RemoveItems(component.Item, component.Quantity);
+        }
+
+        Inventory.AddItems(craftPlan.Product, 1);
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            $"{Name} crafted {craftPlan.MadeOf()} to {Message.Quantity(craftPlan.Product.Name, 1)}."
+        );
     }
 
     private string GetRoomText()
