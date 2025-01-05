@@ -38,32 +38,6 @@ public class BeingIsFeatureCommand : IGameCommand
         _response.AddResult(
             await BeingIsFeature()
         );
-        // var feature =
-        // await _featureRepo.FindFeature(FeatureNameInInput);
-
-        // if(feature is null)
-        // {
-        //     _response.AddText(
-        //         Message.DoesNotExist("feature", FeatureNameInInput)
-        //     );
-
-        //     return;
-        // }
-
-        // if(CurrentBeing.HasFeature(feature))
-        // {
-        //     _response.AddText(
-        //         $"{CurrentBeing.Name} already has {feature.Name} feature."
-        //     );
-
-        //     return;
-        // }
-
-        // await AddFeatureInBeing(feature);
-
-        // _response.AddText(
-        //     $"{CurrentBeing.Name} now has {feature.Name} feature."
-        // );
     }
 
     private async Task<CommandResult> BeingIsFeature()
@@ -78,11 +52,4 @@ public class BeingIsFeatureCommand : IGameCommand
             return CommandResult.UserIsNotSignedIn();
         }
     }
-
-    // private async Task AddFeatureInBeing(Feature feature)
-    // {
-    //     CurrentBeing.Features.Add(feature);
-
-    //     await _beingRepo.UpdateBeing(CurrentBeing);
-    // }
 }
