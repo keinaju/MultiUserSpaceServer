@@ -165,7 +165,7 @@ public class Inventory
 
     public async Task<CommandResult> TakeItemStack(
         Item item,
-        Inventory receiver,
+        Inventory takerInventory,
         string takerName,
         string giverName
     )
@@ -174,7 +174,7 @@ public class Inventory
         {
             var quantity = GetStackSize(item);
 
-            await this.TransferTo(receiver, item, quantity);
+            await this.TransferTo(takerInventory, item, quantity);
 
             return new CommandResult(StatusCode.Success)
             .AddMessage($"{takerName} took {Message.Quantity(item.Name, quantity)} from {giverName}.");

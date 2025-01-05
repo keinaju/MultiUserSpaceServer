@@ -274,7 +274,7 @@ public class Being
 
             return await InRoom.Inventory.TakeItemStack(
                 item: item,
-                receiver: this.Inventory,
+                takerInventory: this.Inventory,
                 takerName: this.Name,
                 giverName: InRoom.Name
             );
