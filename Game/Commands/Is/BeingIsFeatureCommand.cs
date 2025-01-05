@@ -1,9 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -14,9 +11,6 @@ public class BeingIsFeatureCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^being is (.+)$");
@@ -24,63 +18,71 @@ public class BeingIsFeatureCommand : IGameCommand
     private string FeatureNameInInput =>
     _input.GetGroup(this.Regex, 1);
 
-    private Being CurrentBeing => _player.GetSelectedBeing();
-
-    private readonly IBeingRepository _beingRepo;
-    private readonly IFeatureRepository _featureRepo;
-    private readonly IPlayerState _player;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public BeingIsFeatureCommand(
-        IBeingRepository beingRepo,
-        IFeatureRepository featureRepo,
-        IPlayerState player,
+        IInputCommand input,
         IResponsePayload response,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _beingRepo = beingRepo;
-        _featureRepo = featureRepo;
-        _player = player;
-        _response = response;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var feature =
-        await _featureRepo.FindFeature(FeatureNameInInput);
-
-        if(feature is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("feature", FeatureNameInInput)
-            );
-
-            return;
-        }
-
-        if(CurrentBeing.HasFeature(feature))
-        {
-            _response.AddText(
-                $"{CurrentBeing.Name} already has {feature.Name} feature."
-            );
-
-            return;
-        }
-
-        await AddFeatureInBeing(feature);
-
-        _response.AddText(
-            $"{CurrentBeing.Name} now has {feature.Name} feature."
+        _response.AddResult(
+            await BeingIsFeature()
         );
+        // var feature =
+        // await _featureRepo.FindFeature(FeatureNameInInput);
+
+        // if(feature is null)
+        // {
+        //     _response.AddText(
+        //         Message.DoesNotExist("feature", FeatureNameInInput)
+        //     );
+
+        //     return;
+        // }
+
+        // if(CurrentBeing.HasFeature(feature))
+        // {
+        //     _response.AddText(
+        //         $"{CurrentBeing.Name} already has {feature.Name} feature."
+        //     );
+
+        //     return;
+        // }
+
+        // await AddFeatureInBeing(feature);
+
+        // _response.AddText(
+        //     $"{CurrentBeing.Name} now has {feature.Name} feature."
+        // );
     }
 
-    private async Task AddFeatureInBeing(Feature feature)
+    private async Task<CommandResult> BeingIsFeature()
     {
-        CurrentBeing.Features.Add(feature);
-
-        await _beingRepo.UpdateBeing(CurrentBeing);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .BeingIsFeature(FeatureNameInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
+
+    // private async Task AddFeatureInBeing(Feature feature)
+    // {
+    //     CurrentBeing.Features.Add(feature);
+
+    //     await _beingRepo.UpdateBeing(CurrentBeing);
+    // }
 }

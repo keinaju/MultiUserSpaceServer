@@ -79,6 +79,37 @@ public class Being
         _lazyLoader = lazyLoader;
     }
 
+    public async Task<CommandResult> BeingIsFeature(string featureName)
+    {
+        var feature = await _context.FindFeature(featureName);
+
+        if(feature is not null)
+        {
+            if(!HasFeature(feature))
+            {
+                Features.Add(feature);
+
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(
+                    $"{Name} now has the feature {feature.Name}."
+                );
+            }
+            else
+            {
+                return new CommandResult(StatusCode.Fail)
+                .AddMessage(
+                    $"{Name} already has the feature {feature.Name}."
+                );
+            }
+        }
+        else
+        {
+            return FeatureDoesNotExist(featureName);
+        }
+    }
+
     public async Task<CommandResult> Explore()
     {
         return await InRoom.Expand(this);
