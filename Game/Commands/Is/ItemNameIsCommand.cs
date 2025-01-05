@@ -62,7 +62,7 @@ public class ItemNameIsCommand : IGameCommand
         if(await _itemRepo.ItemNameIsReserved(NewItemNameInInput))
         {
             _response.AddText(
-                Message.Reserved("item name", NewItemNameInInput)
+                Message.ReservedName("item name", NewItemNameInInput)
             );
             return false;
         }

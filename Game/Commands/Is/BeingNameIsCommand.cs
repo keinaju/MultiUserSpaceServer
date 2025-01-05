@@ -1,9 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -14,69 +11,44 @@ public class BeingNameIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^being name is (.+)$");
 
-    private string NewNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string BeingNameInInput => _input.GetGroup(this.Regex, 1);
 
-    private Being CurrentBeing => _player.GetSelectedBeing();
-
-    private readonly IBeingRepository _beingRepo;
-    private readonly IPlayerState _player;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public BeingNameIsCommand(
-        IBeingRepository beingRepo,
-        IPlayerState player,
+        IInputCommand input,
         IResponsePayload response,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _beingRepo = beingRepo;
-        _player = player;
-        _response = response;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            Respond();
-            await RenameBeing();
-        }
-    }
-
-    private async Task<bool> IsValid()
-    {
-        if(await _beingRepo
-        .BeingNameIsReserved(NewNameInInput))
-        {
-            _response.AddText(
-                Message.Reserved("being name", NewNameInInput)
-            );
-            return false;
-        }
-
-        return true;
-    }
-
-    private void Respond()
-    {
-        _response.AddText(
-            Message.Renamed(CurrentBeing.Name, NewNameInInput)
+        _response.AddResult(
+            await BeingNameIs()
         );
     }
 
-    private async Task RenameBeing()
+    private async Task<CommandResult> BeingNameIs()
     {
-        CurrentBeing.Name = NewNameInInput;
-
-        await _beingRepo.UpdateBeing(CurrentBeing);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .SelectedBeingNameIs(BeingNameInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

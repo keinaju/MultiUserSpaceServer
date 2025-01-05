@@ -57,7 +57,7 @@ public class RoomNameIsCommand : IGameCommand
         if(await _roomRepo.RoomNameIsReserved(NewNameInInput))
         {
             _response.AddText(
-                Message.Reserved("room name", NewNameInInput)
+                Message.ReservedName("room name", NewNameInInput)
             );
             return false;
         }

@@ -48,7 +48,7 @@ public class SignUpCommand : IGameCommand
         if(UsernameIsReserved())
         {
             return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.Reserved("username", UsernameInInput));
+            .AddMessage(Message.ReservedName("username", UsernameInInput));
         }
         else
         {

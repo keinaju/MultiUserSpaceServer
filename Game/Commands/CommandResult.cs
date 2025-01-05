@@ -43,6 +43,12 @@ public class CommandResult
         .AddMessage(Message.DoesNotExist("being", beingName));
     }
 
+    public static CommandResult BeingNameIsReserved(string beingName)
+    {
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage(Message.ReservedName("being", beingName));
+    }
+
     public static CommandResult FeatureDoesNotExist(string featureName)
     {
         return new CommandResult(StatusCode.Fail)

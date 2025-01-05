@@ -54,9 +54,9 @@ static public class Message
         string old, string @new
     ) => $"'{old}' is renamed '{@new}'.";
 
-    static public string Reserved(
+    static public string ReservedName(
         string type, string input
-    ) => $"'{input}' is a reserved {type}.";
+    ) => $"'{input}' is a reserved {type} name.";
 
     static public string Set(
         string type, string to

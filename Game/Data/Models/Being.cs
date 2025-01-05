@@ -110,6 +110,28 @@ public class Being
         }
     }
 
+    public async Task<CommandResult> BeingNameIs(string beingName)
+    {
+        var validationResult = NameSanitation.Validate(beingName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanName = NameSanitation.Clean(beingName);
+
+            if(await _context.BeingNameIsReserved(cleanName))
+            {
+                return BeingNameIsReserved(cleanName);
+            }
+            else
+            {
+                return await Rename(cleanName);
+            }
+        }
+    }
+
     public async Task<CommandResult> Explore()
     {
         return await InRoom.Expand(this);
@@ -439,5 +461,17 @@ public class Being
                 Name, $"an inside room {RoomInside.Name}"
             );
         }
+    }
+
+    private async Task<CommandResult> Rename(string newName)
+    {
+        var oldName = Name;
+
+        Name = newName;
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(Message.Renamed(oldName, newName));
     }
 }

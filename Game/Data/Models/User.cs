@@ -64,26 +64,6 @@ public class User
         _lazyLoader = lazyLoader;
     }
 
-    public async Task<CommandResult> BeingIsFeature(string featureName)
-    {
-        if(IsBuilder)
-        {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing
-                .BeingIsFeature(featureName);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
-    }
-
     public async Task<CommandResult> BreakItem(string itemName)
     {
         if(SelectedBeing is null)
@@ -261,6 +241,38 @@ public class User
         else
         {
             return BeingDoesNotExist(beingName);
+        }
+    }
+
+    public async Task<CommandResult> SelectedBeingIsFeature(string featureName)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await SelectedBeing
+                .BeingIsFeature(featureName);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+    
+    public async Task<CommandResult> SelectedBeingNameIs(string beingName)
+    {
+        if(SelectedBeing is not null)
+        {
+            return await SelectedBeing.BeingNameIs(beingName);
+        }
+        else
+        {
+            return UserHasNotSelectedBeing();
         }
     }
 

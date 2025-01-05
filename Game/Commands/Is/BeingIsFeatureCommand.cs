@@ -45,7 +45,7 @@ public class BeingIsFeatureCommand : IGameCommand
         if(_session.AuthenticatedUser is not null)
         {
             return await _session.AuthenticatedUser
-            .BeingIsFeature(FeatureNameInInput);
+            .SelectedBeingIsFeature(FeatureNameInInput);
         }
         else
         {

@@ -68,7 +68,7 @@ public class RoomPoolNameIsCommand : IGameCommand
         ))
         {
             _response.AddText(
-                Message.Reserved(
+                Message.ReservedName(
                     "room pool name",
                     NewRoomPoolNameInInput
                 )
