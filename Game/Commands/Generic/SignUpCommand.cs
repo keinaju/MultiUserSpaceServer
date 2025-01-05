@@ -45,24 +45,14 @@ public class SignUpCommand : IGameCommand
 
     private async Task<CommandResult> TrySignUp()
     {
-        if(UsernameIsReserved())
+        if(await _context.UsernameIsReserved(UsernameInInput))
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.ReservedName("username", UsernameInInput));
+            return NameIsReserved("user", UsernameInInput);
         }
         else
         {
             return await CreateNewUser();
         }
-    }
-
-    private bool UsernameIsReserved()
-    {
-        bool userExists = _context.Users.Any(
-            user => user.Username == UsernameInInput
-        );
-
-        return userExists;
     }
 
     private async Task<CommandResult> CreateNewUser()
