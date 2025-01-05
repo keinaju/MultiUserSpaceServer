@@ -76,6 +76,16 @@ namespace MUS.Game.Data
             );
         }
 
+        public async Task<CommandResult> CreateUser(User user)
+        {
+            await Users.AddAsync(user);
+
+            await SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(Message.Created("user", user.Username));
+        }
+
         public async Task<CommandResult> DeleteFeature(string featureName)
         {
             var feature = await FindFeature(featureName);

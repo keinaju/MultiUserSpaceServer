@@ -2,7 +2,6 @@ using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
 using MUS.Game.Data.Models;
-using MUS.Game.Utilities;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
@@ -45,30 +44,30 @@ public class SignUpCommand : IGameCommand
 
     private async Task<CommandResult> TrySignUp()
     {
-        if(await _context.UsernameIsReserved(UsernameInInput))
+        var validationResult = NameSanitation.Validate(UsernameInInput);
+        if(validationResult.GetStatus() == StatusCode.Fail)
         {
-            return NameIsReserved("user", UsernameInInput);
+            return validationResult;
         }
         else
         {
-            return await CreateNewUser();
+            var cleanName = NameSanitation.Clean(UsernameInInput);
+
+            if(await _context.UsernameIsReserved(cleanName))
+            {
+                return NameIsReserved("user", cleanName);
+            }
+            else
+            {
+                var user = new User()
+                {
+                    IsBuilder = false,
+                    Username = cleanName,
+                    HashedPassword = User.HashPassword(PasswordInInput)
+                };
+
+                return await _context.CreateUser(user);
+            }
         }
-    }
-
-    private async Task<CommandResult> CreateNewUser()
-    {
-        var newUser = new User()
-        {
-            IsBuilder = false,
-            Username = UsernameInInput,
-            HashedPassword = User.HashPassword(PasswordInInput)
-        };
-
-        await _context.Users.AddAsync(newUser);
-
-        await _context.SaveChangesAsync();
-
-        return new CommandResult(StatusCode.Success)
-        .AddMessage(Message.Created("user", newUser.Username));
     }
 }
