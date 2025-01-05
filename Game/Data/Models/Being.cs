@@ -125,16 +125,10 @@ public class Being
 
     public async Task<CommandResult> DeployItem(string itemName)
     {
-        bool itemExists = _context.Items.Any(
-            item => item.Name == itemName
-        );
+        var item = await _context.FindItem(itemName);
 
-        if(itemExists)
+        if(item is not null)
         {
-            var item = _context.Items.First(
-                item => item.Name == itemName
-            );
-
             if(Inventory.Contains(item, 1))
             {
                 return await item.Deploy(being: this);
@@ -151,31 +145,22 @@ public class Being
         }
         else
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.DoesNotExist("item", itemName));
+            return ItemDoesNotExist(itemName);
         }
     }
 
     public async Task<CommandResult> Go(string roomName)
     {
-        bool roomExists = _context.Rooms.Any(
-            room => room.Name == roomName
-        );
+        var room = await _context.FindRoom(roomName);
 
-        if(roomExists)
+        if(room is not null)
         {
-            var room = _context.Rooms.First(
-                room => room.Name == roomName
-            );
-
             return await MoveTo(room);
         }
         else
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.DoesNotExist("room", roomName));
+            return RoomDoesNotExist(roomName);
         }
-
     }
 
     public bool HasFeature(Feature feature)
@@ -262,16 +247,10 @@ public class Being
 
     public async Task<CommandResult> TakeItemFromRoom(string itemName)
     {
-        bool itemExists = _context.Items.Any(
-            item => item.Name == itemName
-        );
+        var item = await _context.FindItem(itemName);
 
-        if(itemExists)
+        if(item is not null)
         {
-            var item = _context.Items.First(
-                item => item.Name == itemName
-            );
-
             return await InRoom.Inventory.TakeItemStack(
                 item: item,
                 takerInventory: this.Inventory,
@@ -281,23 +260,16 @@ public class Being
         }
         else
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.DoesNotExist("item", itemName));
+            return CommandResult.ItemDoesNotExist(itemName);
         }
     }
 
     public async Task<CommandResult> TryBreakItem(string itemName)
     {
-        bool itemExists = _context.Items.Any(
-            item => item.Name == itemName
-        );
+        var item = await _context.FindItem(itemName);
 
-        if(itemExists)
+        if(item is not null)
         {
-            var item = _context.Items.First(
-                item => item.Name == itemName
-            );
-
             if(item.IsCraftable() && item.CraftPlan is not null)
             {
                 if(Inventory.Contains(item, 1))
@@ -323,24 +295,16 @@ public class Being
         }
         else
         {
-            return new CommandResult(
-                StatusCode.Fail
-            ).AddMessage(Message.DoesNotExist("item", itemName));
+            return ItemDoesNotExist(itemName);
         }
     }
 
     public async Task<CommandResult> TryCraftItem(string itemName)
     {
-        bool itemExists = _context.Items.Any(
-            item => item.Name == itemName
-        );
+        var item = await _context.FindItem(itemName);
 
-        if(itemExists)
+        if(item is not null)
         {
-            var item = _context.Items.First(
-                item => item.Name == itemName
-            );
-
             if (item.IsCraftable() && item.CraftPlan is not null)
             {
                 // Check that player has each item of craft plan
@@ -368,9 +332,7 @@ public class Being
         }
         else
         {
-            return new CommandResult(
-                StatusCode.Fail
-            ).AddMessage(Message.DoesNotExist("item", itemName));
+            return ItemDoesNotExist(itemName);
         }
     }
 

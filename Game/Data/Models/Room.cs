@@ -4,7 +4,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
-using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -95,8 +94,8 @@ public class Room
         set => _roomPools = value;
     }
 
-    private readonly ILazyLoader _lazyLoader;
     private readonly GameContext _context;
+    private readonly ILazyLoader _lazyLoader;
 
     private ICollection<Being> _beingsHere;
     private ICollection<Feature> _requiredFeatures;

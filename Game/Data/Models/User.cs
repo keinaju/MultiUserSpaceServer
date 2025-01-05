@@ -90,28 +90,22 @@ public class User
 
     public async Task<CommandResult> DeleteBeing(string beingName)
     {
-        bool beingExists = CreatedBeings.Any(
+        var being = CreatedBeings.SingleOrDefault(
             being => being.Name == beingName
         );
 
-        if (beingExists)
+        if (being is not null)
         {
-            var being = CreatedBeings.First(
-                being => being.Name == beingName
-            );
             CreatedBeings.Remove(being);
 
             await _context.SaveChangesAsync();
 
-            return new CommandResult(
-                StatusCode.Success
-            ).AddMessage(Message.Deleted("being", being.Name));
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(Message.Deleted("being", being.Name));
         }
         else
         {
-            return new CommandResult(
-                StatusCode.Fail
-            ).AddMessage(Message.DoesNotExist("being", beingName));
+            return BeingDoesNotExist(beingName);
         }
     }
 
@@ -121,29 +115,9 @@ public class User
         {
             return UserIsNotBuilder();
         }
-
-        bool featureExists = _context.Features.Any(
-            feature => feature.Name == featureName
-        );
-
-        if(featureExists)
-        {
-            var feature = _context.Features.First(
-                feature => feature.Name == featureName
-            );
-            _context.Features.Remove(feature);
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(
-                StatusCode.Success
-            ).AddMessage(Message.Deleted("feature", feature.Name));
-        }
         else
         {
-            return new CommandResult(
-                StatusCode.Fail
-            ).AddMessage(Message.DoesNotExist("feature", featureName));
+            return await _context.DeleteFeature(featureName);
         }
     }
 
@@ -153,30 +127,9 @@ public class User
         {
             return UserIsNotBuilder();
         }
-
-        bool itemExists = _context.Items.Any(
-            item => item.Name == itemName
-        );
-
-        if(itemExists)
-        {
-            var item = _context.Items.First(
-                item => item.Name == itemName
-            );
-
-            _context.Items.Remove(item);
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(
-                StatusCode.Success
-            ).AddMessage(Message.Deleted("item", item.Name));
-        }
         else
         {
-            return new CommandResult(
-                StatusCode.Fail
-            ).AddMessage(Message.DoesNotExist("item", itemName));
+            return await _context.DeleteItem(itemName);
         }
     }
 
@@ -186,30 +139,9 @@ public class User
         {
             return UserIsNotBuilder();
         }
-
-        bool roomExists = _context.Rooms.Any(
-            room => room.Name == roomName
-        );
-
-        if(roomExists)
-        {
-            var room = _context.Rooms.First(
-                room => room.Name == roomName
-            );
-
-            _context.Rooms.Remove(room);
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(
-                StatusCode.Success
-            ).AddMessage(Message.Deleted("room", room.Name));
-        }
         else
         {
-            return new CommandResult(
-                StatusCode.Fail
-            ).AddMessage(Message.DoesNotExist("room", roomName));
+            return await _context.DeleteRoom(roomName);
         }
     }
 
@@ -219,40 +151,9 @@ public class User
         {
             return UserIsNotBuilder();
         }
-
-        bool poolExists = _context.RoomPools.Any(
-            pool => pool.Name == poolName
-        );
-
-        if(poolExists)
-        {
-            var pool = _context.RoomPools.First(
-                pool => pool.Name == poolName
-            );
-
-            var roomsWithCuriosity = await _context.Rooms.Where(
-                room => room.Curiosity == pool
-            ).ToListAsync();
-
-            foreach(var room in roomsWithCuriosity)
-            {
-                room.Curiosity = null;
-            }
-
-            _context.RoomPools.Remove(pool);
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(
-                StatusCode.Success
-            ).AddMessage(Message.Deleted("room pool", pool.Name));
-
-        }
         else
         {
-            return new CommandResult(
-                StatusCode.Fail
-            ).AddMessage(Message.DoesNotExist("room pool", poolName));
+            return await _context.DeleteRoomPool(poolName);
         }
     }
 
@@ -322,29 +223,24 @@ public class User
 
     public async Task<CommandResult> SelectBeing(string beingName)
     {
-        bool beingExists = CreatedBeings.Any(
+        var being = CreatedBeings.SingleOrDefault(
             being => being.Name == beingName
         );
 
-        if(beingExists)
+        if(being is not null)
         {
-            var being = CreatedBeings.First(
-                being => being.Name == beingName
-            );
-
             SelectedBeing = being;
 
             await _context.SaveChangesAsync();
 
             return new CommandResult(StatusCode.Success)
             .AddMessage(
-                Message.Set("the selected being", SelectedBeing.Name)
+                Message.Set($"{Username}'s selected being", SelectedBeing.Name)
             );
         }
         else
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.DoesNotExist("being", beingName));
+            return BeingDoesNotExist(beingName);
         }
     }
 
@@ -413,15 +309,13 @@ public class User
     
     private CommandResult UserHasNotSelectedBeing()
     {
-        return new CommandResult(
-            StatusCode.Fail
-        ).AddMessage($"User {Username} has not selected a being.");
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage($"User {Username} has not selected a being.");
     }
 
     private CommandResult UserIsNotBuilder()
     {
-        return new CommandResult(
-            StatusCode.Fail
-        ).AddMessage($"User {Username} does not have a builder role.");
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage($"User {Username} does not have a builder role.");
     }
 }
