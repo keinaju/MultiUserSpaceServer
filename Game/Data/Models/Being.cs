@@ -272,9 +272,11 @@ public class Being
                 item => item.Name == itemName
             );
 
-            return await InRoom.TakeItem(
+            return await InRoom.Inventory.TakeItemStack(
                 item: item,
-                being: this
+                receiver: this.Inventory,
+                takerName: this.Name,
+                giverName: InRoom.Name
             );
         }
         else

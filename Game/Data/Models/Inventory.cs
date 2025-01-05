@@ -163,7 +163,7 @@ public class Inventory
         stack.Quantity -= quantity;
     }
 
-    public async Task<CommandResult> TakeItem(
+    public async Task<CommandResult> TakeItemStack(
         Item item,
         Inventory receiver,
         string takerName,

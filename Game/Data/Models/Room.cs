@@ -237,16 +237,6 @@ public class Room
         return texts;
     }
 
-    public async Task<CommandResult> TakeItem(Item item, Being being)
-    {
-        return await Inventory.TakeItem(
-            item: item,
-            receiver: being.Inventory,
-            takerName: being.Name,
-            giverName: this.Name
-        );
-    }
-
     private string GetBeingsText()
     {
         if(BeingsHere.Count > 0)
