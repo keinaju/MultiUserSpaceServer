@@ -88,6 +88,25 @@ public class User
         }
     }
 
+    public async Task<CommandResult> CuriosityIs(string poolName)
+    {
+        if(IsBuilder) 
+        {
+            if(SelectedBeing is not null)
+            {
+                return await SelectedBeing.CuriosityIs(poolName);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> DeleteBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

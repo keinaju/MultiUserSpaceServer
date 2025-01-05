@@ -43,12 +43,6 @@ public class CommandResult
         .AddMessage(Message.DoesNotExist("being", beingName));
     }
 
-    public static CommandResult BeingNameIsReserved(string beingName)
-    {
-        return new CommandResult(StatusCode.Fail)
-        .AddMessage(Message.ReservedName("being", beingName));
-    }
-
     public static CommandResult FeatureDoesNotExist(string featureName)
     {
         return new CommandResult(StatusCode.Fail)
@@ -61,6 +55,12 @@ public class CommandResult
         .AddMessage(Message.DoesNotExist("item", itemName));
     }
 
+    public static CommandResult NameIsReserved(string type, string name)
+    {
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage(Message.ReservedName(type, name));
+    }
+    
     public static CommandResult RoomDoesNotExist(string roomName)
     {
         return new CommandResult(StatusCode.Fail)

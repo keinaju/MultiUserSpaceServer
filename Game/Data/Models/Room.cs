@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -139,6 +140,27 @@ public class Room
         this.ConnectedToRooms.Add(destination);
         
         destination.ConnectedToRooms.Add(this);
+    }
+
+    public async Task<CommandResult> CuriosityIs(string poolName)
+    {
+        var pool = await _context.FindRoomPool(poolName);
+
+        if(pool is not null)
+        {
+            Curiosity = pool;
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Set($"{Name}'s curiosity", pool.Name)
+            );
+        }
+        else
+        {
+            return RoomPoolDoesNotExist(poolName);
+        }
     }
 
     public async Task<CommandResult> Expand(Being being)

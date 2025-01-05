@@ -123,13 +123,18 @@ public class Being
 
             if(await _context.BeingNameIsReserved(cleanName))
             {
-                return BeingNameIsReserved(cleanName);
+                return NameIsReserved("being", cleanName);
             }
             else
             {
                 return await Rename(cleanName);
             }
         }
+    }
+
+    public async Task<CommandResult> CuriosityIs(string poolName)
+    {
+        return await InRoom.CuriosityIs(poolName);
     }
 
     public async Task<CommandResult> Explore()
