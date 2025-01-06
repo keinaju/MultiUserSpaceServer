@@ -1,6 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Session;
+using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Is;
 
@@ -20,16 +23,19 @@ public class ItemHatcherIntervalIsCommand : IGameCommand
     private string IntervalInInput =>
     _input.GetGroup(this.Regex, 2);
 
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
     private readonly ISessionService _session;
 
     public ItemHatcherIntervalIsCommand(
+        GameContext context,
         IResponsePayload response,
         IInputCommand input,
         ISessionService session
     )
     {
+        _context = context;
         _response = response;
         _input = input;
         _session = session;
@@ -44,14 +50,29 @@ public class ItemHatcherIntervalIsCommand : IGameCommand
 
     private async Task<CommandResult> ItemHatcherIntervalIs()
     {
-        if(_session.AuthenticatedUser is not null)
+        bool ok = int.TryParse(IntervalInInput, out int interval);
+        if(!ok || interval < 1)
         {
-            return await _session.AuthenticatedUser
-            .ItemHatcherIntervalIs(ItemNameInInput, IntervalInInput);
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.Invalid(IntervalInInput, "interval"));
+        }
+        
+        var item = await _context.FindItem(ItemNameInInput);
+        if(item is not null)
+        {
+            if(_session.AuthenticatedUser is not null)
+            {
+                return await _session.AuthenticatedUser
+                .ItemHatcherIntervalIs(item, interval);
+            }
+            else
+            {
+                return UserIsNotSignedIn();
+            }
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return ItemDoesNotExist(ItemNameInInput);
         }
     }
 }

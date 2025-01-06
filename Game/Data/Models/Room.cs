@@ -213,105 +213,60 @@ public class Room
     }
 
     public async Task<CommandResult> ItemHatcherIntervalIs(
-        string itemName, string intervalInput
+        Item item, int interval
     )
     {
-        bool ok = int.TryParse(intervalInput, out int interval);
-        if(!ok || interval < 1)
+        var hatcher = Inventory.ItemHatchers.SingleOrDefault(
+            hatcher => hatcher.Item == item
+        );
+        if(hatcher is not null)
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.Invalid(intervalInput, "interval"));
-        }
+            hatcher.IntervalInTicks = interval;
 
-        var item = await _context.FindItem(itemName);
-        if(item is not null)
-        {
-            var hatcher = Inventory.ItemHatchers.SingleOrDefault(
-                hatcher => hatcher.Item == item
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Set($"item hatcher", hatcher.Show())
             );
-            if(hatcher is not null)
-            {
-                hatcher.IntervalInTicks = interval;
-
-                await _context.SaveChangesAsync();
-
-                return new CommandResult(StatusCode.Success)
-                .AddMessage(
-                    Message.Set($"item hatcher", hatcher.Show())
-                );
-            }
-            else
-            {
-                return new CommandResult(StatusCode.Fail)
-                .AddMessage(
-                    $"{Name} has not subscribed to {item.Name} item hatcher."
-                );
-            }
         }
         else
         {
-            return ItemDoesNotExist(itemName);
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"{Name} has not subscribed to {item.Name} item hatcher."
+            );
         }
     }
 
     public async Task<CommandResult> ItemHatcherQuantityIs(
-        string itemName,
-        string minQuantityInput,
-        string maxQuantityInput
+        Item item,
+        int minQuantity,
+        int maxQuantity
     )
     {
-        bool minOk = int.TryParse(minQuantityInput, out int minQuantity);
-        if(!minOk || minQuantity < 1)
-        {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.Invalid(minQuantityInput, "quantity"));
-        }
+        var hatcher = Inventory.ItemHatchers.SingleOrDefault(
+            hatcher => hatcher.Item == item
+        );
 
-        bool maxOk = int.TryParse(maxQuantityInput, out int maxQuantity);
-        if(!maxOk || maxQuantity < 1)
+        if(hatcher is not null)
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(Message.Invalid(maxQuantityInput, "quantity"));
-        }
+            hatcher.MinimumQuantity = minQuantity;
+            hatcher.MaximumQuantity = maxQuantity;
 
-        if(maxQuantity < minQuantity)
-        {
-            return new CommandResult(StatusCode.Fail)
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
             .AddMessage(
-                $"Maximum quantity can not be less than minimum quantity."
+                Message.Set($"item hatcher", hatcher.Show())
             );
-        }
-
-        var item = await _context.FindItem(itemName);
-        if(item is not null)
-        {
-            var hatcher = Inventory.ItemHatchers.SingleOrDefault(
-                hatcher => hatcher.Item == item
-            );
-
-            if(hatcher is not null)
-            {
-                hatcher.MinimumQuantity = minQuantity;
-                hatcher.MaximumQuantity = maxQuantity;
-
-                await _context.SaveChangesAsync();
-
-                return new CommandResult(StatusCode.Success)
-                .AddMessage(
-                    Message.Set($"item hatcher", hatcher.Show())
-                );
-            }
-            else
-            {
-                return new CommandResult(StatusCode.Fail)
-                .AddMessage(
-                    $"{Name} has not subscribed to {item.Name} item hatcher."
-                );
-            }
         }
         else
         {
-            return ItemDoesNotExist(itemName);
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"{Name} has not subscribed to {item.Name} item hatcher."
+            );
         }
     }
 

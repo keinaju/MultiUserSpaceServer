@@ -283,7 +283,7 @@ public class User
     }
 
     public async Task<CommandResult> ItemHatcherIntervalIs(
-        string itemName, string interval
+        Item item, int interval
     )
     {
         if(IsBuilder)
@@ -291,7 +291,7 @@ public class User
             if(SelectedBeing is not null)
             {
                 return await SelectedBeing.InRoom
-                .ItemHatcherIntervalIs(itemName, interval);
+                .ItemHatcherIntervalIs(item, interval);
             }
             else
             {
@@ -305,9 +305,7 @@ public class User
     }
 
     public async Task<CommandResult> ItemHatcherQuantityIs(
-        string itemName,
-        string minimumQuantity,
-        string maximumQuantity
+        Item item, int minQuantity, int maxQuantity
     )
     {
         if(IsBuilder)
@@ -315,11 +313,7 @@ public class User
             if(SelectedBeing is not null)
             {
                 return await SelectedBeing.InRoom
-                .ItemHatcherQuantityIs(
-                    itemName,
-                    minimumQuantity,
-                    maximumQuantity
-                );
+                .ItemHatcherQuantityIs(item, minQuantity, maxQuantity);
             }
             else
             {
