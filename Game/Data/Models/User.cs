@@ -433,6 +433,27 @@ public class User
         }
     }
 
+    public async Task<CommandResult> RoomIsInRoomPool(RoomPool pool)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await pool.RoomIsInRoomPool(
+                    SelectedBeing.InRoom
+                );
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

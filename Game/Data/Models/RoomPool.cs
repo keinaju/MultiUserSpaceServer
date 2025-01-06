@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -64,13 +65,34 @@ public class RoomPool
         _lazyLoader = lazyLoader;
     }
 
+    public async Task<CommandResult> RoomIsInRoomPool(Room room)
+    {
+        if(this.HasRoom(room))
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"Room pool {Name} already has the room {room.Name}."
+            );
+        }
+        else
+        {
+            Prototypes.Add(room);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Added("room", room.Name, $"{this.Name}'s prototypes")
+            );
+        }
+    }
+
     public async Task<CommandResult> CreateExpansion(Room from, Being being)
     {
         if(Prototypes.Count == 0)
         {
-            return new CommandResult(
-                CommandResult.StatusCode.Fail
-            ).AddMessage(Message.DoesNotHave(Name, "prototypes"));
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.DoesNotHave(Name, "prototypes"));
         }
         else
         {
@@ -103,15 +125,7 @@ public class RoomPool
 
     public bool HasRoom(Room room)
     {
-        foreach(var prototype in Prototypes)
-        {
-            if (prototype == room)
-            {
-                return true;
-            }
-        }
-
-        return false;
+        return Prototypes.Contains(room);
     }
 
     public ICollection<string> GetDetails()

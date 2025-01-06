@@ -1,9 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -14,9 +12,6 @@ public class RoomIsInRoomPoolCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^room is in pool (.+)$");
@@ -24,64 +19,50 @@ public class RoomIsInRoomPoolCommand : IGameCommand
     private string RoomPoolNameInInput =>
     _input.GetGroup(this.Regex, 1);
 
-    private Room CurrentRoom => _player.GetCurrentRoom();
 
-    private readonly IPlayerState _player;
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
-    private readonly IRoomPoolRepository _roomPoolRepo;
     private readonly IInputCommand _input;
+    private readonly ISessionService _session;
 
     public RoomIsInRoomPoolCommand(
-        IPlayerState player,
+        GameContext context,
         IResponsePayload response,
-        IRoomPoolRepository roomPoolRepo,
-        IInputCommand input
+        IInputCommand input,
+        ISessionService session
     )
     {
-        _player = player;
+        _context = context;
         _response = response;
-        _roomPoolRepo = roomPoolRepo;
         _input = input;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var roomPool =
-        await _roomPoolRepo.FindRoomPool(
-            RoomPoolNameInInput
-        );
-        if(roomPool is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist(
-                    "room pool",
-                    RoomPoolNameInInput
-                )
-            );
-
-            return;
-        }
-
-        if(roomPool.HasRoom(CurrentRoom))
-        {
-            _response.AddText(
-                $"{CurrentRoom.Name} is already in {roomPool.Name}."
-            );
-            
-            return;
-        }
-
-        await AddRoomInRoomPool(roomPool);
-
-        _response.AddText(
-            $"{CurrentRoom.Name} was added to room pool {roomPool.Name}."
+        _response.AddResult(
+            await RoomIsInRoomPool()
         );
     }
 
-    private async Task AddRoomInRoomPool(RoomPool roomPool)
+    private async Task<CommandResult> RoomIsInRoomPool()
     {
-        roomPool.Prototypes.Add(CurrentRoom);
+        var pool = await _context
+        .FindRoomPool(RoomPoolNameInInput);
+        if(pool is null)
+        {
+            return CommandResult
+            .RoomPoolDoesNotExist(RoomPoolNameInInput);
+        }
 
-        await _roomPoolRepo.UpdateRoomPool(roomPool);
+        if(_session.AuthenticatedUser is null)
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
+        else
+        {
+            return await _session.AuthenticatedUser
+            .RoomIsInRoomPool(pool);
+        }
     }
 }

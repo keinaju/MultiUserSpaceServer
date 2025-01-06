@@ -2,6 +2,10 @@ namespace MUS.Game.Utilities;
 
 static public class Message
 {
+    static public string Added(
+        string type, string name, string container
+    ) => $"{type.FirstCharToUpper()} {name} has been added to {container}.";
+
     static public string Contains(
         string container, string content
     ) => $"{container.FirstCharToUpper()} contains {content}.";
