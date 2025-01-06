@@ -1,7 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Data;
+using MUS.Game.Session;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Is;
 
@@ -11,8 +12,6 @@ public class ItemNameIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^item (.+) name is (.+)$");
@@ -23,68 +22,47 @@ public class ItemNameIsCommand : IGameCommand
     private string NewItemNameInInput =>
     _input.GetGroup(this.Regex, 2);
 
-    private readonly IItemRepository _itemRepo;
-    private readonly IResponsePayload _response;
+    private readonly GameContext _context;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public ItemNameIsCommand(
-        IItemRepository itemRepo,
+        GameContext context,
+        IInputCommand input,
         IResponsePayload response,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _itemRepo = itemRepo;
-        _response = response;
+        _context = context;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            await RenameItem();
-            Respond();
-        }
+        _response.AddResult(
+            await ItemNameIs()
+        );
     }
 
-    private async Task<bool> IsValid()
+    private async Task<CommandResult> ItemNameIs()
     {
-        var item = await _itemRepo.FindItem(OldItemNameInInput);
+        var item = await _context.FindItem(OldItemNameInInput);
         if(item is null)
         {
-            _response.AddText(
-                Message.DoesNotExist("item", OldItemNameInInput)
-            );
-
-            return false;
+            return ItemDoesNotExist(OldItemNameInInput);
         }
 
-        if(await _itemRepo.ItemNameIsReserved(NewItemNameInInput))
+        if(_session.AuthenticatedUser is null)
         {
-            _response.AddText(
-                Message.ReservedName("item name", NewItemNameInInput)
-            );
-            return false;
+            return UserIsNotSignedIn();
         }
-
-        return true;
-    }
-
-    private async Task RenameItem()
-    {
-        var item = await _itemRepo.FindItem(OldItemNameInInput);
-
-        item!.Name = NewItemNameInInput;
-
-        await _itemRepo.UpdateItem(item);
-    }
-
-    private void Respond()
-    {
-        _response.AddText(
-            Message.Renamed(
-                OldItemNameInInput, NewItemNameInInput
-            )
-        );
+        else
+        {
+            return await _session.AuthenticatedUser
+            .ItemNameIs(item, NewItemNameInInput);
+        }
     }
 }

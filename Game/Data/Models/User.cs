@@ -340,6 +340,20 @@ public class User
         }
     }
 
+    public async Task<CommandResult> ItemNameIs(
+        Item item, string newName
+    )
+    {
+        if(IsBuilder)
+        {
+            return await item.Rename(newName);
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(
