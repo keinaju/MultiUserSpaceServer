@@ -11,7 +11,7 @@ public static class NameSanitation
     private const int MINIMUM_LENGTH = 2;
     private const int MAXIMUM_LENGTH = 20;
     private const string ALLOWED_CHARACTERS =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+    "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789 ";
 
     public static string Clean(string name)
     {
