@@ -304,6 +304,34 @@ public class User
         }
     }
 
+    public async Task<CommandResult> ItemHatcherQuantityIs(
+        string itemName,
+        string minimumQuantity,
+        string maximumQuantity
+    )
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await SelectedBeing.InRoom
+                .ItemHatcherQuantityIs(
+                    itemName,
+                    minimumQuantity,
+                    maximumQuantity
+                );
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

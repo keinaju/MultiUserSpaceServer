@@ -254,6 +254,67 @@ public class Room
         }
     }
 
+    public async Task<CommandResult> ItemHatcherQuantityIs(
+        string itemName,
+        string minQuantityInput,
+        string maxQuantityInput
+    )
+    {
+        bool minOk = int.TryParse(minQuantityInput, out int minQuantity);
+        if(!minOk || minQuantity < 1)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.Invalid(minQuantityInput, "quantity"));
+        }
+
+        bool maxOk = int.TryParse(maxQuantityInput, out int maxQuantity);
+        if(!maxOk || maxQuantity < 1)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.Invalid(maxQuantityInput, "quantity"));
+        }
+
+        if(maxQuantity < minQuantity)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"Maximum quantity can not be less than minimum quantity."
+            );
+        }
+
+        var item = await _context.FindItem(itemName);
+        if(item is not null)
+        {
+            var hatcher = Inventory.ItemHatchers.SingleOrDefault(
+                hatcher => hatcher.Item == item
+            );
+
+            if(hatcher is not null)
+            {
+                hatcher.MinimumQuantity = minQuantity;
+                hatcher.MaximumQuantity = maxQuantity;
+
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(
+                    Message.Set($"item hatcher", hatcher.Show())
+                );
+            }
+            else
+            {
+                return new CommandResult(StatusCode.Fail)
+                .AddMessage(
+                    $"{Name} has not subscribed to {item.Name} item hatcher."
+                );
+            }
+        }
+        else
+        {
+            return ItemDoesNotExist(itemName);
+        }
+    }
+
     public async Task SetUniqueName()
     {
         if(await _context.Rooms.AnyAsync(

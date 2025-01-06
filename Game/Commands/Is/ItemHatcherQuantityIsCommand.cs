@@ -1,9 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Is;
 
@@ -13,129 +11,54 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new(
         @"^hatcher (.+) quantity is (\d+) to (\d+)$"
     );
 
-    private string ItemNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
 
-    private string MinimumQuantityInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string MinimumQuantityInInput => _input.GetGroup(this.Regex, 2);
 
-    private string MaximumQuantityInInput =>
-    _input.GetGroup(this.Regex, 3);
+    private string MaximumQuantityInInput => _input.GetGroup(this.Regex, 3);
 
-    private Room CurrentRoom => _player.GetCurrentRoom();
-
-    private readonly IItemHatcherRepository _itemHatcherRepo;
-    private readonly IItemRepository _itemRepo;
-    private readonly IPlayerState _player;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public ItemHatcherQuantityIsCommand(
-        IItemHatcherRepository itemHatcherRepo,
-        IItemRepository itemRepo,
-        IPlayerState player,
+        IInputCommand input,
         IResponsePayload response,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _itemHatcherRepo = itemHatcherRepo;
-        _itemRepo = itemRepo;
-        _player = player;
-        _response = response;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var minimumQuantity = GetParsedQuantity(MinimumQuantityInInput);
-        if(minimumQuantity is null)
-        {
-            _response.AddText(
-                Message.Invalid(MinimumQuantityInInput, "quantity")
-            );
-            return;
-        }
-
-        var maximumQuantity = GetParsedQuantity(MaximumQuantityInInput);
-        if(maximumQuantity is null)
-        {
-            _response.AddText(
-                Message.Invalid(MaximumQuantityInInput, "quantity")
-            );
-            return;
-        }
-
-        if(minimumQuantity > maximumQuantity)
-        {
-            _response.AddText(
-                $"Minimum quantity can not be bigger than maximum quantity."
-            );
-            return;
-        }
-
-        var item = await _itemRepo.FindItem(ItemNameInInput);
-        if(item is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("item", ItemNameInInput)
-            );
-            return;
-        }
-
-        var itemHatcher = CurrentRoom.Inventory.GetItemHatcher(item);
-        if(itemHatcher is null)
-        {
-            _response.AddText(
-                $"{CurrentRoom.Name} is not subscribed to {item.Name} hatcher."
-            );
-            return;
-        }
-
-        await SetItemHatcherQuantities(
-            itemHatcher,
-            (int)minimumQuantity,
-            (int)maximumQuantity
-        );
-
-        _response.AddText(
-            Message.Set("item hatcher", itemHatcher.Show())
+        _response.AddResult(
+            await ItemHatcherQuantityIs()
         );
     }
 
-    private int? GetParsedQuantity(string input)
+    private async Task<CommandResult> ItemHatcherQuantityIs()
     {
-        bool success = int.TryParse(
-            input, out int result
-        );
-
-        if(success && result > 0)
+        if(_session.AuthenticatedUser is not null)
         {
-            return result;
+            return await _session.AuthenticatedUser
+            .ItemHatcherQuantityIs(
+                ItemNameInInput,
+                MinimumQuantityInInput,
+                MaximumQuantityInInput
+            );
         }
         else
         {
-            return null;
+            return UserIsNotSignedIn();
         }
-    }
-
-    private async Task SetItemHatcherQuantities(
-        ItemHatcher itemHatcher,
-        int minimumQuantity,
-        int maximumQuantity
-    )
-    {
-        itemHatcher.MinimumQuantity = minimumQuantity;
-        itemHatcher.MaximumQuantity = maximumQuantity;
-
-        await _itemHatcherRepo.UpdateItemHatcher(itemHatcher);
     }
 }
