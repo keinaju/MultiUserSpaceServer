@@ -312,6 +312,28 @@ public class Room
         }
     }
 
+    public async Task<CommandResult> RoomIsFor(Feature feature)
+    {
+        if(RequiredFeatures.Contains(feature))
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"{Name} already has the feature {feature.Name}."
+            );
+        }
+        else
+        {
+            RequiredFeatures.Add(feature);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                $"Feature {feature.Name} has been added to {Name}'s required features."
+            );
+        }
+    }
+
     public async Task SetUniqueName()
     {
         if(await _context.Rooms.AnyAsync(

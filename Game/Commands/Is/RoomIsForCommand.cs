@@ -1,8 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -13,71 +12,53 @@ public class RoomIsForCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^room is for (.+)$");
 
-    private Room CurrentRoom => _player.GetCurrentRoom();
-
     private string FeatureNameInInput =>
     _input.GetGroup(this.Regex, 1);
 
-    private readonly IFeatureRepository _featureRepo;
-    private readonly IGameCommandValidation _validation;
-    private readonly IPlayerState _player;
-    private readonly IResponsePayload _response;
-    private readonly IRoomRepository _roomRepo;
+    private readonly GameContext _context;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
     
     public RoomIsForCommand(
-        IFeatureRepository featureRepo,
-        IGameCommandValidation validation,
-        IPlayerState player,
+        GameContext context,
+        IInputCommand input,
         IResponsePayload response,
-        IRoomRepository roomRepo,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _featureRepo = featureRepo;
-        _validation = validation;
-        _player = player;
-        _response = response;
-        _roomRepo = roomRepo;
+        _context = context;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var feature = await _featureRepo
-        .FindFeature(FeatureNameInInput);
+        _response.AddResult(
+            await RoomIsFor()
+        );
+    }
 
-        if(IsValid(feature))
+    private async Task<CommandResult> RoomIsFor()
+    {
+        var feature = await _context.FindFeature(FeatureNameInInput);
+        if(feature is null)
         {
-            await AddFeatureInRoom(feature!);
-
-            _response.AddText(
-                $"{feature!.Name} was added to {CurrentRoom.Name}."
-            );
+            return CommandResult.FeatureDoesNotExist(FeatureNameInInput);
         }
 
-    }
-
-    private bool IsValid(Feature? feature)
-    {
-        return _validation.UserIsSignedIn()
-        && _validation.CurrentUserIsBuilder()
-        && _validation.CurrentUserHasSelectedBeing()
-        && _validation.FeatureIsNotNull(feature, FeatureNameInInput)
-        && _validation.CurrentRoomDoesNotHaveFeature(feature!, FeatureNameInInput);
-    }
-
-    private async Task AddFeatureInRoom(Feature feature)
-    {
-        CurrentRoom.RequiredFeatures.Add(feature);
-
-        await _roomRepo.UpdateRoom(CurrentRoom);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser.RoomIsFor(feature);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }
