@@ -113,14 +113,14 @@ public class Being
 
     public async Task<CommandResult> BeingNameIs(string beingName)
     {
-        var validationResult = NameSanitation.Validate(beingName);
+        var validationResult = TextSanitation.ValidateName(beingName);
         if(validationResult.GetStatus() == StatusCode.Fail)
         {
             return validationResult;
         }
         else
         {
-            var cleanName = NameSanitation.Clean(beingName);
+            var cleanName = TextSanitation.GetCleanName(beingName);
 
             if(await _context.BeingNameIsReserved(cleanName))
             {

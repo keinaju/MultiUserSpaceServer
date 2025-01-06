@@ -44,14 +44,14 @@ public class SignUpCommand : IGameCommand
 
     private async Task<CommandResult> TrySignUp()
     {
-        var validationResult = NameSanitation.Validate(UsernameInInput);
+        var validationResult = TextSanitation.ValidateName(UsernameInInput);
         if(validationResult.GetStatus() == StatusCode.Fail)
         {
             return validationResult;
         }
         else
         {
-            var cleanName = NameSanitation.Clean(UsernameInInput);
+            var cleanName = TextSanitation.GetCleanName(UsernameInInput);
 
             if(await _context.UsernameIsReserved(cleanName))
             {

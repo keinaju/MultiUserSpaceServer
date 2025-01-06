@@ -1,8 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -13,8 +11,6 @@ public class ItemDescriptionIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^item (.+) description is (.+)$");
@@ -25,46 +21,38 @@ public class ItemDescriptionIsCommand : IGameCommand
     private string DescriptionInInput =>
     _input.GetGroup(this.Regex, 2);
 
-    private readonly IItemRepository _itemRepo;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public ItemDescriptionIsCommand(
-        IItemRepository itemRepo,
+        IInputCommand input,
         IResponsePayload response,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _itemRepo = itemRepo;
-        _response = response;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var item = await _itemRepo.FindItem(ItemNameInInput);
-        if(item is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("item", ItemNameInInput)
-            );
-            return;
-        }
-
-        await SetItemDescription(item);
-
-        _response.AddText(
-            Message.Set(
-                $"{item.Name}'s description",
-                DescriptionInInput
-            )
+        _response.AddResult(
+            await ItemDescriptionIs()
         );
     }
 
-    private async Task SetItemDescription(Item item)
+    private async Task<CommandResult> ItemDescriptionIs()
     {
-        item.Description = DescriptionInInput;
-
-        await _itemRepo.UpdateItem(item);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .ItemDescriptionIs(ItemNameInInput, DescriptionInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

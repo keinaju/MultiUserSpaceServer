@@ -260,6 +260,28 @@ public class User
         return isValid;
     }
 
+    public async Task<CommandResult> ItemDescriptionIs(
+        string itemName, string itemDescription
+    )
+    {
+        if(IsBuilder)
+        {
+            var item = await _context.FindItem(itemName);
+            if(item is not null)
+            {
+                return await item.DescriptionIs(itemDescription);
+            }
+            else
+            {
+                return ItemDoesNotExist(itemName);
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

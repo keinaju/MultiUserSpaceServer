@@ -43,14 +43,14 @@ public class Feature
 
     public async Task<CommandResult> Rename(string newName)
     {
-        var validationResult = NameSanitation.Validate(newName);
+        var validationResult = TextSanitation.ValidateName(newName);
         if(validationResult.GetStatus() == StatusCode.Fail)
         {
             return validationResult;
         }
         else
         {
-            var cleanName = NameSanitation.Clean(newName);
+            var cleanName = TextSanitation.GetCleanName(newName);
 
             if(await _context.FeatureNameIsReserved(cleanName))
             {

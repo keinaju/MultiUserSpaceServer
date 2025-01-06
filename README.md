@@ -57,6 +57,7 @@ To look for details in a room:
 ```
 look
 ```
+
 See more detailed commands in All Commands -section.
 
 ### Beings
