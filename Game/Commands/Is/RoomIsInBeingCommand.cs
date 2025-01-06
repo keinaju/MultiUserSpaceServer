@@ -1,9 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -14,42 +11,39 @@ public class RoomIsInBeingCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^room is inside$");
-
-    private Being SelectedBeing => _player.GetSelectedBeing();
-
-    private Room CurrentRoom => _player.GetCurrentRoom();
-
-    private readonly IBeingRepository _beingRepo;
-    private readonly IPlayerState _player;
+    
     private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public RoomIsInBeingCommand(
-        IBeingRepository beingRepo,
-        IPlayerState player,
-        IResponsePayload response
+        IResponsePayload response,
+        ISessionService session
     )
     {
-        _beingRepo = beingRepo;
-        _player = player;
         _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        SelectedBeing.RoomInside = CurrentRoom;
-        await _beingRepo.UpdateBeing(SelectedBeing);
-
-        _response.AddText(
-            Message.Set(
-                $"{SelectedBeing.Name}'s inside room",
-                CurrentRoom.Name
-            )
+        _response.AddResult(
+            await RoomIsInBeing()
         );
+    }
+
+    private async Task<CommandResult> RoomIsInBeing()
+    {
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .RoomIsInBeing();
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

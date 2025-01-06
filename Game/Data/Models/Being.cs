@@ -283,6 +283,20 @@ public class Being
         Inventory.RemoveItems(item, quantity);
     }
 
+    public async Task<CommandResult> RoomIsInside()
+    {
+        this.RoomInside = this.InRoom;
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set(
+                $"{Name}'s inside room", RoomInside.Name
+            )
+        );
+    }
+
     public async Task SetUniqueName()
     {
         if(await _context.Beings.AnyAsync(
