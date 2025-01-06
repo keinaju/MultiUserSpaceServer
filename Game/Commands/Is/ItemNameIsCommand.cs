@@ -15,7 +15,7 @@ public class ItemNameIsCommand : IGameCommand
         Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^item name (.+) is (.+)$");
+    public Regex Regex => new("^item (.+) name is (.+)$");
 
     private string OldItemNameInInput =>
     _input.GetGroup(this.Regex, 1);

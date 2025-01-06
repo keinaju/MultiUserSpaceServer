@@ -12,7 +12,7 @@ public class FeatureNameIsCommand : IGameCommand
     [
     ];
 
-    public Regex Regex => new("^feature name (.+) is (.+)$");
+    public Regex Regex => new("^feature (.+) name is (.+)$");
 
     private string OldFeatureNameInInput =>
     _input.GetGroup(this.Regex, 1);

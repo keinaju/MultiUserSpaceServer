@@ -16,7 +16,7 @@ public class ItemIsMadeOfCommand : IGameCommand
         Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new(@"^(.+) is made of (\d+) (.+)$");
+    public Regex Regex => new(@"^item (.+) is made of (\d+) (.+)$");
 
     private string ProductNameInInput => _input.GetGroup(this.Regex, 1);
     private string QuantityInInput => _input.GetGroup(this.Regex, 2);

@@ -16,7 +16,7 @@ public class RoomPoolNameIsCommand : IGameCommand
         Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^pool name (.+) is (.+)$");
+    public Regex Regex => new("^pool (.+) name is (.+)$");
 
     private string OldRoomPoolNameInInput =>
     _input.GetGroup(this.Regex, 1);
