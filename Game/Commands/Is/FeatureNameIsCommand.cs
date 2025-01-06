@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -11,8 +10,6 @@ public class FeatureNameIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^feature name (.+) is (.+)$");
@@ -23,73 +20,39 @@ public class FeatureNameIsCommand : IGameCommand
     private string NewFeatureNameInInput =>
     _input.GetGroup(this.Regex, 2);
 
-    private readonly IFeatureRepository _featureRepo;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public FeatureNameIsCommand(
-        IFeatureRepository featureRepo,
+        IInputCommand input,
         IResponsePayload response,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _featureRepo = featureRepo;
-        _response = response;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            Respond();
-            await RenameFeature();
-        }
-    }
-
-    private async Task<bool> IsValid()
-    {
-        var feature = await _featureRepo
-        .FindFeature(OldFeatureNameInInput);
-
-        if(feature is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("feature", OldFeatureNameInInput)
-            );
-            return false;
-        }        
-
-        if(await _featureRepo.FeatureNameIsReserved(
-            NewFeatureNameInInput
-        ))
-        {
-            _response.AddText(
-                Message.ReservedName("feature name", NewFeatureNameInInput)
-            );
-            return false;
-        }
-        
-        return true;
-    }
-
-    private void Respond()
-    {
-        _response.AddText(
-            Message.Renamed(
-                OldFeatureNameInInput,
-                NewFeatureNameInInput
-            )
+        _response.AddResult(
+            await FeatureNameIs()
         );
     }
 
-    private async Task RenameFeature()
+    private async Task<CommandResult> FeatureNameIs()
     {
-        var feature = await _featureRepo
-        .FindFeature(OldFeatureNameInInput);
-
-        feature!.Name = NewFeatureNameInInput;
-
-        await _featureRepo.UpdateFeature(feature);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser.FeatureNameIs(
+                OldFeatureNameInInput, NewFeatureNameInInput
+            );
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

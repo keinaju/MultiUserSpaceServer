@@ -2,6 +2,9 @@ using System;
 using System.ComponentModel.DataAnnotations;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using MUS.Game.Commands;
+using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
@@ -25,14 +28,28 @@ public class Feature
         set => _requiredInRooms = value;
     }
 
+    private readonly GameContext _context;
     private readonly ILazyLoader _lazyLoader;
     private ICollection<Being> _associatedWithBeings;
     private ICollection<Room> _requiredInRooms;
 
     public Feature() {}
 
-    private Feature(ILazyLoader lazyLoader)
+    private Feature(GameContext context, ILazyLoader lazyLoader)
     {
+        _context = context;
         _lazyLoader = lazyLoader;
+    }
+
+    public async Task<CommandResult> Rename(string newName)
+    {
+        var oldName = Name;
+
+        Name = newName;
+
+        await _context.SaveChangesAsync();
+        
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(Message.Renamed(oldName, newName));
     }
 }

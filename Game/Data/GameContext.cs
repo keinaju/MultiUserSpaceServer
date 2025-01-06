@@ -40,41 +40,6 @@ namespace MUS.Game.Data
             );
         }
 
-        public async Task<bool> FeatureNameIsReserved(string featureName)
-        {
-            return await Features.AnyAsync(
-                feature => feature.Name == featureName
-            );
-        }
-
-        public async Task<bool> ItemNameIsReserved(string itemName)
-        {
-            return await Items.AnyAsync(
-                item => item.Name == itemName
-            );
-        }
-
-        public async Task<bool> RoomNameIsReserved(string roomName)
-        {
-            return await Rooms.AnyAsync(
-                room => room.Name == roomName
-            );
-        }
-
-        public async Task<bool> RoomPoolNameIsReserved(string poolName)
-        {
-            return await RoomPools.AnyAsync(
-                pool => pool.Name == poolName
-            );
-        }
-
-        public async Task<bool> UsernameIsReserved(string username)
-        {
-            return await Users.AnyAsync(
-                user => user.Username == username
-            );
-        }
-
         public async Task<CommandResult> CreateUser(User user)
         {
             await Users.AddAsync(user);
@@ -171,6 +136,13 @@ namespace MUS.Game.Data
             }
         }
 
+        public async Task<bool> FeatureNameIsReserved(string featureName)
+        {
+            return await Features.AnyAsync(
+                feature => feature.Name == featureName
+            );
+        }
+
         public async Task<Being?> FindBeing(string beingName)
         {
             return await Beings.SingleOrDefaultAsync(
@@ -203,6 +175,34 @@ namespace MUS.Game.Data
         {
             return await RoomPools.SingleOrDefaultAsync(
                 pool => pool.Name == poolName
+            );
+        }
+
+        public async Task<bool> ItemNameIsReserved(string itemName)
+        {
+            return await Items.AnyAsync(
+                item => item.Name == itemName
+            );
+        }
+        
+        public async Task<bool> RoomNameIsReserved(string roomName)
+        {
+            return await Rooms.AnyAsync(
+                room => room.Name == roomName
+            );
+        }
+
+        public async Task<bool> RoomPoolNameIsReserved(string poolName)
+        {
+            return await RoomPools.AnyAsync(
+                pool => pool.Name == poolName
+            );
+        }
+
+        public async Task<bool> UsernameIsReserved(string username)
+        {
+            return await Users.AnyAsync(
+                user => user.Username == username
             );
         }
     }
