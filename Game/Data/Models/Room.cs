@@ -212,6 +212,48 @@ public class Room
         return leads;
     }
 
+    public async Task<CommandResult> ItemHatcherIntervalIs(
+        string itemName, string intervalInput
+    )
+    {
+        bool ok = int.TryParse(intervalInput, out int interval);
+        if(!ok || interval < 1)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.Invalid(intervalInput, "interval"));
+        }
+
+        var item = await _context.FindItem(itemName);
+        if(item is not null)
+        {
+            var hatcher = Inventory.ItemHatchers.SingleOrDefault(
+                hatcher => hatcher.Item == item
+            );
+            if(hatcher is not null)
+            {
+                hatcher.IntervalInTicks = interval;
+
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(
+                    Message.Set($"item hatcher", hatcher.Show())
+                );
+            }
+            else
+            {
+                return new CommandResult(StatusCode.Fail)
+                .AddMessage(
+                    $"{Name} has not subscribed to {item.Name} item hatcher."
+                );
+            }
+        }
+        else
+        {
+            return ItemDoesNotExist(itemName);
+        }
+    }
+
     public async Task SetUniqueName()
     {
         if(await _context.Rooms.AnyAsync(

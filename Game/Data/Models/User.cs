@@ -282,6 +282,28 @@ public class User
         }
     }
 
+    public async Task<CommandResult> ItemHatcherIntervalIs(
+        string itemName, string interval
+    )
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await SelectedBeing.InRoom
+                .ItemHatcherIntervalIs(itemName, interval);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(
