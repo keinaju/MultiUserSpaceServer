@@ -354,6 +354,26 @@ public class User
         }
     }
 
+    public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await SelectedBeing.InRoom
+                .RoomDescriptionIs(roomDescription);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

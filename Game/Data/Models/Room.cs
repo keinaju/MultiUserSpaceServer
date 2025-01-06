@@ -212,6 +212,21 @@ public class Room
         return leads;
     }
 
+    public bool HasAccessTo(Room destination)
+    {
+        if(destination.GlobalAccess)
+        {
+            return true;
+        }
+
+        if(GetLeadsToRooms().Contains(destination))
+        {
+            return true;
+        }
+
+        return false;
+    }
+
     public async Task<CommandResult> ItemHatcherIntervalIs(
         Item item, int interval
     )
@@ -270,6 +285,33 @@ public class Room
         }
     }
 
+    public async Task<CommandResult> RoomDescriptionIs(
+        string roomDescription
+    )
+    {
+        var validationResult = TextSanitation
+        .ValidateDescription(roomDescription);
+
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanDescription = TextSanitation
+            .GetCleanDescription(roomDescription);
+
+            Description = cleanDescription;
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Set($"{Name}'s description", cleanDescription)
+            );
+        }
+    }
+
     public async Task SetUniqueName()
     {
         if(await _context.Rooms.AnyAsync(
@@ -278,21 +320,6 @@ public class Room
         {
             this.Name += StringUtilities.GetRandomCharacter();
         }
-    }
-
-    public bool HasAccessTo(Room destination)
-    {
-        if(destination.GlobalAccess)
-        {
-            return true;
-        }
-
-        if(GetLeadsToRooms().Contains(destination))
-        {
-            return true;
-        }
-
-        return false;
     }
 
     public List<string> Show()
