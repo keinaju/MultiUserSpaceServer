@@ -1,11 +1,13 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
 
 namespace MUS.Game.Data.Models;
 
+[Index(nameof(Name))]
 public class RoomPool
 {
     [Key]

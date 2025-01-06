@@ -1,9 +1,11 @@
 using System;
 using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 
 namespace MUS.Game.Data.Models;
 
+[Index(nameof(Name))]
 public class Feature
 {
     [Key]

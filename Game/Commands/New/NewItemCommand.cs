@@ -45,7 +45,7 @@ public class NewItemCommand : IGameCommand
             new Item()
             {
                 Name = await _itemRepo.GetUniqueItemName("item #"),
-                Deployment = null,
+                DeploymentPrototype = null,
                 Description = null,
                 CraftPlan = null
             }

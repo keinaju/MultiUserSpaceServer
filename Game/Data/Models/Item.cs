@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
 using MUS.Game.Utilities;
@@ -6,6 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
+[Index(nameof(Name))]
 public class Item
 {
     [Key]
@@ -24,17 +26,18 @@ public class Item
         set => _craftPlan = value;
     }
 
-    public required Deployment? Deployment
+    public int? DeploymentPrototypePrimaryKey { get; set; }
+    public required Being? DeploymentPrototype
     {
-        get => _lazyLoader.Load(this, ref _deployment);
-        set => _deployment = value;
+        get => _lazyLoader.Load(this, ref _deploymentPrototype);
+        set => _deploymentPrototype = value;
     }
 
     private readonly GameContext _context;
     private readonly ILazyLoader _lazyLoader;
 
     private CraftPlan? _craftPlan;
-    private Deployment? _deployment;
+    private Being? _deploymentPrototype;
 
     public Item() {}
 
@@ -46,7 +49,7 @@ public class Item
 
     public async Task<CommandResult> Deploy(Being being)
     {
-        if(Deployment is null)
+        if(DeploymentPrototype is null)
         {
             return new CommandResult(StatusCode.Fail)
             .AddMessage($"{Name} is not a deployable item.");
@@ -54,7 +57,7 @@ public class Item
         else
         {
             var clone = await being
-            .CreateDeployedBeing(Deployment.Prototype);
+            .CreateDeployedBeing(DeploymentPrototype);
 
             being.RemoveItems(1, this);
 
@@ -82,7 +85,7 @@ public class Item
 
     public bool IsDeployable()
     {
-        if(Deployment is null)
+        if(DeploymentPrototype is null)
         {
             return false;
         }
@@ -145,7 +148,7 @@ public class Item
 
     private string GetDeploymentText()
     {
-        if(Deployment is null)
+        if(DeploymentPrototype is null)
         {
             return $"{Name} is not deployable.";
         }

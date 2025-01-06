@@ -14,21 +14,18 @@ public class GameCommandValidation : IGameCommandValidation
 
     private Room? CurrentRoom => CurrentBeing?.InRoom;
 
-    private readonly IDeploymentRepository _deployRepo;
     private readonly IFeatureRepository _featureRepo;
     private readonly IResponsePayload _response;
     private readonly IRoomRepository _roomRepo;
     private readonly ISessionService _session;
 
     public GameCommandValidation(
-        IDeploymentRepository deployRepo,
         IFeatureRepository featureRepo,
         IResponsePayload response,
         IRoomRepository roomRepo,
         ISessionService session
     )
     {
-        _deployRepo = deployRepo;
         _featureRepo = featureRepo;
         _response = response;
         _roomRepo = roomRepo;
@@ -265,7 +262,7 @@ public class GameCommandValidation : IGameCommandValidation
 
     public bool ItemHasDeployment(Item item)
     {
-        if(item.Deployment is null)
+        if(item.DeploymentPrototype is null)
         {
             _response.AddText(
                 $"{item.Name} is not a deployable item."

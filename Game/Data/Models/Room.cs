@@ -8,6 +8,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Data.Models;
 
+[Index(nameof(Name))]
 public class Room
 {
     [Key]

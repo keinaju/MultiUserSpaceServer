@@ -1,89 +1,88 @@
-using System;
-using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+// using System;
+// using System.Text.RegularExpressions;
+// using MUS.Game.Data;
+// using MUS.Game.Data.Models;
+// using MUS.Game.Data.Repositories;
+// using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands.New;
+// namespace MUS.Game.Commands.New;
 
-public class NewDeploymentCommand : IGameCommand
-{
-    public string HelpText =>
-    "Creates a new deployment from the current being to an item.";
+// public class NewDeploymentCommand : IGameCommand
+// {
+//     public string HelpText =>
+//     "Creates a new deployment from the current being to an item.";
 
-    public Condition[] Conditions =>
-    [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
-    ];
+//     public Condition[] Conditions =>
+//     [
+//         Condition.UserIsSignedIn,
+//         Condition.UserIsBuilder,
+//         Condition.UserHasSelectedBeing
+//     ];
 
-    private string ItemNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+//     private string ItemNameInInput =>
+//     _input.GetGroup(this.Regex, 1);
 
-    public Regex Regex => new("^new deploy (.+)$");
+//     public Regex Regex => new("^new deploy (.+)$");
 
-    private Being CurrentBeing => _player.GetSelectedBeing();
+//     private Being CurrentBeing => _player.GetSelectedBeing();
 
-    private readonly IDeploymentRepository _deployRepo;
-    private readonly IItemRepository _itemRepo;
-    private readonly IPlayerState _player;
-    private readonly IResponsePayload _response;
-    private readonly IInputCommand _input;
+//     private readonly IItemRepository _itemRepo;
+//     private readonly IPlayerState _player;
+//     private readonly IResponsePayload _response;
+//     private readonly IInputCommand _input;
 
-    public NewDeploymentCommand(
-        IDeploymentRepository deployRepo,
-        IItemRepository itemRepo,
-        IPlayerState player,
-        IResponsePayload response,
-        IInputCommand input
-    )
-    {
-        _deployRepo = deployRepo;
-        _itemRepo = itemRepo;
-        _player = player;
-        _response = response;
-        _input = input;
-    }
+//     public NewDeploymentCommand(
+//         IDeploymentRepository deployRepo,
+//         IItemRepository itemRepo,
+//         IPlayerState player,
+//         IResponsePayload response,
+//         IInputCommand input
+//     )
+//     {
+//         _deployRepo = deployRepo;
+//         _itemRepo = itemRepo;
+//         _player = player;
+//         _response = response;
+//         _input = input;
+//     }
 
-    public async Task Run()
-    {
-        var item = await _itemRepo.FindItem(ItemNameInInput);
-        if(item is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("Item", ItemNameInInput)
-            );
-            return;
-        }
+//     public async Task Run()
+//     {
+//         var item = await _itemRepo.FindItem(ItemNameInInput);
+//         if(item is null)
+//         {
+//             _response.AddText(
+//                 Message.DoesNotExist("Item", ItemNameInInput)
+//             );
+//             return;
+//         }
 
-        var deploy = await _deployRepo.FindDeploymentByItem(item);
-        if(deploy is not null)
-        {
-            _response.AddText(
-                $"{item.Name} already has a deployment to {deploy.Prototype.Name}."
-            );
-            return;
-        }
+//         var deploy = await _deployRepo.FindDeploymentByItem(item);
+//         if(deploy is not null)
+//         {
+//             _response.AddText(
+//                 $"{item.Name} already has a deployment to {deploy.Prototype.Name}."
+//             );
+//             return;
+//         }
 
-        await CreateDeployment(item);
+//         await CreateDeployment(item);
 
-        _response.AddText(
-            Message.Created(
-                $"deployment from {item.Name} to {CurrentBeing.Name}"
-            )
-        );
-    }
+//         _response.AddText(
+//             Message.Created(
+//                 $"deployment from {item.Name} to {CurrentBeing.Name}"
+//             )
+//         );
+//     }
 
-    private async Task CreateDeployment(Item item)
-    {
-        await _deployRepo.CreateDeployment(
-            new Deployment()
-            {
-                Item = item,
-                Prototype = CurrentBeing
-            }
-        );
-    }
-}
+//     private async Task CreateDeployment(Item item)
+//     {
+//         await _deployRepo.CreateDeployment(
+//             new Deployment()
+//             {
+//                 Item = item,
+//                 Prototype = CurrentBeing
+//             }
+//         );
+//     }
+// }
