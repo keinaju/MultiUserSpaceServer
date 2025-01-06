@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
 using MUS.Game.Utilities;
 using static MUS.Game.Commands.CommandResult;
@@ -14,8 +13,6 @@ public class ItemIsMadeOfCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        // Condition.UserIsSignedIn,
-        // Condition.UserIsBuilder
     ];
 
     public Regex Regex => new(@"^item (.+) is made of (\d+) (.+)$");
@@ -27,23 +24,20 @@ public class ItemIsMadeOfCommand : IGameCommand
     private string ComponentNameInInput => _input.GetGroup(this.Regex, 3);
 
     private readonly GameContext _context;
-    private readonly IItemRepository _itemRepo;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ItemIsMadeOfCommand(
         GameContext context,
-        IItemRepository itemRepo,
-        IResponsePayload response,
         IInputCommand input,
+        IResponsePayload response,
         ISessionService session
     )
     {
         _context = context;
-        _itemRepo = itemRepo;
-        _response = response;
         _input = input;
+        _response = response;
         _session = session;
     }
 
