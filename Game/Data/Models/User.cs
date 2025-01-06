@@ -326,6 +326,20 @@ public class User
         }
     }
 
+    public async Task<CommandResult> ItemIsMadeOf(
+        Item product, Item component, int quantity
+    )
+    {
+        if(IsBuilder)
+        {
+            return await product.SetComponent(component, quantity);
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

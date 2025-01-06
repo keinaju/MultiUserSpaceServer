@@ -120,7 +120,7 @@ public class Item
         }
     }
 
-    public void SetComponent(Item item, int quantity)
+    public async Task<CommandResult> SetComponent(Item item, int quantity)
     {
         if(CraftPlan is null)
         {
@@ -132,6 +132,11 @@ public class Item
         }
 
         CraftPlan.SetComponent(item, quantity);
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage($"{Name} is now made of {CraftPlan.MadeOf()}.");
     }
 
     public List<string> Show()
@@ -175,11 +180,11 @@ public class Item
     {
         if(DeploymentPrototype is null)
         {
-            return $"{Name} is not deployable.";
+            return $"{Name} is not a deployable item.";
         }
         else
         {
-            return $"{Name} can be deployed.";
+            return $"{Name} is a deployable item.";
         }
     }
 }

@@ -1,8 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
+using MUS.Game.Data;
 using MUS.Game.Data.Repositories;
+using MUS.Game.Session;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Is;
 
@@ -12,87 +14,84 @@ public class ItemIsMadeOfCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
+        // Condition.UserIsSignedIn,
+        // Condition.UserIsBuilder
     ];
 
     public Regex Regex => new(@"^item (.+) is made of (\d+) (.+)$");
 
     private string ProductNameInInput => _input.GetGroup(this.Regex, 1);
+
     private string QuantityInInput => _input.GetGroup(this.Regex, 2);
+
     private string ComponentNameInInput => _input.GetGroup(this.Regex, 3);
 
+    private readonly GameContext _context;
     private readonly IItemRepository _itemRepo;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly ISessionService _session;
 
     public ItemIsMadeOfCommand(
+        GameContext context,
         IItemRepository itemRepo,
         IResponsePayload response,
-        IInputCommand input
+        IInputCommand input,
+        ISessionService session
     )
     {
+        _context = context;
         _itemRepo = itemRepo;
         _response = response;
         _input = input;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var component = await _itemRepo.FindItem(ComponentNameInInput);
-        if(component is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("item", ComponentNameInInput)
-            );
-            return;
-        }
-
-        var product = await _itemRepo.FindItem(ProductNameInInput);
-        if(product is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("item", ProductNameInInput)
-            );
-            return;
-        }
-
-        if(component == product)
-        {
-            _response.AddText(
-                "Component and product can not be the same item."
-            );
-            return;
-        }
-
-        // Validate quantity
-        bool success = int.TryParse(
-            QuantityInInput,
-            out int quantity
+        _response.AddResult(
+            await ItemIsMadeOf()
         );
+    }
+
+    private async Task<CommandResult> ItemIsMadeOf()
+    {        
+        bool success = int.TryParse(QuantityInInput, out int quantity);
         if(!success || quantity < 0)
         {
             _response.AddText(
                 Message.Invalid(QuantityInInput, "quantity")
             );
-            return;
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.Invalid(QuantityInInput, "quantity"));
         }
 
-        await SetComponent(product, component, quantity);
+        var product = await _context.FindItem(ProductNameInInput);
+        if(product is null)
+        {
+            return ItemDoesNotExist(ProductNameInInput);
+        }
 
-        _response.AddText(
-            $"{Message.Quantity(component.Name, quantity)} was set to {product.Name}'s craft plan."
-        );
-    }
+        var component = await _context.FindItem(ComponentNameInInput);
+        if(component is null)
+        {
+            return ItemDoesNotExist(ComponentNameInInput);
+        }
 
-    private async Task SetComponent(
-        Item product,
-        Item component,
-        int quantity
-    )
-    {
-        product.SetComponent(component, quantity);
+        if(product == component)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage("Component and product can not be the same item.");
+        }
 
-        await _itemRepo.UpdateItem(product);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .ItemIsMadeOf(product, component, quantity);
+        }
+        else
+        {
+            return UserIsNotSignedIn();
+        }
     }
 }

@@ -73,11 +73,11 @@ public class CraftPlan
         }
     }
 
-    public string? MadeOf()
+    public string MadeOf()
     {
         if(Components.Count == 0)
         {
-            return null;
+            return "no items";
         }
 
         var componentQuantities = new List<string>();
