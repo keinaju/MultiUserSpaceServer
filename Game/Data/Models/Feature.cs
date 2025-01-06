@@ -43,13 +43,30 @@ public class Feature
 
     public async Task<CommandResult> Rename(string newName)
     {
-        var oldName = Name;
+        var validationResult = NameSanitation.Validate(newName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanName = NameSanitation.Clean(newName);
 
-        Name = newName;
+            if(await _context.FeatureNameIsReserved(cleanName))
+            {
+                return NameIsReserved("feature", cleanName);
+            }
+            else
+            {
+                var message = Message.Renamed(Name, cleanName);
 
-        await _context.SaveChangesAsync();
-        
-        return new CommandResult(StatusCode.Success)
-        .AddMessage(Message.Renamed(oldName, newName));
+                Name = cleanName;
+
+                await _context.SaveChangesAsync();
+                
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(message);
+            }
+        }
     }
 }

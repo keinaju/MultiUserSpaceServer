@@ -212,24 +212,7 @@ public class User
         var feature = await _context.FindFeature(oldFeatureName);
         if(feature is not null)
         {
-            var validationResult = NameSanitation.Validate(newFeatureName);
-            if(validationResult.GetStatus() == StatusCode.Fail)
-            {
-                return validationResult;
-            }
-            else
-            {
-                var cleanName = NameSanitation.Clean(newFeatureName);
-
-                if(await _context.FeatureNameIsReserved(cleanName))
-                {
-                    return NameIsReserved("feature", cleanName);
-                }
-                else
-                {
-                    return await feature.Rename(cleanName);
-                }
-            }
+            return await feature.Rename(newFeatureName);
         }
         else
         {
