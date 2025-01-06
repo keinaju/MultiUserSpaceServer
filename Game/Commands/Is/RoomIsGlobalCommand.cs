@@ -1,9 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -14,55 +11,46 @@ public class RoomIsGlobalCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^room (is|is not) global$");
 
-    private string IsOrIsNotInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string WordInInput => _input.GetGroup(this.Regex, 1);
 
-    private bool TrueOrFalse =>
-    IsOrIsNotInInput == "is" ? true : false;
+    private bool NewValue => WordInInput == "is" ? true : false;
 
-    private Room CurrentRoom => _player.GetCurrentRoom();
-
-    private readonly IPlayerState _player;
-    private readonly IResponsePayload _response;
-    private readonly IRoomRepository _roomRepo;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public RoomIsGlobalCommand(
-        IPlayerState player,
+        IInputCommand input,
         IResponsePayload response,
-        IRoomRepository roomRepo,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _player = player;
-        _response = response;        
-        _roomRepo = roomRepo;        
-        _input = input;        
+        _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        await SetRoomGlobalAccess();
-
-        _response.AddText(
-            Message.Set(
-                $"{CurrentRoom.Name}'s global access",
-                TrueOrFalse.ToString()
-            )
+        _response.AddResult(
+            await RoomIsGlobal()
         );
     }
 
-    private async Task SetRoomGlobalAccess()
+    private async Task<CommandResult> RoomIsGlobal()
     {
-        CurrentRoom.GlobalAccess = TrueOrFalse;
-
-        await _roomRepo.UpdateRoom(CurrentRoom);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .RoomIsGlobal(NewValue);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

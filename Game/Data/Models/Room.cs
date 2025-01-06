@@ -334,6 +334,21 @@ public class Room
         }
     }
 
+    public async Task<CommandResult> RoomIsGlobal(bool newValue)
+    {
+        GlobalAccess = newValue;
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set(
+                $"{Name}'s global access",
+                newValue.ToString().ToUpper()
+            )
+        );
+    }
+
     public async Task SetUniqueName()
     {
         if(await _context.Rooms.AnyAsync(
