@@ -1,8 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Data;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -13,8 +12,6 @@ public class RoomPoolDescriptionIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex =>
@@ -26,51 +23,45 @@ public class RoomPoolDescriptionIsCommand : IGameCommand
     private string RoomPoolDescriptionInInput =>
     _input.GetGroup(this.Regex, 2);
 
-    private readonly IResponsePayload _response;
-    private readonly IRoomPoolRepository _roomPoolRepo;
+    private readonly GameContext _context;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public RoomPoolDescriptionIsCommand(
+        GameContext context,
+        IInputCommand input,
         IResponsePayload response,
-        IRoomPoolRepository roomPoolRepo,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _response = response;
-        _roomPoolRepo = roomPoolRepo;
+        _context = context;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(RoomPoolNameInInput);
-        if(roomPool is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist(
-                    "room pool",
-                    RoomPoolNameInInput
-                )
-            );
-
-            return;
-        }
-
-        await SetRoomPoolDescription(roomPool);
-
-        _response.AddText(
-            Message.Set(
-                $"{roomPool.Name}'s description",
-                RoomPoolDescriptionInInput
-            )
+        _response.AddResult(
+            await RoomPoolDescriptionIs()
         );
     }
 
-    private async Task SetRoomPoolDescription(RoomPool roomPool)
+    private async Task<CommandResult> RoomPoolDescriptionIs()
     {
-        roomPool.Description = RoomPoolDescriptionInInput;
+        var pool = await _context.FindRoomPool(RoomPoolNameInInput);
+        if(pool is null)
+        {
+            return CommandResult.RoomPoolDoesNotExist(RoomPoolNameInInput);
+        }
 
-        await _roomPoolRepo.UpdateRoomPool(roomPool);
+        if(_session.AuthenticatedUser is null)
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
+
+        return await _session.AuthenticatedUser
+        .RoomPoolDescriptionIs(pool, RoomPoolDescriptionInInput);
     }
 }

@@ -474,6 +474,20 @@ public class User
         }
     }
 
+    public async Task<CommandResult> RoomPoolDescriptionIs(
+        RoomPool pool, string poolDescription
+    )
+    {
+        if(IsBuilder)
+        {
+            return await pool.SetDescription(poolDescription);
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

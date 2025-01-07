@@ -123,6 +123,31 @@ public class RoomPool
         }
     }
 
+    public async Task<CommandResult> SetDescription(string poolDescription)
+    {
+        var validationResult = TextSanitation
+        .ValidateDescription(poolDescription);
+
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanDescription = TextSanitation
+            .GetCleanDescription(poolDescription);
+
+            this.Description = cleanDescription;
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Set($"{Name}'s description", cleanDescription)
+            );
+        }
+    }
+
     public bool HasRoom(Room room)
     {
         return Prototypes.Contains(room);
