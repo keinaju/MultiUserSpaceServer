@@ -19,7 +19,6 @@ public class RoomIsInRoomPoolCommand : IGameCommand
     private string RoomPoolNameInInput =>
     _input.GetGroup(this.Regex, 1);
 
-
     private readonly GameContext _context;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;

@@ -1,9 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -13,9 +10,6 @@ public class RoomNameIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^room name is (.+)$");
@@ -23,59 +17,38 @@ public class RoomNameIsCommand : IGameCommand
     private string NewNameInInput =>
     _input.GetGroup(this.Regex, 1);
 
-    private Room CurrentRoom => _player.GetCurrentRoom();
-
-    private readonly IPlayerState _player;
-    private readonly IResponsePayload _response;
-    private readonly IRoomRepository _roomRepo;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public RoomNameIsCommand(
-        IPlayerState player,
+        IInputCommand input,
         IResponsePayload response,
-        IRoomRepository roomRepo,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _player = player;
-        _response = response;
-        _roomRepo = roomRepo;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            Respond();
-            await RenameRoom();
-        }
-    }
-
-    private async Task<bool> IsValid()
-    {
-        if(await _roomRepo.RoomNameIsReserved(NewNameInInput))
-        {
-            _response.AddText(
-                Message.ReservedName("room name", NewNameInInput)
-            );
-            return false;
-        }
-
-        return true;
-    }
-
-    private void Respond()
-    {
-        _response.AddText(
-            Message.Renamed(CurrentRoom.Name, NewNameInInput)
+        _response.AddResult(
+            await RoomNameIs()
         );
     }
 
-    private async Task RenameRoom()
+    private async Task<CommandResult> RoomNameIs()
     {
-        CurrentRoom.Name = NewNameInInput;
-
-        await _roomRepo.UpdateRoom(CurrentRoom);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .RoomNameIs(NewNameInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

@@ -285,6 +285,34 @@ public class Room
         }
     }
 
+    public async Task<CommandResult> Rename(string newName)
+    {
+        var validationResult = TextSanitation.ValidateName(newName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanName = TextSanitation.GetCleanName(newName);
+            if(await _context.RoomNameIsReserved(cleanName))
+            {
+                return NameIsReserved("room", cleanName);
+            }
+            else
+            {
+                var message = Message.Renamed(Name, cleanName);
+
+                Name = cleanName;
+
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(message);
+            }
+        }
+    }
+
     public async Task<CommandResult> RoomDescriptionIs(
         string roomDescription
     )
