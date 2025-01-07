@@ -1,8 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Data;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -12,88 +11,59 @@ public class RoomPoolFeeIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^pool (.+) fee is (.+)$");
 
-    private string RoomPoolNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string RoomPoolNameInInput => _input.GetGroup(this.Regex, 1);
 
-    private string ItemNameInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string ItemNameInInput => _input.GetGroup(this.Regex, 2);
 
-    private readonly IItemRepository _itemRepo;
-    private readonly IResponsePayload _response;
-    private readonly IRoomPoolRepository _roomPoolRepo;
+    private readonly GameContext _context;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public RoomPoolFeeIsCommand(
-        IItemRepository itemRepo,
+        GameContext context,
+        IInputCommand input,
         IResponsePayload response,
-        IRoomPoolRepository roomPoolRepo,
-        IInputCommand input
+        ISessionService session
     )
     {
-        _itemRepo = itemRepo;
-        _response = response;
-        _roomPoolRepo = roomPoolRepo;
+        _context = context;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            await SetRoomPoolFeeItem();
-        }
-    }
-
-    private async Task<bool> IsValid()
-    {
-        if(await GetRoomPool() is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("room pool", RoomPoolNameInInput)
-            );
-            return false;
-        }
-
-        if(await GetItem() is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("item", ItemNameInInput)
-            );
-            return false;
-        }
-
-        return true;
-    }
-
-    private async Task SetRoomPoolFeeItem()
-    {
-        var roomPool = await GetRoomPool();
-
-        roomPool!.FeeItem = await GetItem();
-
-        await _roomPoolRepo.UpdateRoomPool(roomPool);
-
-        _response.AddText(
-            Message.Set(
-                $"{roomPool.Name}'s fee item",
-                roomPool.FeeItem!.Name
-            )
+        _response.AddResult(
+            await RoomPoolFeeIs()
         );
     }
 
-    private async Task<RoomPool?> GetRoomPool()
+    private async Task<CommandResult> RoomPoolFeeIs()
     {
-        return await _roomPoolRepo.FindRoomPool(RoomPoolNameInInput);
-    }
+        var pool = await _context.FindRoomPool(RoomPoolNameInInput);
+        if(pool is null)
+        {
+            return CommandResult.RoomPoolDoesNotExist(RoomPoolNameInInput);
+        }
+        
+        var item = await _context.FindItem(ItemNameInInput);
+        if(item is null)
+        {
+            return CommandResult.ItemDoesNotExist(ItemNameInInput);
+        }
 
-    private async Task<Item?> GetItem()
-    {
-        return await _itemRepo.FindItem(ItemNameInInput);
+        if(_session.AuthenticatedUser is null)
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
+
+        return await _session.AuthenticatedUser
+        .RoomPoolFeeIs(pool, item);
     }
 }

@@ -123,6 +123,22 @@ public class RoomPool
         }
     }
 
+    public bool HasRoom(Room room)
+    {
+        return Prototypes.Contains(room);
+    }
+
+    public ICollection<string> GetDetails()
+    {
+        return new List<string>
+        {
+            GetDescriptionText(),
+            GetFeeItemText(),
+            GetPrototypesText(),
+            GetCuriosityCountText()
+        };
+    }
+
     public async Task<CommandResult> SetDescription(string poolDescription)
     {
         var validationResult = TextSanitation
@@ -148,20 +164,16 @@ public class RoomPool
         }
     }
 
-    public bool HasRoom(Room room)
+    public async Task<CommandResult> SetFeeItem(Item item)
     {
-        return Prototypes.Contains(room);
-    }
+        this.FeeItem = item;
 
-    public ICollection<string> GetDetails()
-    {
-        return new List<string>
-        {
-            GetDescriptionText(),
-            GetFeeItemText(),
-            GetPrototypesText(),
-            GetCuriosityCountText()
-        };
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set($"{Name}'s fee item", item.Name)
+        );
     }
 
     public string Show()
