@@ -300,6 +300,13 @@ namespace MUS.Game.Data
             return await Features.ToListAsync();
         }
 
+        public async Task<ICollection<Room>> FindAllGlobalRooms()
+        {
+            return await Rooms.Where(
+                room => room.GlobalAccess == true
+            ).ToListAsync();
+        }
+
         public async Task<bool> FeatureNameIsReserved(string featureName)
         {
             return await Features.AnyAsync(

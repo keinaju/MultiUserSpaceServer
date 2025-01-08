@@ -1,8 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
@@ -14,29 +15,39 @@ public class ShowGlobalRoomsCommand : IGameCommand
 
     public Regex Regex => new("^(show|s) global rooms$");
 
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
-    private readonly IRoomRepository _roomRepo;
 
     public ShowGlobalRoomsCommand(
-        IResponsePayload response,
-        IRoomRepository roomRepo
+        GameContext context,
+        IResponsePayload response
     )
     {
+        _context = context;
         _response = response;
-        _roomRepo = roomRepo;
     }
 
     public async Task Run()
     {
-        var rooms = await _roomRepo.FindGlobalRooms();
+        _response.AddResult(
+            await ShowGlobalRooms()
+        );
+    }
 
-        if(rooms.Count == 0)
+    private async Task<CommandResult> ShowGlobalRooms()
+    {
+        var globalRooms = await _context.FindAllGlobalRooms();
+
+        if(globalRooms.Count == 0)
         {
-            _response.AddText("There are no global rooms.");
-            return;
+            return new CommandResult(StatusCode.Success)
+            .AddMessage("There are no global rooms.");
         }
-
-        _response.AddText($"All global rooms are: {GetRoomNames(rooms)}.");
+        else
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"All global rooms are: {GetRoomNames(globalRooms)}.");
+        }
     }
 
     private string GetRoomNames(IEnumerable<Room> rooms)

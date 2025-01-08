@@ -27,18 +27,20 @@ public class ShowBeingCommand : IGameCommand
         _session = session;
     }
 
-    public async Task Run()
+    public Task Run()
     {
         _response.AddResult(
-            await ShowBeing()
+            ShowBeing()
         );
+
+        return Task.CompletedTask;
     }
 
-    private async Task<CommandResult> ShowBeing()
+    private CommandResult ShowBeing()
     {
-        if(_session.AuthenticatedUser is not null)
+        if (_session.AuthenticatedUser is not null)
         {
-            return await _session.AuthenticatedUser.ShowBeing();
+            return _session.AuthenticatedUser.ShowBeing();
         }
         else
         {

@@ -327,6 +327,16 @@ public class Being
         return new CommandResult(StatusCode.Success)
         .AddMessages(this.GetDetails());
     }
+
+    public CommandResult ShowInventory()
+    {
+        var content = this.Inventory.Contents();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            $"{Name} has {(content is null ? "no items" : content)}."
+        );
+    }
     
     public async Task<CommandResult> TakeItemFromRoom(string itemName)
     {

@@ -220,14 +220,14 @@ public class Room
         }
         texts.Add(GetBeingsText());
         texts.Add(GetLeadsToText());
-        texts.Add(GetCuriosityText());
         if(GlobalAccess)
         {
             texts.Add($"{Name} can be accessed globally.");
         }
+        texts.Add(GetFeaturesText());
         texts.Add(GetInventoryText());
         texts.Add(GetItemHatchersText());
-        texts.Add(GetFeaturesText());
+        texts.Add(GetCuriosityText());
 
         return texts;
     }

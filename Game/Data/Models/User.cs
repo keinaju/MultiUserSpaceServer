@@ -701,11 +701,23 @@ public class User
         }
     }
 
-    public async Task<CommandResult> ShowBeing()
+    public CommandResult ShowBeing()
+    {
+        if (SelectedBeing is not null)
+        {
+            return SelectedBeing.Show();
+        }
+        else
+        {
+            return UserHasNotSelectedBeing();
+        }
+    }
+
+    public CommandResult ShowInventory()
     {
         if(SelectedBeing is not null)
         {
-            return SelectedBeing.Show();
+            return SelectedBeing.ShowInventory();
         }
         else
         {

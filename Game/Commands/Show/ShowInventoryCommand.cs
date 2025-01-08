@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Show;
 
@@ -12,42 +11,40 @@ public class ShowInventoryCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^(show|s) (inventory|i)$");
 
-    private string BeingName =>
-    _player.GetSelectedBeing().Name;
-
-    private string? InventoryContents =>
-    _player.GetSelectedBeing().Inventory.Contents();
-
-    private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public ShowInventoryCommand(
-        IPlayerState player,
-        IResponsePayload response
+        IResponsePayload response,
+        ISessionService session
     )
     {
-        _player = player;
         _response = response;
+        _session = session;
     }
 
     public Task Run()
     {
-        _response.AddText(
-            $"{BeingName} has: {GetInventoryText()}."
+        _response.AddResult(
+            ShowInventory()
         );
 
         return Task.CompletedTask;
     }
 
-    private string GetInventoryText()
+    private CommandResult ShowInventory()
     {
-        return InventoryContents is null ?
-        "no items" : InventoryContents;
+        if(_session.AuthenticatedUser is not null)
+        {
+            return _session.AuthenticatedUser.ShowInventory();
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }
