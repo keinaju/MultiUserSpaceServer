@@ -1,17 +1,14 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
-using MUS.Game.Utilities;
 
-namespace MUS.Game.Commands.New;
+namespace MUS.Game.Commands.Is;
 
-public class NewDeploymentCommand : IGameCommand
+public class DeploymentIsCommand : IGameCommand
 {
     public string HelpText =>
-    "Creates a new deployment from the current being to an item.";
+    "Sets the deployment of an item to the current being.";
 
     public Condition[] Conditions =>
     [
@@ -19,14 +16,14 @@ public class NewDeploymentCommand : IGameCommand
 
     private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
 
-    public Regex Regex => new("^new deploy (.+)$");
+    public Regex Regex => new("^item (.+) deploy is this$");
 
     private readonly GameContext _context;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
     private readonly ISessionService _session;
 
-    public NewDeploymentCommand(
+    public DeploymentIsCommand(
         GameContext context,
         IResponsePayload response,
         IInputCommand input,
@@ -42,11 +39,11 @@ public class NewDeploymentCommand : IGameCommand
     public async Task Run()
     {
         _response.AddResult(
-            await NewDeployment()
+            await DeploymentIs()
         );
     }
 
-    private async Task<CommandResult> NewDeployment()
+    private async Task<CommandResult> DeploymentIs()
     {
         var item = await _context.FindItem(ItemNameInInput);
         if(item is null)
@@ -59,6 +56,6 @@ public class NewDeploymentCommand : IGameCommand
             return CommandResult.UserIsNotSignedIn();
         }
 
-        return await _session.AuthenticatedUser.NewDeployment(item);
+        return await _session.AuthenticatedUser.DeploymentIs(item);
     }
 }

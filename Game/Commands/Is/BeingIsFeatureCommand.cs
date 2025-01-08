@@ -13,7 +13,7 @@ public class BeingIsFeatureCommand : IGameCommand
     [
     ];
 
-    public Regex Regex => new("^being is (.+)$");
+    public Regex Regex => new("^being feature is (.+)$");
 
     private string FeatureNameInInput =>
     _input.GetGroup(this.Regex, 1);

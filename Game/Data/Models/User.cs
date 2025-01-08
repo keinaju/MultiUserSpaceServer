@@ -188,6 +188,25 @@ public class User
         }
     }
 
+    public async Task<CommandResult> DeploymentIs(Item item)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await item.SetDeployment(SelectedBeing);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+    
     public async Task<CommandResult> Explore()
     {
         if(SelectedBeing is null)
@@ -407,25 +426,6 @@ public class User
                     Message.Created("being", being.Name)
                 );
             }
-        }
-    }
-
-    public async Task<CommandResult> NewDeployment(Item item)
-    {
-        if(IsBuilder)
-        {
-            if(SelectedBeing is not null)
-            {
-                return await item.SetDeployment(SelectedBeing);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
-        }
-        else
-        {
-            return UserIsNotBuilder();
         }
     }
 
