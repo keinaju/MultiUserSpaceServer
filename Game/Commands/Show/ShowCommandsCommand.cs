@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
@@ -25,8 +26,23 @@ public class ShowCommandsCommand : IGameCommand
 
     public Task Run()
     {
-        var commands = _serviceProvider
-        .GetServices<IGameCommand>();
+        _response.AddResult(
+            ShowCommands()
+        );
+
+        return Task.CompletedTask;
+    }
+
+    private CommandResult ShowCommands()
+    {
+        return new CommandResult(StatusCode.Success)
+        .AddMessage("All commands are:")
+        .AddMessages(GetCommandsList());
+    }
+
+    private ICollection<string> GetCommandsList()
+    {
+        var commands = _serviceProvider.GetServices<IGameCommand>();
         
         var commandsList = new List<string>();
         foreach(var command in commands)
@@ -37,10 +53,6 @@ public class ShowCommandsCommand : IGameCommand
         }
         commandsList.Sort();
 
-        _response.AddText("All commands are:");
-
-        _response.AddList(commandsList);
-
-        return Task.CompletedTask;
+        return commandsList;
     }
 }

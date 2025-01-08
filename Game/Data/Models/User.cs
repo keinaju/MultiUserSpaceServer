@@ -239,6 +239,21 @@ public class User
         }
     }
 
+    public List<string> GetDetails()
+    {
+        var texts = new List<string>();
+
+        texts.Add($"You are {Username}.");
+        if(IsBuilder)
+        {
+            texts.Add("You have access to builder commands.");
+        }
+        texts.Add(GetSelectedBeingText());
+        texts.Add(GetBeingsText());
+
+        return texts;
+    }
+    
     public async Task<CommandResult> Go(string roomName)
     {
         if(SelectedBeing is null)
@@ -394,67 +409,84 @@ public class User
 
     public async Task<CommandResult> NewBeing(string beingName)
     {
-        var validationResult = TextSanitation.ValidateName(beingName);
-        if(validationResult.GetStatus() == StatusCode.Fail)
-        {
-            return validationResult;
-        }
-        else
-        {
-            var cleanName = TextSanitation.GetCleanName(beingName);
-            if(await _context.BeingNameIsReserved(cleanName))
-            {
-                return NameIsReserved("being", cleanName);
-            }
-            else
-            {
-                var settings = await _context.GetGameSettings();
-
-                var being = new Being()
-                {
-                    CreatedByUser = this,
-                    Inventory = new Inventory(),
-                    InRoom = settings!.DefaultSpawnRoom,
-                    Name = cleanName
-                };
-
-                await _context.Beings.AddAsync(being);
-                await _context.SaveChangesAsync();
-
-                return new CommandResult(StatusCode.Success)
-                .AddMessage(
-                    Message.Created("being", being.Name)
-                );
-            }
-        }
+        return await _context.CreateBeing(this, beingName);
     }
 
     public async Task<CommandResult> NewFeature(string featureName)
     {
-        if(!IsBuilder)
+        if(IsBuilder)
+        {
+            return await _context.CreateFeature(featureName);
+        }
+        else
         {
             return UserIsNotBuilder();
         }
+    }
 
-        var validationResult = TextSanitation.ValidateName(featureName);
-        if(validationResult.GetStatus() == StatusCode.Fail)
+    public async Task<CommandResult> NewItem(string itemName)
+    {
+        if(IsBuilder)
         {
-            return validationResult;
+            return await _context.CreateItem(itemName);
         }
-
-        var cleanName = TextSanitation.GetCleanName(featureName);
-        if (await _context.FeatureNameIsReserved(cleanName))
+        else
         {
-            return NameIsReserved("feature", cleanName);
+            return UserIsNotBuilder();
         }
+    }
 
-        await _context.Features.AddAsync(
-            new Feature() { Name = cleanName }
-        );
-        await _context.SaveChangesAsync();
+    public async Task<CommandResult> NewItemHatcher(Item item)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await SelectedBeing.InRoom.CreateItemHatcher(item);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
 
-        return new CommandResult(StatusCode.Success)
-        .AddMessage(Message.Created("feature", cleanName));
+    public async Task<CommandResult> NewRoom(string roomName)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await _context.CreateRoom(
+                    inputName: roomName,
+                    being: SelectedBeing
+                );
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
+    public async Task<CommandResult> NewRoomPool(string poolName)
+    {
+        if(IsBuilder)
+        {
+            return await _context.CreateRoomPool(poolName);
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
     }
 
     public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
@@ -483,8 +515,7 @@ public class User
         {
             if(SelectedBeing is not null)
             {
-                return await SelectedBeing.InRoom
-                .RoomIsFor(feature);
+                return await SelectedBeing.InRoom.RoomIsFor(feature);
             }
             else
             {
@@ -503,8 +534,7 @@ public class User
         {
             if(SelectedBeing is not null)
             {
-                return await SelectedBeing.InRoom
-                .RoomIsGlobal(newValue);
+                return await SelectedBeing.InRoom.RoomIsGlobal(newValue);
             }
             else
             {
@@ -563,8 +593,7 @@ public class User
         {
             if(SelectedBeing is not null)
             {
-                return await SelectedBeing.InRoom
-                .Rename(newName);
+                return await SelectedBeing.InRoom.Rename(newName);
             }
             else
             {
@@ -672,19 +701,16 @@ public class User
         }
     }
 
-    public List<string> Show()
+    public async Task<CommandResult> ShowBeing()
     {
-        var texts = new List<string>();
-
-        texts.Add($"You are {Username}.");
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            texts.Add("You have access to builder commands.");
+            return SelectedBeing.Show();
         }
-        texts.Add(GetSelectedBeingText());
-        texts.Add(GetBeingsText());
-
-        return texts;
+        else
+        {
+            return UserHasNotSelectedBeing();
+        }
     }
 
     public async Task<CommandResult> TakeItem(string itemName)

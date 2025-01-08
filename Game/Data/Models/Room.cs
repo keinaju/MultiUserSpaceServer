@@ -143,6 +143,38 @@ public class Room
         destination.ConnectedToRooms.Add(this);
     }
 
+    public async Task<CommandResult> CreateItemHatcher(Item item)
+    {
+        var existingHatcher = this.Inventory.GetItemHatcher(item);
+
+        if(existingHatcher is null)
+        {
+            var hatcher = new ItemHatcher()
+            {
+                IntervalInTicks = 1,
+                Item = item,
+                MinimumQuantity = 1,
+                MaximumQuantity = 1
+            };
+
+            await _context.ItemHatchers.AddAsync(hatcher);
+
+            hatcher.Inventories.Add(this.Inventory);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Created($"{item.Name} item hatcher ({hatcher.GetDetails()})")
+            );
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{Name} already has an item hatcher ({existingHatcher.GetDetails()}).");
+        }
+    }
+
     public async Task<CommandResult> CuriosityIs(string poolName)
     {
         var pool = await _context.FindRoomPool(poolName);
@@ -176,6 +208,28 @@ public class Room
         {
             return await Curiosity.CreateExpansion(from: this, being: being);            
         }
+    }
+    
+    public List<string> GetDetails()
+    {
+        var texts = new List<string>();
+
+        if(Description is not null)
+        {
+            texts.Add(Description);
+        }
+        texts.Add(GetBeingsText());
+        texts.Add(GetLeadsToText());
+        texts.Add(GetCuriosityText());
+        if(GlobalAccess)
+        {
+            texts.Add($"{Name} can be accessed globally.");
+        }
+        texts.Add(GetInventoryText());
+        texts.Add(GetItemHatchersText());
+        texts.Add(GetFeaturesText());
+
+        return texts;
     }
 
     public ICollection<ItemHatcher> GetItemHatchers()
@@ -242,7 +296,7 @@ public class Room
 
             return new CommandResult(StatusCode.Success)
             .AddMessage(
-                Message.Set($"item hatcher", hatcher.Show())
+                Message.Set($"item hatcher", hatcher.GetDetails())
             );
         }
         else
@@ -273,7 +327,7 @@ public class Room
 
             return new CommandResult(StatusCode.Success)
             .AddMessage(
-                Message.Set($"item hatcher", hatcher.Show())
+                Message.Set($"item hatcher", hatcher.GetDetails())
             );
         }
         else
@@ -377,28 +431,6 @@ public class Room
         );
     }
 
-    public List<string> Show()
-    {
-        var texts = new List<string>();
-
-        if(Description is not null)
-        {
-            texts.Add(Description);
-        }
-        texts.Add(GetBeingsText());
-        texts.Add(GetLeadsToText());
-        texts.Add(GetCuriosityText());
-        if(GlobalAccess)
-        {
-            texts.Add($"{Name} can be accessed globally.");
-        }
-        texts.Add(GetInventoryText());
-        texts.Add(GetItemHatchersText());
-        texts.Add(GetFeaturesText());
-
-        return texts;
-    }
-
     private string GetBeingsText()
     {
         if(BeingsHere.Count > 0)
@@ -423,7 +455,8 @@ public class Room
     {
         if(Curiosity is not null)
         {
-            return $"{Name} has a curiosity. {Curiosity.Show()}";
+            return $"{Name} has a curiosity. " +
+            Curiosity.GetCuriosityPresentationText();
         }
         else
         {
@@ -486,7 +519,7 @@ public class Room
         foreach(var hatcher in GetItemHatchers())
         {
             hatcherDetails.Add(
-                hatcher.Show()
+                hatcher.GetDetails()
             );
         }
 

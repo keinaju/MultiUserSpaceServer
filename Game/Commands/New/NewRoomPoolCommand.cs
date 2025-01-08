@@ -1,8 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.New;
 
@@ -12,42 +10,44 @@ public class NewRoomPoolCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^new pool$");
+    public Regex Regex => new("^new pool (.+)$");
 
+    private string PoolNameInInput => _input.GetGroup(this.Regex, 1);
+
+    private readonly IInputCommand _input;
     private readonly IResponsePayload _response;
-    private readonly IRoomPoolRepository _roomPoolRepo;
+    private readonly ISessionService _session;
 
     public NewRoomPoolCommand(
+        IInputCommand input,
         IResponsePayload response,
-        IRoomPoolRepository roomPoolRepo
+        ISessionService session
     )
     {
+        _input = input;
         _response = response;
-        _roomPoolRepo = roomPoolRepo;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var roomPool = await CreateRoomPool();
-
-        _response.AddText(
-            Message.Created("room pool", roomPool.Name)
+        _response.AddResult(
+            await NewRoomPool()
         );
     }
 
-    private async Task<RoomPool> CreateRoomPool()
+    private async Task<CommandResult> NewRoomPool()
     {
-        return await _roomPoolRepo.CreateRoomPool(
-            new RoomPool()
-            {
-                Description = null,
-                FeeItem = null,
-                Name = await _roomPoolRepo.GetUniqueRoomPoolName("pool #")
-            }
-        );
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .NewRoomPool(PoolNameInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

@@ -56,8 +56,10 @@ public class ItemHatcher
         _lazyLoader = lazyLoader;
     }
 
-    public string Show() =>
-    $"[{MinimumQuantity} to {MaximumQuantity}] {Item.Name} "
-    + $"every {Message.Quantity("ticks", IntervalInTicks)} " +
-    $"in {Message.Quantity("inventories", Inventories.Count)}";
+    public string GetDetails()
+    {
+        return $"[{MinimumQuantity} to {MaximumQuantity}] {Item.Name} "
+        + $"every {Message.Quantity("ticks", IntervalInTicks)} " +
+        $"in {Message.Quantity("inventories", Inventories.Count)}";
+    }
 }

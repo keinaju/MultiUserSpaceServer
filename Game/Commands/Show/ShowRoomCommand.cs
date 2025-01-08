@@ -40,7 +40,7 @@ public class ShowRoomCommand : IGameCommand
         );
 
         _response.AddList(
-            _player.GetCurrentRoom().Show()
+            _player.GetCurrentRoom().GetDetails()
         );
 
         return Task.CompletedTask;

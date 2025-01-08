@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Show;
 
@@ -12,30 +11,38 @@ public class ShowBeingCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserHasSelectedBeing
     ];
 
     public Regex Regex => new("^(show|s) being$");
 
-    private Being SelectedBeing => _player.GetSelectedBeing();
-
-    private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public ShowBeingCommand(
-        IPlayerState player,
-        IResponsePayload response
+        IResponsePayload response,
+        ISessionService session
     )
     {
-        _player = player;
         _response = response;
+        _session = session;
     }
 
-    public Task Run()
+    public async Task Run()
     {
-        _response.AddList(SelectedBeing.Show());
+        _response.AddResult(
+            await ShowBeing()
+        );
+    }
 
-        return Task.CompletedTask;
+    private async Task<CommandResult> ShowBeing()
+    {
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser.ShowBeing();
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

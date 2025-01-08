@@ -33,7 +33,7 @@ public class ShowUserCommand : IGameCommand
 
     public Task Run()
     {
-        _response.AddList(User.Show());
+        _response.AddList(User.GetDetails());
 
         return Task.CompletedTask;
     }

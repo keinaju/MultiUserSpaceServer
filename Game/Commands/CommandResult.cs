@@ -27,6 +27,16 @@ public class CommandResult
         return this;
     }
 
+    public CommandResult AddMessages(IEnumerable<string> messages)
+    {
+        foreach(var message in messages)
+        {
+            _messages.Add(message);
+        }
+
+        return this;
+    }
+
     public List<string> GetMessages()
     {
         return _messages;

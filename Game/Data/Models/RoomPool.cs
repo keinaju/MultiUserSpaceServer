@@ -136,6 +136,27 @@ public class RoomPool
             GetCuriosityCountText()
         };
     }
+    
+    public string GetCuriosityPresentationText()
+    {
+        var sentences = new List<string>();
+
+        if(this.Description is not null)
+        {
+            sentences.Add(this.Description);
+        }
+
+        if(this.FeeItem is null)
+        {
+            sentences.Add($"Exploring this is free.");
+        }
+        else
+        {
+            sentences.Add($"Exploring this costs {Message.Quantity(this.FeeItem.Name, 1)}.");
+        }
+
+        return string.Join(" ", sentences);
+    }
 
     public async Task<CommandResult> Rename(string newName)
     {
@@ -200,25 +221,6 @@ public class RoomPool
         .AddMessage(
             Message.Set($"{Name}'s fee item", item.Name)
         );
-    }
-
-    public string Show()
-    {
-        var texts = new List<string>();
-
-        if(Description is not null)
-        {
-            texts.Add(Description);
-        }
-
-        if(FeeItem is not null)
-        {
-            texts.Add(
-                $" Exploring this requires {Message.Quantity(FeeItem.Name, 1)}."
-            );
-        }
-
-        return string.Join(" ", texts);
     }
 
     private async Task<Room> GenerateExpansion(Room from)

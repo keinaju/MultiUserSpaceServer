@@ -93,6 +93,20 @@ public class Item
         }
     }
 
+    public List<string> GetDetails()
+    {
+        var texts = new List<string>();
+
+        if(Description is not null)
+        {
+            texts.Add(Description);
+        }
+        texts.Add(GetCraftPlanText());
+        texts.Add(GetDeploymentText());
+
+        return texts;
+    }
+    
     public bool IsCraftable()
     {
         if(CraftPlan is null)
@@ -180,20 +194,6 @@ public class Item
                 $"{Name}'s deployment", this.DeploymentPrototype.Name
             )
         );
-    }
-
-    public List<string> Show()
-    {
-        var texts = new List<string>();
-
-        if(Description is not null)
-        {
-            texts.Add(Description);
-        }
-        texts.Add(GetCraftPlanText());
-        texts.Add(GetDeploymentText());
-
-        return texts;
     }
 
     private string GetCraftPlanText()

@@ -1,9 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.New;
 
@@ -11,64 +8,46 @@ public class NewRoomCommand : IGameCommand
 {
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserHasSelectedBeing,
-        Condition.UserIsBuilder
     ];
 
     public string HelpText =>
     "Creates a new room and connects it to the current room.";
 
-    public Regex Regex => new("^new room$");
+    public Regex Regex => new("^new room (.+)$");
 
-    private Room CurrentRoom => _player.GetCurrentRoom();
+    private string RoomNameInInput => _input.GetGroup(this.Regex, 1);
 
-    private readonly IPlayerState _player;
+    private readonly IInputCommand _input;
     private readonly IResponsePayload _response;
-    private readonly IRoomRepository _roomRepo;
+    private readonly ISessionService _session;
 
     public NewRoomCommand(
-        IPlayerState player,
+        IInputCommand input,
         IResponsePayload response,
-        IRoomRepository roomRepo
+        ISessionService session
     )
     {
-        _player = player;
+        _input = input;
         _response = response;
-        _roomRepo = roomRepo;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var newRoom = await CreateRoom();
-
-        await SetBidirectionalConnection(newRoom, CurrentRoom);
-
-        _response.AddText(
-            Message.Created("room", newRoom.Name)
+        _response.AddResult(
+            await NewRoom()
         );
     }
 
-    private async Task<Room> CreateRoom()
+    private async Task<CommandResult> NewRoom()
     {
-        return await _roomRepo.CreateRoom(
-            new Room()
-            {
-                GlobalAccess = false,
-                Inventory = new Inventory(),
-                InBeing = null,
-                Name = await _roomRepo.GetUniqueRoomName("room #"),
-            }
-        );
-    }
-
-    private async Task SetBidirectionalConnection(
-        Room from, Room to
-    )
-    {
-        from.ConnectBidirectionally(to);
-
-        await _roomRepo.UpdateRoom(from);
-        await _roomRepo.UpdateRoom(to);
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser.NewRoom(RoomNameInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

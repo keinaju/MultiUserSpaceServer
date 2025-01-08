@@ -288,7 +288,7 @@ public class Being
             await _context.SaveChangesAsync();
             
             return new CommandResult(StatusCode.Success)
-            .AddMessage($"{Name} moved in {destination.Name}.");
+            .AddMessage($"{Name} has moved in {destination.Name}.");
         }
     }
 
@@ -311,7 +311,7 @@ public class Being
         );
     }
 
-    public List<string> Show()
+    public List<string> GetDetails()
     {
         var texts = new List<string>();
 
@@ -322,6 +322,12 @@ public class Being
         return texts;
     }
 
+    public CommandResult Show()
+    {
+        return new CommandResult(StatusCode.Success)
+        .AddMessages(this.GetDetails());
+    }
+    
     public async Task<CommandResult> TakeItemFromRoom(string itemName)
     {
         var item = await _context.FindItem(itemName);

@@ -1,8 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.New;
 
@@ -12,43 +10,43 @@ public class NewItemCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^new item$");
+    public Regex Regex => new("^new item (.+)$");
+
+    private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
     
-    private readonly IItemRepository _itemRepo;
+    private readonly IInputCommand _input;
     private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public NewItemCommand(
-        IItemRepository itemRepo,
-        IResponsePayload response
+        IInputCommand input,
+        IResponsePayload response,
+        ISessionService session
     )
     {
-        _itemRepo = itemRepo;
+        _input = input;
         _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var item = await CreateItem();
-
-        _response.AddText(
-            Message.Created("item", item.Name)
+        _response.AddResult(
+            await NewItem()
         );
     }
 
-    private async Task<Item> CreateItem()
+    private async Task<CommandResult> NewItem()
     {
-        return await _itemRepo.CreateItem(
-            new Item()
-            {
-                Name = await _itemRepo.GetUniqueItemName("item #"),
-                DeploymentPrototype = null,
-                Description = null,
-                CraftPlan = null
-            }
-        );
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser.NewItem(ItemNameInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

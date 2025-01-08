@@ -36,7 +36,7 @@ public class ShowItemCommand : IGameCommand
 
         if(item is not null)
         {
-            _response.AddList(item.Show());
+            _response.AddList(item.GetDetails());
         }
         else
         {

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using MUS.Game.Commands;
 using MUS.Game.Data.Models;
 using MUS.Game.Utilities;
@@ -38,6 +39,164 @@ namespace MUS.Game.Data
             return await Beings.AnyAsync(
                 being => being.Name == beingName
             );
+        }
+
+        public async Task<CommandResult> CreateBeing(
+            User creator, string inputName
+        )
+        {
+            var validationResult = TextSanitation.ValidateName(inputName);
+            if(validationResult.GetStatus() == StatusCode.Fail)
+            {
+                return validationResult;
+            }
+            
+            var cleanName = TextSanitation.GetCleanName(inputName);
+            if(await BeingNameIsReserved(cleanName))
+            {
+                return NameIsReserved("being", cleanName);
+            }
+
+            var settings = await GetGameSettings();
+
+            await Beings.AddAsync(
+                new Being()
+                {
+                    CreatedByUser = creator,
+                    Inventory = new Inventory(),
+                    InRoom = settings!.DefaultSpawnRoom,
+                    Name = cleanName
+                }
+            );
+
+            await SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Created("being", cleanName)
+            );
+        }
+
+        public async Task<CommandResult> CreateFeature(string inputName)
+        {
+            var validationResult = TextSanitation.ValidateName(inputName);
+            if(validationResult.GetStatus() == StatusCode.Fail)
+            {
+                return validationResult;
+            }
+
+            var cleanName = TextSanitation.GetCleanName(inputName);
+            if (await FeatureNameIsReserved(cleanName))
+            {
+                return NameIsReserved("feature", cleanName);
+            }
+
+            await Features.AddAsync(
+                new Feature() { Name = cleanName }
+            );
+
+            await SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(Message.Created("feature", cleanName));
+        }
+
+        public async Task<CommandResult> CreateItem(string inputName)
+        {
+            var validationResult = TextSanitation.ValidateName(inputName);
+            if(validationResult.GetStatus() == StatusCode.Fail)
+            {
+                return validationResult;
+            }
+
+            var cleanName = TextSanitation.GetCleanName(inputName);
+            if(await ItemNameIsReserved(cleanName))
+            {
+                return NameIsReserved("item", cleanName);
+            }
+
+            await Items.AddAsync(
+                new Item()
+                {
+                    CraftPlan = null,
+                    DeploymentPrototype = null,
+                    Description = null,
+                    Name = cleanName
+                }
+            );
+
+            await SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(Message.Created("item", cleanName));
+        }
+
+        public async Task<CommandResult> CreateRoom(
+            string inputName, Being being
+        )
+        {
+            var validationResult = TextSanitation.ValidateName(inputName);
+            if(validationResult.GetStatus() == StatusCode.Fail)
+            {
+                return validationResult;
+            }
+            
+            var cleanName = TextSanitation.GetCleanName(inputName);
+            if(await RoomNameIsReserved(cleanName))
+            {
+                return NameIsReserved("room", cleanName);
+            }
+
+            EntityEntry<Room> entry = await Rooms.AddAsync(
+                new Room()
+                {
+                    GlobalAccess = false,
+                    Inventory = new Inventory(),
+                    InBeing = null,
+                    Name = cleanName
+                }
+            );
+
+            var newRoom = entry.Entity;
+
+            newRoom.ConnectBidirectionally(being.InRoom);
+
+            being.InRoom = newRoom;
+
+            await SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(Message.Created("room", newRoom.Name))
+            .AddMessage($"{being.Name} has moved in {newRoom.Name} automatically.");
+        }
+
+        public async Task<CommandResult> CreateRoomPool(string inputName)
+        {
+            var validationResult = TextSanitation.ValidateName(inputName);
+            if(validationResult.GetStatus() == StatusCode.Fail)
+            {
+                return validationResult;
+            }
+
+            var cleanName = TextSanitation.GetCleanName(inputName);
+            if(await RoomPoolNameIsReserved(cleanName))
+            {
+                return NameIsReserved("room pool", cleanName);
+            }
+
+            await RoomPools.AddAsync(
+                new RoomPool()
+                {
+                    Description = null,
+                    FeeItem = null,
+                    Name = cleanName
+                }
+            );
+
+            await SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(Message.Created("room pool", cleanName));
         }
 
         public async Task<CommandResult> CreateUser(User user)
