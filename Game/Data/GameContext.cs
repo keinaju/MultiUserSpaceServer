@@ -295,6 +295,11 @@ namespace MUS.Game.Data
             }
         }
 
+        public async Task<ICollection<Feature>> FindAllFeatures()
+        {
+            return await Features.ToListAsync();
+        }
+
         public async Task<bool> FeatureNameIsReserved(string featureName)
         {
             return await Features.AnyAsync(
