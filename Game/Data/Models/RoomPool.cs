@@ -104,9 +104,8 @@ public class RoomPool
                 }
                 else
                 {
-                    return new CommandResult(
-                        CommandResult.StatusCode.Fail
-                    ).AddMessage(
+                    return new CommandResult(StatusCode.Fail)
+                    .AddMessage(
                         Message.DoesNotHave(
                             being.Name,
                             Message.Quantity(FeeItem.Name, 1)
@@ -117,9 +116,8 @@ public class RoomPool
 
             var expansion = await GenerateExpansion(from);
 
-            return new CommandResult(
-                CommandResult.StatusCode.Success
-            ).AddMessage($"{expansion.Name} has been found.");
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"{expansion.Name} has been found.");
         }
     }
 
@@ -137,6 +135,34 @@ public class RoomPool
             GetPrototypesText(),
             GetCuriosityCountText()
         };
+    }
+
+    public async Task<CommandResult> Rename(string newName)
+    {
+        var validationResult = TextSanitation.ValidateName(newName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanName = TextSanitation.GetCleanName(newName);
+            if(await _context.RoomPoolNameIsReserved(cleanName))
+            {
+                return NameIsReserved("room pool", cleanName);
+            }
+            else
+            {
+                var message = Message.Renamed(this.Name, cleanName);
+
+                this.Name = cleanName;
+
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(message);
+            }
+        }
     }
 
     public async Task<CommandResult> SetDescription(string poolDescription)

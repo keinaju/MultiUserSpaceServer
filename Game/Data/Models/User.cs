@@ -500,6 +500,20 @@ public class User
         }
     }
 
+    public async Task<CommandResult> RoomPoolNameIs(
+        RoomPool pool, string newName
+    )
+    {
+        if(IsBuilder)
+        {
+            return await pool.Rename(newName);
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(

@@ -1,8 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Data;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Is;
 
@@ -12,8 +11,6 @@ public class RoomPoolNameIsCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^pool (.+) name is (.+)$");
@@ -24,79 +21,45 @@ public class RoomPoolNameIsCommand : IGameCommand
     private string NewRoomPoolNameInInput =>
     _input.GetGroup(this.Regex, 2);
 
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
-    private readonly IRoomPoolRepository _roomPoolRepo;
     private readonly IInputCommand _input;
+    private readonly ISessionService _session;
 
     public RoomPoolNameIsCommand(
+        GameContext context,
         IResponsePayload response,
-        IRoomPoolRepository roomPoolRepo,
-        IInputCommand input
+        IInputCommand input,
+        ISessionService session
     )
     {
+        _context = context;
         _response = response;
-        _roomPoolRepo = roomPoolRepo;
         _input = input;
+        _session = session;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            await RenameRoomPool();
-            Respond();
-        }
-    }
-
-    private async Task<bool> IsValid()
-    {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(OldRoomPoolNameInInput);
-        if(roomPool is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist(
-                    "room pool", OldRoomPoolNameInInput
-                )
-            );
-
-            return false;
-        }
-
-        if(await _roomPoolRepo.RoomPoolNameIsReserved(
-            NewRoomPoolNameInInput
-        ))
-        {
-            _response.AddText(
-                Message.ReservedName(
-                    "room pool name",
-                    NewRoomPoolNameInInput
-                )
-            );
-
-            return false;
-        }
-
-        return true;
-    }
-
-    private async Task RenameRoomPool()
-    {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(OldRoomPoolNameInInput);
-
-        roomPool!.Name = NewRoomPoolNameInInput;
-
-        await _roomPoolRepo.UpdateRoomPool(roomPool);
-    }
-
-    private void Respond()
-    {
-        _response.AddText(
-            Message.Renamed(
-                OldRoomPoolNameInInput,
-                NewRoomPoolNameInInput
-            )
+        _response.AddResult(
+            await RoomPoolNameIs()
         );
+    }
+
+    private async Task<CommandResult> RoomPoolNameIs()
+    {
+        var pool = await _context.FindRoomPool(OldRoomPoolNameInInput);
+        if(pool is null)
+        {
+            return CommandResult.RoomPoolDoesNotExist(OldRoomPoolNameInInput);
+        }
+
+        if(_session.AuthenticatedUser is null)
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
+
+        return await _session.AuthenticatedUser
+        .RoomPoolNameIs(pool, NewRoomPoolNameInInput);
     }
 }
