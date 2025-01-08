@@ -54,8 +54,8 @@ public class DatabaseSeeder
         {
             var roomOne = new Room()
             {
-                Name = "r1",
-                Description = "Everything starts from one.",
+                Name = "DEFAULT",
+                Description = "This is the default room of the application.",
                 GlobalAccess = false,
                 Inventory = new Inventory(),
                 InBeing = null
@@ -72,7 +72,10 @@ public class DatabaseSeeder
             var firstRoom = await _roomRepository.GetFirstRoom();
             var gameSettings = new GameSettings()
             {
-                DefaultSpawnRoom = firstRoom!
+                DefaultSpawnRoom = firstRoom!,
+                GameName = "DEFAULT",
+                GameDescription = null,
+                TickIntervalSeconds = 10
             };
 
             await _gameSettingsRepository.SetGameSettings(gameSettings);

@@ -178,6 +178,11 @@ namespace MUS.Game.Data
             );
         }
 
+        public async Task<GameSettings?> GetGameSettings()
+        {
+            return await GameSettings.FirstOrDefaultAsync();
+        }
+
         public async Task<bool> ItemNameIsReserved(string itemName)
         {
             return await Items.AnyAsync(
@@ -197,6 +202,22 @@ namespace MUS.Game.Data
             return await RoomPools.AnyAsync(
                 pool => pool.Name == poolName
             );
+        }
+
+        public async Task SetGameSettings(GameSettings newSettings)
+        {
+            var settingsInDb = await GetGameSettings();
+
+            if(settingsInDb is null)
+            {
+                await this.GameSettings.AddAsync(newSettings);
+            }
+            else
+            {
+                settingsInDb = newSettings;
+            }
+
+            await SaveChangesAsync();
         }
 
         public async Task<bool> UsernameIsReserved(string username)

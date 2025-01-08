@@ -15,6 +15,12 @@ public class GameSettings
         set => _defaultSpawnRoom = value;
     }
 
+    public required string GameName { get; set; }
+
+    public required string? GameDescription { get; set; }
+
+    public required int TickIntervalSeconds { get; set; }
+
     private readonly ILazyLoader _lazyLoader;
     private Room _defaultSpawnRoom;
 
