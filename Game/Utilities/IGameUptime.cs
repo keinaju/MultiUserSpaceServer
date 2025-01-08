@@ -9,4 +9,6 @@ public interface IGameUptime
     TimeSpan GetUptime();
 
     string GetUptimeText();
+
+    void ResetStartTime();
 }

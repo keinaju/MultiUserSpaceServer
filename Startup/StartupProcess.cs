@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MUS.Game.Data;
+using MUS.Game.Utilities;
 
 namespace MUS.Startup;
 
@@ -40,7 +41,10 @@ public class StartupProcess
         services.AddControllers();
     }
 
-    public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+    public void Configure(
+        IApplicationBuilder app,
+        IGameUptime uptime
+    )
     {
         app.UseRouting();
         app.UseCors();
@@ -51,5 +55,7 @@ public class StartupProcess
         });
 
         app.EnsureDatabaseExists();
+
+        uptime.ResetStartTime();
     }
 }

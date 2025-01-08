@@ -4,7 +4,7 @@ namespace MUS.Game.Utilities;
 
 public class GameUptime : IGameUptime
 {
-    private readonly DateTime _startTime;
+    private DateTime _startTime;
 
     public GameUptime()
     {
@@ -25,5 +25,10 @@ public class GameUptime : IGameUptime
     {
         var span = GetUptime();
         return $"{span.Days} days, {span.Hours} hours, {span.Minutes} minutes and {span.Seconds} seconds";
+    }
+
+    public void ResetStartTime()
+    {
+        _startTime = DateTime.Now;
     }
 }
