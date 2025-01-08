@@ -64,5 +64,5 @@ static public class Message
 
     static public string Set(
         string type, string to
-    ) => $"{type.FirstCharToUpper()} is now set to '{to}'.";
+    ) => $"{type.FirstCharToUpper()} is now set to {to}.";
 }

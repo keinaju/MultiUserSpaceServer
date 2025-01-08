@@ -168,6 +168,20 @@ public class Item
         .AddMessage($"{Name} is now made of {CraftPlan.MadeOf()}.");
     }
 
+    public async Task<CommandResult> SetDeployment(Being being)
+    {
+        this.DeploymentPrototype = being;
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set(
+                $"{Name}'s deployment", this.DeploymentPrototype.Name
+            )
+        );
+    }
+
     public List<string> Show()
     {
         var texts = new List<string>();

@@ -51,7 +51,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, ItemNameIsCommand>();
         services.AddScoped<IGameCommand, MakeItemsCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
-        // services.AddScoped<IGameCommand, NewDeploymentCommand>();
+        services.AddScoped<IGameCommand, NewDeploymentCommand>();
         services.AddScoped<IGameCommand, NewFeatureCommand>();
         services.AddScoped<IGameCommand, NewItemHatcherCommand>();
         services.AddScoped<IGameCommand, NewItemCommand>();

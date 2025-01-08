@@ -410,6 +410,25 @@ public class User
         }
     }
 
+    public async Task<CommandResult> NewDeployment(Item item)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await item.SetDeployment(SelectedBeing);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
     {
         if(IsBuilder)
