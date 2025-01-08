@@ -1,9 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
+using MUS.Game.Session;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Make;
 
@@ -11,9 +11,6 @@ public class MakeItemsCommand : IGameCommand
 {
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder,
-        Condition.UserHasSelectedBeing
     ];
 
     public string HelpText =>
@@ -21,74 +18,58 @@ public class MakeItemsCommand : IGameCommand
 
     public Regex Regex => new(@"^make (\d+) (.+)$");
 
-    private string ItemNameInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string ItemNameInInput => _input.GetGroup(this.Regex, 2);
 
-    private string QuantityInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string QuantityInInput => _input.GetGroup(this.Regex, 1);
 
-    private string BeingName =>
-    _player.GetSelectedBeing().Name;
-
-    private Inventory Inventory =>
-    _player.GetSelectedBeing().Inventory;
-
-    private readonly IInventoryRepository _inventoryRepo;
-    private readonly IItemRepository _itemRepo;
-    private readonly IPlayerState _player;
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly ISessionService _session;
 
     public MakeItemsCommand(
-        IInventoryRepository inventoryRepo,
-        IItemRepository itemRepo,
-        IPlayerState player,
+        GameContext context,
         IResponsePayload response,
-        IInputCommand input
+        IInputCommand input,
+        ISessionService session
     )
     {
-        _inventoryRepo = inventoryRepo;
-        _itemRepo = itemRepo;
-        _player = player;
+        _context = context;
         _response = response;
         _input = input;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var success = int.TryParse(
-            QuantityInInput, out int quantity
-        );
-        if(!success || quantity <= 0)
-        {
-            _response.AddText(
-                Message.Invalid(QuantityInInput, "quantity")
-            );
-
-            return;
-        }
-
-        var item = await _itemRepo.FindItem(ItemNameInInput);
-        if (item is null)
-        {
-            _response.AddText(
-                Message.DoesNotExist("item", ItemNameInInput)
-            );
-
-            return;
-        }
-
-        await MakeItems(item, quantity);
-
-        _response.AddText(
-            $"{BeingName} got {Message.Quantity(item.Name, quantity)}."
+        _response.AddResult(
+            await MakeItems()
         );
     }
 
-    private async Task MakeItems(Item item, int quantity)
+    private async Task<CommandResult> MakeItems()
     {
-        Inventory.AddItems(item, quantity);
+        var ok = int.TryParse(QuantityInInput, out int quantity);
+        if(!ok || quantity < 1)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                Message.Invalid(QuantityInInput, "quantity")
+            );
+        }
 
-        await _inventoryRepo.UpdateInventory(Inventory);
+        var item = await _context.FindItem(ItemNameInInput);
+        if (item is null)
+        {
+            return ItemDoesNotExist(ItemNameInInput);
+        }
+
+        if(_session.AuthenticatedUser is null)
+        {
+            return UserIsNotSignedIn();
+        }
+
+        return await _session.AuthenticatedUser
+        .MakeItems(item, quantity);
     }
 }

@@ -354,6 +354,25 @@ public class User
         }
     }
 
+    public async Task<CommandResult> MakeItems(Item item, int quantity)
+    {
+        if(IsBuilder)
+        {
+            if(SelectedBeing is not null)
+            {
+                return await SelectedBeing.MakeItems(item, quantity);
+            }
+            else
+            {
+                return UserHasNotSelectedBeing();
+            }
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
     {
         if(IsBuilder)

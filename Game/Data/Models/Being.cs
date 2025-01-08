@@ -246,6 +246,18 @@ public class Being
         }
     }
 
+    public async Task<CommandResult> MakeItems(Item item, int quantity)
+    {
+        this.Inventory.AddItems(item, quantity);
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            $"{Message.Quantity(item.Name, quantity)} has been added to {Name}'s inventory."
+        );
+    }
+
     public async Task<CommandResult> MoveTo(Room destination)
     {
         if(destination == InRoom)
