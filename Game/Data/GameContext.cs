@@ -183,6 +183,18 @@ namespace MUS.Game.Data
             return await GameSettings.FirstOrDefaultAsync();
         }
 
+        public async Task<string> GetUniqueBeingName(string beingName)
+        {
+            while(await Beings.AnyAsync(
+                being => being.Name == beingName
+            ))
+            {
+                beingName += StringUtilities.GetRandomCharacter();
+            }
+
+            return beingName;
+        }
+
         public async Task<bool> ItemNameIsReserved(string itemName)
         {
             return await Items.AnyAsync(

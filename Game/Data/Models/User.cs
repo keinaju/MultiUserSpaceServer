@@ -373,6 +373,43 @@ public class User
         }
     }
 
+    public async Task<CommandResult> NewBeing(string beingName)
+    {
+        var validationResult = TextSanitation.ValidateName(beingName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanName = TextSanitation.GetCleanName(beingName);
+            if(await _context.BeingNameIsReserved(cleanName))
+            {
+                return NameIsReserved("being", cleanName);
+            }
+            else
+            {
+                var settings = await _context.GetGameSettings();
+
+                var being = new Being()
+                {
+                    CreatedByUser = this,
+                    Inventory = new Inventory(),
+                    InRoom = settings!.DefaultSpawnRoom,
+                    Name = cleanName
+                };
+
+                await _context.Beings.AddAsync(being);
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(
+                    Message.Created("being", being.Name)
+                );
+            }
+        }
+    }
+
     public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
     {
         if(IsBuilder)
