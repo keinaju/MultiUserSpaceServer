@@ -1,8 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.New;
 
@@ -12,40 +10,44 @@ public class NewFeatureCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
-    public Regex Regex => new("^new feature$");
+    public Regex Regex => new("^new feature (.+)$");
+
+    private string FeatureNameInInput => _input.GetGroup(this.Regex, 1);
     
-    private readonly IFeatureRepository _featureRepo;
+    private readonly IInputCommand _input;
     private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public NewFeatureCommand(
-        IFeatureRepository featureRepo,
-        IResponsePayload response
+        IInputCommand input,
+        IResponsePayload response,
+        ISessionService session
     )
     {
-        _featureRepo = featureRepo;
+        _input = input;
         _response = response;
+        _session = session;
     }
 
     public async Task Run()
     {
-        var feature = await CreateFeature();
-
-        _response.AddText(
-            Message.Created("feature", feature.Name)
+        _response.AddResult(
+            await NewFeature()
         );
     }
 
-    private async Task<Feature> CreateFeature()
+    private async Task<CommandResult> NewFeature()
     {
-        return await _featureRepo.CreateFeature(
-            new Feature()
-            {
-                Name = await _featureRepo.GetUniqueFeatureName("feature #")
-            }
-        );
+        if(_session.AuthenticatedUser is not null)
+        {
+            return await _session.AuthenticatedUser
+            .NewFeature(FeatureNameInInput);
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

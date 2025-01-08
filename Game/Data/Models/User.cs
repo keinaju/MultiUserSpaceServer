@@ -206,7 +206,7 @@ public class User
             return UserIsNotBuilder();
         }
     }
-    
+
     public async Task<CommandResult> Explore()
     {
         if(SelectedBeing is null)
@@ -427,6 +427,34 @@ public class User
                 );
             }
         }
+    }
+
+    public async Task<CommandResult> NewFeature(string featureName)
+    {
+        if(!IsBuilder)
+        {
+            return UserIsNotBuilder();
+        }
+
+        var validationResult = TextSanitation.ValidateName(featureName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+
+        var cleanName = TextSanitation.GetCleanName(featureName);
+        if (await _context.FeatureNameIsReserved(cleanName))
+        {
+            return NameIsReserved("feature", cleanName);
+        }
+
+        await _context.Features.AddAsync(
+            new Feature() { Name = cleanName }
+        );
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(Message.Created("feature", cleanName));
     }
 
     public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
