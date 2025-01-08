@@ -185,14 +185,22 @@ namespace MUS.Game.Data
 
         public async Task<string> GetUniqueBeingName(string beingName)
         {
-            while(await Beings.AnyAsync(
-                being => being.Name == beingName
-            ))
+            while(await BeingNameIsReserved(beingName))
             {
                 beingName += StringUtilities.GetRandomCharacter();
             }
 
             return beingName;
+        }
+        
+        public async Task<string> GetUniqueRoomName(string roomName)
+        {
+            while(await RoomNameIsReserved(roomName))
+            {
+                roomName += StringUtilities.GetRandomCharacter();
+            }
+
+            return roomName;
         }
 
         public async Task<bool> ItemNameIsReserved(string itemName)

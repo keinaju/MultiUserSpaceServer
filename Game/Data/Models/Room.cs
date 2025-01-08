@@ -377,16 +377,6 @@ public class Room
         );
     }
 
-    public async Task SetUniqueName()
-    {
-        if(await _context.Rooms.AnyAsync(
-            room => room.Name == this.Name
-        ))
-        {
-            this.Name += StringUtilities.GetRandomCharacter();
-        }
-    }
-
     public List<string> Show()
     {
         var texts = new List<string>();

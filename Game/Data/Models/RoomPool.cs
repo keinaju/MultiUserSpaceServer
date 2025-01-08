@@ -229,7 +229,7 @@ public class RoomPool
 
         await _context.Rooms.AddAsync(expansion);
 
-        await expansion.SetUniqueName();
+        expansion.Name = await _context.GetUniqueRoomName(expansion.Name);
         expansion.ConnectBidirectionally(from);
 
         await _context.SaveChangesAsync();

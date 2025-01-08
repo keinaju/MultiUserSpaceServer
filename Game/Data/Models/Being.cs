@@ -168,13 +168,15 @@ public class Being
         var clone = prototype.Clone();
         clone.InRoom = this.InRoom;
         clone.CreatedByUser = this.CreatedByUser;
-        await clone.SetUniqueName();
+        clone.Name = await _context.GetUniqueBeingName(Name);
 
         await _context.Beings.AddAsync(clone);
-        
-        if(clone.RoomInside is not null)
+
+        var insideRoom = clone.RoomInside;
+        if(insideRoom is not null)
         {
-            await clone.RoomInside.SetUniqueName();
+            insideRoom.Name = await _context
+            .GetUniqueRoomName(insideRoom.Name);
         }
 
         await _context.SaveChangesAsync();
@@ -307,16 +309,6 @@ public class Being
                 $"{Name}'s inside room", RoomInside.Name
             )
         );
-    }
-
-    public async Task SetUniqueName()
-    {
-        if(await _context.Beings.AnyAsync(
-            being => being.Name == this.Name
-        ))
-        {
-            this.Name += StringUtilities.GetRandomCharacter();
-        }
     }
 
     public List<string> Show()
