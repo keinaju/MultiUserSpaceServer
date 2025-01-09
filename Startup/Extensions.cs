@@ -66,7 +66,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, RoomPoolFeeIsCommand>();
         services.AddScoped<IGameCommand, RoomPoolNameIsCommand>();
         services.AddScoped<IGameCommand, SelectBeingCommand>();
-        services.AddScoped<IGameCommand, SellCommand>();
+        services.AddScoped<IGameCommand, TradeCommand>();
         services.AddScoped<IGameCommand, ShowBeingCommand>();
         services.AddScoped<IGameCommand, ShowCommandsCommand>();
         services.AddScoped<IGameCommand, ShowFeaturesCommand>();

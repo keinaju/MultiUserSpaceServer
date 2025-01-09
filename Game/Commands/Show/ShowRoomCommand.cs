@@ -8,36 +8,30 @@ public class ShowRoomCommand : IGameCommand
 {
     public string HelpText => "Shows the current room.";
 
-    public Regex Regex => new("^(show|s) (room|r)$");
+    public Regex Pattern => new("^(show|s) (room|r)$");
 
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ShowRoomCommand(
-        IResponsePayload response,
         ISessionService session
     )
     {
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public Task<CommandResult> Run()
     {
-        _response.AddResult(
-            ShowRoom()
-        );
-    }
-
-    private CommandResult ShowRoom()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return _session.AuthenticatedUser.ShowRoom();
+            return Task.FromResult(
+                _session.User.ShowRoom()
+            );
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return Task.FromResult(
+                CommandResult.UserIsNotSignedIn()
+            );
         }
     }
 }

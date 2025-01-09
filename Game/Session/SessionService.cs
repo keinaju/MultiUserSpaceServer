@@ -5,7 +5,10 @@ namespace MUS.Game.Session;
 
 public class SessionService : ISessionService
 {
-    public User? AuthenticatedUser => _user;
+    /// <summary>
+    /// User that has been authenticated.
+    /// </summary>
+    public User? User => _user;
 
     private readonly ITokenService _tokenService;
     private readonly IUserRepository _userRepo;
@@ -22,13 +25,9 @@ public class SessionService : ISessionService
 
     public async Task AuthenticateUser(string token)
     {
-        var userPrimaryKey = 
-        await _tokenService.ValidateToken(token);
+        var userPrimaryKey = await _tokenService.ValidateToken(token);
 
-        var ok = int.TryParse(
-            userPrimaryKey,
-            out int parsedPrimaryKey
-        );
+        var ok = int.TryParse(userPrimaryKey, out int parsedPrimaryKey);
 
         if(ok)
         {

@@ -8,27 +8,22 @@ public class ShowCommandsCommand : IGameCommand
 {
     public string HelpText => "Shows all commands.";
 
-    public Regex Regex => new("^(help|show commands|s commands)$");
+    public Regex Pattern => new("^help$");
 
-    private readonly IResponsePayload _response;
     private readonly IServiceProvider _serviceProvider;
 
     public ShowCommandsCommand(
-        IResponsePayload response,
         IServiceProvider serviceProvider
     )
     {
-        _response = response;
         _serviceProvider = serviceProvider;        
     }
 
-    public Task Run()
+    public Task<CommandResult> Run()
     {
-        _response.AddResult(
+        return Task.FromResult(
             ShowCommands()
         );
-
-        return Task.CompletedTask;
     }
 
     private CommandResult ShowCommands()
@@ -46,7 +41,7 @@ public class ShowCommandsCommand : IGameCommand
         foreach(var command in commands)
         {
             commandsList.Add(
-                $"{command.Regex} = {command.HelpText}"
+                $"{command.Pattern} = {command.HelpText}"
             );
         }
         commandsList.Sort();

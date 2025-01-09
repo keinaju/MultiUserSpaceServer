@@ -8,38 +8,27 @@ public class NewRoomPoolCommand : IGameCommand
 {
     public string HelpText => "Creates a new room pool.";
     
-    public Regex Regex => new("^new pool (.+)$");
+    public Regex Pattern => new("^new pool (.+)$");
 
-    private string PoolNameInInput => _input.GetGroup(this.Regex, 1);
+    private string PoolNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public NewRoomPoolCommand(
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await NewRoomPool()
-        );
-    }
-
-    private async Task<CommandResult> NewRoomPool()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser
-            .NewRoomPool(PoolNameInInput);
+            return await _session.User.NewRoomPool(PoolNameInInput);
         }
         else
         {

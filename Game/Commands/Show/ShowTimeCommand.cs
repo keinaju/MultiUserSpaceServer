@@ -9,26 +9,18 @@ public class ShowTimeCommand : IGameCommand
 {
     public string HelpText => "Shows game's time.";
 
-    public Regex Regex => new("^(show|s) time$");
+    public Regex Pattern => new("^(show|s) time$");
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
 
     public ShowTimeCommand(
-        GameContext context,
-        IResponsePayload response
+        GameContext context
     )
     {
         _context = context;
-        _response = response;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(await ShowTime());
-    }
-
-    private async Task<CommandResult> ShowTime()
+    public async Task<CommandResult> Run()
     {
         var tick = await _context.GetTickCount();
         var settings = await _context.GetGameSettings();

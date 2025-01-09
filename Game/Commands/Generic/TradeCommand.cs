@@ -7,46 +7,41 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class SellCommand : IGameCommand
+public class TradeCommand : IGameCommand
 {
     public string HelpText => "Creates an offer to trade items.";
 
-    public Regex Regex => new(@"^(offer|sell|trade) (\d+) (.+) for (\d+) (.+)$");
+    public Regex Pattern => new(@"^(trade) (\d+) (.+) for (\d+) (.+)$");
 
-    private string SellQuantityInInput => _input.GetGroup(this.Regex, 2);
+    private string SellQuantityInInput => _input.GetGroup(this.Pattern, 2);
 
-    private string SellItemNameInInput => _input.GetGroup(this.Regex, 3);
+    private string SellItemNameInInput => _input.GetGroup(this.Pattern, 3);
 
-    private string BuyQuantityInInput => _input.GetGroup(this.Regex, 4);
+    private string BuyQuantityInInput => _input.GetGroup(this.Pattern, 4);
 
-    private string BuyItemNameInInput => _input.GetGroup(this.Regex, 5);
+    private string BuyItemNameInInput => _input.GetGroup(this.Pattern, 5);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
-    public SellCommand(
+    public TradeCommand(
         GameContext context,
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _context = context;
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await Sell()
-        );
+        return await Trade();
     }
 
-    private async Task<CommandResult> Sell()
+    private async Task<CommandResult> Trade()
     {
         bool buyOk = int.TryParse(BuyQuantityInInput, out int buyQuantity);
         if(!buyOk || buyQuantity < 1)
@@ -80,18 +75,18 @@ public class SellCommand : IGameCommand
             .AddMessage("The item to sell can not be the item to buy.");
         }
 
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is null)
         {
-            return await _session.AuthenticatedUser.Sell(
+            return UserIsNotSignedIn();
+        }
+        else
+        {
+            return await _session.User.Sell(
                 sellQuantity: sellQuantity,
                 buyQuantity: buyQuantity,
                 sellItem: sellItem,
                 buyItem: buyItem
             );
-        }
-        else
-        {
-            return UserIsNotSignedIn();
         }
     }
 }

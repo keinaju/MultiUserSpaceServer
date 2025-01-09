@@ -16,7 +16,7 @@ public class PlayerState : IPlayerState
     
     public Being GetSelectedBeing()
     {
-        var user = _session.AuthenticatedUser;
+        var user = _session.User;
         
         if (user is null || user.SelectedBeing is null)
         {

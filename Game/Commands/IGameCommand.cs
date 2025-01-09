@@ -7,7 +7,7 @@ public interface IGameCommand
 {
     string HelpText { get; }
     
-    Regex Regex { get; }
+    Regex Pattern { get; }
 
-    Task Run();
+    Task<CommandResult> Run();
 }

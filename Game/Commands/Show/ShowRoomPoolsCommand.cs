@@ -11,26 +11,18 @@ public class ShowRoomPoolsCommand : IGameCommand
 {
     public string HelpText => "Shows all room pools.";
 
-    public Regex Regex => new("^(show|s) pools$");
+    public Regex Pattern => new("^(show|s) pools$");
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
 
     public ShowRoomPoolsCommand(
-        GameContext context,
-        IResponsePayload response
+        GameContext context
     )
     {
         _context = context;
-        _response = response;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(await ShowRoomPools());
-    }
-
-    private async Task<CommandResult> ShowRoomPools()
+    public async Task<CommandResult> Run()
     {
         var pools = await _context.FindAllRoomPools();
         if(pools.Count == 0)

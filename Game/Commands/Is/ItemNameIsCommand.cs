@@ -10,40 +10,28 @@ public class ItemNameIsCommand : IGameCommand
 {
     public string HelpText => "Renames an item.";
 
-    public Regex Regex => new("^item (.+) name is (.+)$");
+    public Regex Pattern => new("^item (.+) name is (.+)$");
 
-    private string OldItemNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string OldItemNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private string NewItemNameInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string NewItemNameInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ItemNameIsCommand(
         GameContext context,
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _context = context;
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await ItemNameIs()
-        );
-    }
-
-    private async Task<CommandResult> ItemNameIs()
+    public async Task<CommandResult> Run()
     {
         var item = await _context.FindItem(OldItemNameInInput);
         if(item is null)
@@ -51,14 +39,13 @@ public class ItemNameIsCommand : IGameCommand
             return ItemDoesNotExist(OldItemNameInInput);
         }
 
-        if(_session.AuthenticatedUser is null)
+        if(_session.User is null)
         {
             return UserIsNotSignedIn();
         }
         else
         {
-            return await _session.AuthenticatedUser
-            .ItemNameIs(item, NewItemNameInInput);
+            return await _session.User.ItemNameIs(item, NewItemNameInInput);
         }
     }
 }

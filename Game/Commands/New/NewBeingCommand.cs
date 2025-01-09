@@ -8,37 +8,27 @@ public class NewBeingCommand : IGameCommand
 {
     public string HelpText => "Creates a new being.";
 
-    public Regex Regex => new("^new being (.+)$");
+    public Regex Pattern => new("^new being (.+)$");
 
-    private string BeingNameInInput => _input.GetGroup(this.Regex, 1);
+    private string BeingNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public NewBeingCommand(
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await NewBeing()
-        );
-    }
-
-    private async Task<CommandResult> NewBeing()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser.NewBeing(BeingNameInInput);
+            return await _session.User.NewBeing(BeingNameInInput);
         }
         else
         {

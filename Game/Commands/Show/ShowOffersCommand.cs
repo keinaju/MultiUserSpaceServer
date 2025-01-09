@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
 using MUS.Game.Session;
 using static MUS.Game.Commands.CommandResult;
 
@@ -10,35 +9,22 @@ public class ShowOffersCommand : IGameCommand
 {
     public string HelpText => "Shows all offers in the current room.";
 
-    public Regex Regex => new("^(show|s) offers$");
+    public Regex Pattern => new("^(show|s) offers$");
 
-    private readonly GameContext _context;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ShowOffersCommand(
-        GameContext context,
-        IResponsePayload response,
         ISessionService session
     )
     {
-        _context = context;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await ShowOffers()
-        );
-    }
-
-    private async Task<CommandResult> ShowOffers()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser.ShowOffersInCurrentRoom();
+            return await _session.User.ShowOffersInCurrentRoom();
         }
         else
         {

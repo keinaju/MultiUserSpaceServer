@@ -8,38 +8,27 @@ public class NewFeatureCommand : IGameCommand
 {
     public string HelpText => "Creates a new feature.";
 
-    public Regex Regex => new("^new feature (.+)$");
+    public Regex Pattern => new("^new feature (.+)$");
 
-    private string FeatureNameInInput => _input.GetGroup(this.Regex, 1);
+    private string FeatureNameInInput => _input.GetGroup(this.Pattern, 1);
     
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public NewFeatureCommand(
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await NewFeature()
-        );
-    }
-
-    private async Task<CommandResult> NewFeature()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser
-            .NewFeature(FeatureNameInInput);
+            return await _session.User.NewFeature(FeatureNameInInput);
         }
         else
         {

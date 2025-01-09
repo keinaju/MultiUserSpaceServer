@@ -14,51 +14,41 @@ public class SignInCommand : IGameCommand
 
     public string HelpText => "Creates a user session.";
 
-    public Regex Regex => new("^sign in (.+) (.+)$");
+    public Regex Pattern => new("^sign in (.+) (.+)$");
 
-    private string UsernameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string UsernameInInput => _input.GetGroup(this.Pattern, 1);
     
-    private string PasswordInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string PasswordInInput => _input.GetGroup(this.Pattern, 2);
     
     private readonly GameContext _context;
+    private readonly IInputCommand _input;
     private readonly IResponsePayload _response;
     private readonly ITokenService _tokenService;
-    private readonly IInputCommand _input;
 
     public SignInCommand(
         GameContext context,
+        IInputCommand input,
         IResponsePayload response,
-        ITokenService tokenService,
-        IInputCommand input
+        ITokenService tokenService
     )
     {
         _context = context;
+        _input = input;
         _response = response;
         _tokenService = tokenService;
-        _input = input;
     }
     
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await TrySignIn()
-        );
+        return await SignIn();
     }
 
-    private async Task<CommandResult> TrySignIn()
+    private async Task<CommandResult> SignIn()
     {
-        var userExists = _context.Users.Any(
-            user => user.Username == UsernameInInput
-        );
+        var user = await _context.FindUser(UsernameInInput);
 
-        if(userExists)
+        if(user is not null)
         {
-            var user = await _context.Users.SingleAsync(
-                user => user.Username == UsernameInInput
-            );
-
             if(user.IsCorrectPassword(PasswordInInput))
             {
                 return SignInSuccess(user);

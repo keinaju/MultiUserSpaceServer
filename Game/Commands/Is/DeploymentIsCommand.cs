@@ -10,48 +10,39 @@ public class DeploymentIsCommand : IGameCommand
     public string HelpText =>
     "Sets the deployment of an item to the current being.";
 
-    private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
+    private string ItemNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    public Regex Regex => new("^item (.+) deploy is this$");
+    public Regex Pattern => new("^item (.+) deploy is this$");
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
     private readonly ISessionService _session;
 
     public DeploymentIsCommand(
         GameContext context,
-        IResponsePayload response,
         IInputCommand input,
         ISessionService session
     )
     {
         _context = context;
-        _response = response;
         _input = input;
         _session = session;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await DeploymentIs()
-        );
-    }
-
-    private async Task<CommandResult> DeploymentIs()
+    public async Task<CommandResult> Run()
     {
         var item = await _context.FindItem(ItemNameInInput);
         if(item is null)
         {
             return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
-
-        if(_session.AuthenticatedUser is null)
+        if(_session.User is null)
         {
             return CommandResult.UserIsNotSignedIn();
         }
-
-        return await _session.AuthenticatedUser.DeploymentIs(item);
+        else
+        {
+            return await _session.User.DeploymentIs(item);
+        }
     }
 }

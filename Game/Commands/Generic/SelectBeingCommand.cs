@@ -8,43 +8,31 @@ public class SelectBeingCommand : IGameCommand
 {
     public string HelpText => "Selects a being to use.";
 
-    public Regex Regex => new("^select (.+)$");
+    public Regex Pattern => new("^select (.+)$");
 
-    private string BeingNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string BeingNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
     private readonly IInputCommand _input;
 
     public SelectBeingCommand(
-        IResponsePayload response,
         ISessionService session,
         IInputCommand input
     )
     {
-        _response = response;
         _session = session;
         _input = input;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await Select()
-        );
-    }
-
-    private async Task<CommandResult> Select()
-    {
-        if(_session.AuthenticatedUser is null)
+        if(_session.User is null)
         {
             return CommandResult.UserIsNotSignedIn();
         }
         else
         {
-            return await _session.AuthenticatedUser
-            .SelectBeing(BeingNameInInput);
+            return await _session.User.SelectBeing(BeingNameInInput);
         }
     }
 }

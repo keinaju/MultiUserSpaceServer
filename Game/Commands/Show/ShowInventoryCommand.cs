@@ -8,38 +8,30 @@ public class ShowInventoryCommand : IGameCommand
 {
     public string HelpText => "Shows the inventory of the current being.";
     
-    public Regex Regex => new("^(show|s) (inventory|i)$");
+    public Regex Pattern => new("^(show|s) (inventory|i)$");
 
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ShowInventoryCommand(
-        IResponsePayload response,
         ISessionService session
     )
     {
-        _response = response;
         _session = session;
     }
 
-    public Task Run()
+    public Task<CommandResult> Run()
     {
-        _response.AddResult(
-            ShowInventory()
-        );
-
-        return Task.CompletedTask;
-    }
-
-    private CommandResult ShowInventory()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return _session.AuthenticatedUser.ShowInventory();
+            return Task.FromResult(
+                _session.User.ShowInventory()
+            );
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return Task.FromResult(
+                CommandResult.UserIsNotSignedIn()
+            );
         }
     }
 }

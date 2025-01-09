@@ -22,7 +22,7 @@ public class CommandParser : ICommandParser
         var matchingCommands = new List<IGameCommand>();
         foreach(var command in _commands)
         {
-            var match = command.Regex.Match(_input.Text);
+            var match = command.Pattern.Match(_input.Text);
             if(match.Success)
             {
                 matchingCommands.Add(command);

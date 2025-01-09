@@ -8,39 +8,27 @@ public class RoomNameIsCommand : IGameCommand
 {
     public string HelpText => "Renames the current room.";
 
-    public Regex Regex => new("^room name is (.+)$");
+    public Regex Pattern => new("^room name is (.+)$");
 
-    private string NewNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string NewNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public RoomNameIsCommand(
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await RoomNameIs()
-        );
-    }
-
-    private async Task<CommandResult> RoomNameIs()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser
-            .RoomNameIs(NewNameInInput);
+            return await _session.User.RoomNameIs(NewNameInInput);
         }
         else
         {

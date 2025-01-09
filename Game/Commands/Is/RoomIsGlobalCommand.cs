@@ -9,40 +9,29 @@ public class RoomIsGlobalCommand : IGameCommand
     public string HelpText =>
     "Sets the global accessibility of the current room.";
 
-    public Regex Regex => new("^room (is|is not) global$");
+    public Regex Pattern => new("^room (is|is not) global$");
 
-    private string WordInInput => _input.GetGroup(this.Regex, 1);
+    private string WordInInput => _input.GetGroup(this.Pattern, 1);
 
     private bool NewValue => WordInInput == "is" ? true : false;
 
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public RoomIsGlobalCommand(
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await RoomIsGlobal()
-        );
-    }
-
-    private async Task<CommandResult> RoomIsGlobal()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser
-            .RoomIsGlobal(NewValue);
+            return await _session.User.RoomIsGlobal(NewValue);
         }
         else
         {

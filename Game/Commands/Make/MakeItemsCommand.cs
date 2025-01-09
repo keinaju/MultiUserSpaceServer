@@ -12,38 +12,28 @@ public class MakeItemsCommand : IGameCommand
     public string HelpText =>
     "Creates a stack of items in the current being's inventory.";
 
-    public Regex Regex => new(@"^make (\d+) (.+)$");
+    public Regex Pattern => new(@"^make (\d+) (.+)$");
 
-    private string ItemNameInInput => _input.GetGroup(this.Regex, 2);
+    private string ItemNameInInput => _input.GetGroup(this.Pattern, 2);
 
-    private string QuantityInInput => _input.GetGroup(this.Regex, 1);
+    private string QuantityInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
     private readonly ISessionService _session;
 
     public MakeItemsCommand(
         GameContext context,
-        IResponsePayload response,
         IInputCommand input,
         ISessionService session
     )
     {
         _context = context;
-        _response = response;
         _input = input;
         _session = session;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await MakeItems()
-        );
-    }
-
-    private async Task<CommandResult> MakeItems()
+    public async Task<CommandResult> Run()
     {
         var ok = int.TryParse(QuantityInInput, out int quantity);
         if(!ok || quantity < 1)
@@ -60,12 +50,13 @@ public class MakeItemsCommand : IGameCommand
             return ItemDoesNotExist(ItemNameInInput);
         }
 
-        if(_session.AuthenticatedUser is null)
+        if(_session.User is null)
         {
             return UserIsNotSignedIn();
         }
-
-        return await _session.AuthenticatedUser
-        .MakeItems(item, quantity);
+        else
+        {
+            return await _session.User.MakeItems(item, quantity);
+        }
     }
 }

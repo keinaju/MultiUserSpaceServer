@@ -6,39 +6,33 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowUserCommand : IGameCommand
 {
-    public string HelpText =>
+    public string HelpText => 
     "Shows information about the user that is signed in.";
 
-    public Regex Regex => new("^(show|s) (user|u)$");
+    public Regex Pattern => new("^(show|s) (user|u)$");
 
-    private IResponsePayload _response;
     private ISessionService _session;
 
     public ShowUserCommand(
-        IResponsePayload response,
         ISessionService session
     )
     {
-        _response = response;
         _session = session;
     }
 
-    public Task Run()
+    public Task<CommandResult> Run()
     {
-        _response.AddResult(ShowUser());
-
-        return Task.CompletedTask;
-    }
-
-    private CommandResult ShowUser()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return _session.AuthenticatedUser.ShowUser();
+            return Task.FromResult(
+                _session.User.ShowUser()
+            );
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return Task.FromResult(
+                CommandResult.UserIsNotSignedIn()
+            );
         }
     }
 }

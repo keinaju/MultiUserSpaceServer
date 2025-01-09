@@ -8,38 +8,30 @@ public class ShowBeingCommand : IGameCommand
 {
     public string HelpText => "Shows the currently selected being.";
 
-    public Regex Regex => new("^(show|s) being$");
+    public Regex Pattern => new("^(show|s) being$");
 
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ShowBeingCommand(
-        IResponsePayload response,
         ISessionService session
     )
     {
-        _response = response;
         _session = session;
     }
 
-    public Task Run()
+    public Task<CommandResult> Run()
     {
-        _response.AddResult(
-            ShowBeing()
-        );
-
-        return Task.CompletedTask;
-    }
-
-    private CommandResult ShowBeing()
-    {
-        if (_session.AuthenticatedUser is not null)
+        if (_session.User is not null)
         {
-            return _session.AuthenticatedUser.ShowBeing();
+            return Task.FromResult(
+                _session.User.ShowBeing()
+            );
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return Task.FromResult(
+                CommandResult.UserIsNotSignedIn()
+            );
         }
     }
 }

@@ -11,46 +11,32 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
 {
     public string HelpText => "Sets the quantities for an item hatcher.";
 
-    public Regex Regex => new(
-        @"^hatcher (.+) quantity is (\d+) to (\d+)$"
-    );
+    public Regex Pattern => new(@"^hatcher (.+) quantity is (\d+) to (\d+)$");
 
-    private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
+    private string ItemNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private string MinimumQuantityInInput => _input.GetGroup(this.Regex, 2);
+    private string MinimumQuantityInInput => _input.GetGroup(this.Pattern, 2);
 
-    private string MaximumQuantityInInput => _input.GetGroup(this.Regex, 3);
+    private string MaximumQuantityInInput => _input.GetGroup(this.Pattern, 3);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ItemHatcherQuantityIsCommand(
         GameContext context,
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _context = context;
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await ItemHatcherQuantityIs()
-        );
-    }
-
-    private async Task<CommandResult> ItemHatcherQuantityIs()
-    {
-        bool minOk = int.TryParse(
-            MinimumQuantityInInput, out int minQuantity
-        );
+        bool minOk = int.TryParse(MinimumQuantityInInput, out int minQuantity);
         if(!minOk || minQuantity < 1)
         {
             return new CommandResult(StatusCode.Fail)
@@ -59,9 +45,7 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
             );
         }
 
-        bool maxOk = int.TryParse(
-            MaximumQuantityInInput, out int maxQuantity
-        );
+        bool maxOk = int.TryParse(MaximumQuantityInInput, out int maxQuantity);
         if(!maxOk || maxQuantity < 1)
         {
             return new CommandResult(StatusCode.Fail)
@@ -79,21 +63,19 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
         }
 
         var item = await _context.FindItem(ItemNameInInput);
-        if(item is not null)
+        if(item is null)
         {
-            if(_session.AuthenticatedUser is not null)
-            {
-                return await _session.AuthenticatedUser
-                .ItemHatcherQuantityIs(item, minQuantity, maxQuantity);
-            }
-            else
-            {
-                return UserIsNotSignedIn();
-            }
+            return ItemDoesNotExist(ItemNameInInput);
+        }
+
+        if(_session.User is null)
+        {
+            return UserIsNotSignedIn();
         }
         else
         {
-            return ItemDoesNotExist(ItemNameInInput);
+            return await _session.User
+            .ItemHatcherQuantityIs(item, minQuantity, maxQuantity);
         }
     }
 }

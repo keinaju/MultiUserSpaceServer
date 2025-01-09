@@ -8,36 +8,26 @@ public class ExploreCommand : IGameCommand
 {
     public string HelpText => "Explores the curiosity of the current room.";
 
-    public Regex Regex => new("^explore$");
+    public Regex Pattern => new("^explore$");
 
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ExploreCommand(
-        IResponsePayload response,
         ISessionService session
     )
     {
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await Explore()
-        );
-    }
-
-    private async Task<CommandResult> Explore()
-    {
-        if(_session.AuthenticatedUser is null)
+        if(_session.User is null)
         {
             return CommandResult.UserIsNotSignedIn();
         }
         else
         {
-            return await _session.AuthenticatedUser.Explore();
+            return await _session.User.Explore();
         }
     }
 }

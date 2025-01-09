@@ -32,9 +32,9 @@ public class GameService : IGameService
         }
         else if(commands.Count() == 1)
         {
-            var command = commands.First();
-
-            await command.Run();
+            _response.AddResult(
+                await commands.First().Run()
+            );
         }
         else
         {
@@ -45,7 +45,7 @@ public class GameService : IGameService
             foreach(var command in commands)
             {
                 _response.AddText(
-                    $"{command.Regex} = {command.HelpText}"
+                    $"{command.Pattern} = {command.HelpText}"
                 );
             }
         }

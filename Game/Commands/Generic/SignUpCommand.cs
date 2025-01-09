@@ -10,37 +10,25 @@ public class SignUpCommand : IGameCommand
 {
     public string HelpText => "Creates a new user.";
     
-    public Regex Regex => new("^sign up (.+) (.+)$");
+    public Regex Pattern => new("^sign up (.+) (.+)$");
 
-    private string UsernameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string UsernameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private string PasswordInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string PasswordInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
 
     public SignUpCommand(
         GameContext context,
-        IInputCommand input,
-        IResponsePayload response
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _response = response;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await TrySignUp()
-        );
-    }
-
-    private async Task<CommandResult> TrySignUp()
+    public async Task<CommandResult> Run()
     {
         var validationResult = TextSanitation.ValidateName(UsernameInInput);
         if(validationResult.GetStatus() == StatusCode.Fail)
@@ -50,7 +38,6 @@ public class SignUpCommand : IGameCommand
         else
         {
             var cleanName = TextSanitation.GetCleanName(UsernameInInput);
-
             if(await _context.UsernameIsReserved(cleanName))
             {
                 return NameIsReserved("user", cleanName);

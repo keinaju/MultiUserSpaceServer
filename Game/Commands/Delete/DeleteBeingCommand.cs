@@ -1,6 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Session;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Delete;
 
@@ -8,42 +9,31 @@ public class DeleteBeingCommand : IGameCommand
 {
     public string HelpText => "Deletes a being.";
 
-    public Regex Regex => new("^delete being (.+)$");
+    public Regex Pattern => new("^delete being (.+)$");
 
-    private string BeingNameInInput => _input.GetGroup(this.Regex, 1);
+    private string BeingNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private readonly IResponsePayload _response;
-    private readonly ISessionService _session;
     private readonly IInputCommand _input;
+    private readonly ISessionService _session;
 
     public DeleteBeingCommand(
-        IResponsePayload response,
-        ISessionService session,
-        IInputCommand input
+        IInputCommand input,
+        ISessionService session
     )
     {
-        _response = response;
-        _session = session;
         _input = input;
+        _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await DeleteBeing()
-        );
-    }
-
-    private async Task<CommandResult> DeleteBeing()
-    {
-        if(_session.AuthenticatedUser is null)
+        if(_session.User is null)
         {
-            return CommandResult.UserIsNotSignedIn();
+            return UserIsNotSignedIn();
         }
         else
         {
-            return await _session.AuthenticatedUser
-            .DeleteBeing(BeingNameInInput);
+            return await _session.User.DeleteBeing(BeingNameInInput);
         }
     }
 }

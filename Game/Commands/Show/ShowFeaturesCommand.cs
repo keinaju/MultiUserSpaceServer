@@ -11,28 +11,18 @@ public class ShowFeaturesCommand : IGameCommand
 {
     public string HelpText => "Shows all features.";
 
-    public Regex Regex => new("^(show|s) features$");
+    public Regex Pattern => new("^(show|s) features$");
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
 
     public ShowFeaturesCommand(
-        GameContext context,
-        IResponsePayload response
+        GameContext context
     )
     {
         _context = context;
-        _response = response;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await ShowFeatures()
-        );
-    }
-
-    private async Task<CommandResult> ShowFeatures()
+    public async Task<CommandResult> Run()
     {
         var features = await _context.FindAllFeatures();
         if(features.Count == 0)

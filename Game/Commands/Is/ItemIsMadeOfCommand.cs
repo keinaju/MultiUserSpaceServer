@@ -11,47 +11,34 @@ public class ItemIsMadeOfCommand : IGameCommand
 {
     public string HelpText => "Sets components in a craft plan.";
 
-    public Regex Regex => new(@"^item (.+) is made of (\d+) (.+)$");
+    public Regex Pattern => new(@"^item (.+) is made of (\d+) (.+)$");
 
-    private string ProductNameInInput => _input.GetGroup(this.Regex, 1);
+    private string ProductNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private string QuantityInInput => _input.GetGroup(this.Regex, 2);
+    private string QuantityInInput => _input.GetGroup(this.Pattern, 2);
 
-    private string ComponentNameInInput => _input.GetGroup(this.Regex, 3);
+    private string ComponentNameInInput => _input.GetGroup(this.Pattern, 3);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public ItemIsMadeOfCommand(
         GameContext context,
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _context = context;
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await ItemIsMadeOf()
-        );
-    }
-
-    private async Task<CommandResult> ItemIsMadeOf()
-    {        
         bool success = int.TryParse(QuantityInInput, out int quantity);
         if(!success || quantity < 0)
         {
-            _response.AddText(
-                Message.Invalid(QuantityInInput, "quantity")
-            );
             return new CommandResult(StatusCode.Fail)
             .AddMessage(Message.Invalid(QuantityInInput, "quantity"));
         }
@@ -74,9 +61,9 @@ public class ItemIsMadeOfCommand : IGameCommand
             .AddMessage("Component and product can not be the same item.");
         }
 
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser
+            return await _session.User
             .ItemIsMadeOf(product, component, quantity);
         }
         else

@@ -9,38 +9,28 @@ public class RoomPoolFeeIsCommand : IGameCommand
 {
     public string HelpText => "Sets the fee item of a room pool.";
 
-    public Regex Regex => new("^pool (.+) fee is (.+)$");
+    public Regex Pattern => new("^pool (.+) fee is (.+)$");
 
-    private string RoomPoolNameInInput => _input.GetGroup(this.Regex, 1);
+    private string RoomPoolNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private string ItemNameInInput => _input.GetGroup(this.Regex, 2);
+    private string ItemNameInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public RoomPoolFeeIsCommand(
         GameContext context,
         IInputCommand input,
-        IResponsePayload response,
         ISessionService session
     )
     {
         _context = context;
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await RoomPoolFeeIs()
-        );
-    }
-
-    private async Task<CommandResult> RoomPoolFeeIs()
+    public async Task<CommandResult> Run()
     {
         var pool = await _context.FindRoomPool(RoomPoolNameInInput);
         if(pool is null)
@@ -54,12 +44,13 @@ public class RoomPoolFeeIsCommand : IGameCommand
             return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
 
-        if(_session.AuthenticatedUser is null)
+        if(_session.User is null)
         {
             return CommandResult.UserIsNotSignedIn();
         }
-
-        return await _session.AuthenticatedUser
-        .RoomPoolFeeIs(pool, item);
+        else
+        {
+            return await _session.User.RoomPoolFeeIs(pool, item);
+        }
     }
 }

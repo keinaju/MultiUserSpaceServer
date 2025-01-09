@@ -11,28 +11,18 @@ public class ShowGlobalRoomsCommand : IGameCommand
 {
     public string HelpText => "Shows all globally accessible rooms.";
 
-    public Regex Regex => new("^(show|s) global rooms$");
+    public Regex Pattern => new("^(show|s) global rooms$");
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
 
     public ShowGlobalRoomsCommand(
-        GameContext context,
-        IResponsePayload response
+        GameContext context
     )
     {
         _context = context;
-        _response = response;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await ShowGlobalRooms()
-        );
-    }
-
-    private async Task<CommandResult> ShowGlobalRooms()
+    public async Task<CommandResult> Run()
     {
         var globalRooms = await _context.FindAllGlobalRooms();
 

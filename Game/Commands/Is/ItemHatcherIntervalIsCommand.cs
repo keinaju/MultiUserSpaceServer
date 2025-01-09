@@ -11,40 +11,28 @@ public class ItemHatcherIntervalIsCommand : IGameCommand
 {
     public string HelpText => "Sets the interval for an item hatcher.";
 
-    public Regex Regex => new(@"^hatcher (.+) interval is (\d+)$");
+    public Regex Pattern => new(@"^hatcher (.+) interval is (\d+)$");
 
-    private string ItemNameInInput =>
-    _input.GetGroup(this.Regex, 1);
+    private string ItemNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    private string IntervalInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string IntervalInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
     private readonly ISessionService _session;
 
     public ItemHatcherIntervalIsCommand(
         GameContext context,
-        IResponsePayload response,
         IInputCommand input,
         ISessionService session
     )
     {
         _context = context;
-        _response = response;
         _input = input;
         _session = session;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await ItemHatcherIntervalIs()
-        );
-    }
-
-    private async Task<CommandResult> ItemHatcherIntervalIs()
+    public async Task<CommandResult> Run()
     {
         bool ok = int.TryParse(IntervalInInput, out int interval);
         if(!ok || interval < 1)
@@ -54,21 +42,18 @@ public class ItemHatcherIntervalIsCommand : IGameCommand
         }
         
         var item = await _context.FindItem(ItemNameInInput);
-        if(item is not null)
+        if(item is null)
         {
-            if(_session.AuthenticatedUser is not null)
-            {
-                return await _session.AuthenticatedUser
-                .ItemHatcherIntervalIs(item, interval);
-            }
-            else
-            {
-                return UserIsNotSignedIn();
-            }
+            return ItemDoesNotExist(ItemNameInInput);
+        }
+
+        if(_session.User is null)
+        {
+            return UserIsNotSignedIn();
         }
         else
         {
-            return ItemDoesNotExist(ItemNameInInput);
+            return await _session.User.ItemHatcherIntervalIs(item, interval);
         }
     }
 }

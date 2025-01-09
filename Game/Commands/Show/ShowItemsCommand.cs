@@ -11,28 +11,18 @@ public class ShowItemsCommand : IGameCommand
 {
     public string HelpText => "Shows all items.";
 
-    public Regex Regex => new("^(show|s) items$");
+    public Regex Pattern => new("^(show|s) items$");
 
     private readonly GameContext _context;
-    private readonly IResponsePayload _response;
 
     public ShowItemsCommand(
-        GameContext context,
-        IResponsePayload response
+        GameContext context
     )
     {
         _context = context;
-        _response = response;
     }
 
-    public async Task Run()
-    {
-        _response.AddResult(
-            await ShowItems()
-        );
-    }
-
-    private async Task<CommandResult> ShowItems()
+    public async Task<CommandResult> Run()
     {
         var items = await _context.FindAllItems();
 

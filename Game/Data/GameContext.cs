@@ -381,6 +381,13 @@ namespace MUS.Game.Data
             );
         }
 
+        public async Task<User?> FindUser(string username)
+        {
+            return await Users.SingleOrDefaultAsync(
+                user => user.Username == username
+            );
+        }
+
         public async Task<GameSettings> GetGameSettings()
         {
             var settings = await GameSettings.FirstOrDefaultAsync();

@@ -9,33 +9,22 @@ public class RoomIsInBeingCommand : IGameCommand
     public string HelpText =>
     "Sets the current room as an inside room of the current being.";
 
-    public Regex Regex => new("^room is inside$");
+    public Regex Pattern => new("^room is inside$");
     
-    private readonly IResponsePayload _response;
     private readonly ISessionService _session;
 
     public RoomIsInBeingCommand(
-        IResponsePayload response,
         ISessionService session
     )
     {
-        _response = response;
         _session = session;
     }
 
-    public async Task Run()
+    public async Task<CommandResult> Run()
     {
-        _response.AddResult(
-            await RoomIsInBeing()
-        );
-    }
-
-    private async Task<CommandResult> RoomIsInBeing()
-    {
-        if(_session.AuthenticatedUser is not null)
+        if(_session.User is not null)
         {
-            return await _session.AuthenticatedUser
-            .RoomIsInBeing();
+            return await _session.User.RoomIsInBeing();
         }
         else
         {
