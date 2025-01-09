@@ -317,6 +317,11 @@ namespace MUS.Game.Data
             return await Offers.ToListAsync();
         }
 
+        public async Task<ICollection<RoomPool>> FindAllRoomPools()
+        {
+            return await RoomPools.ToListAsync();
+        }
+
         public async Task<bool> FeatureNameIsReserved(string featureName)
         {
             return await Features.AnyAsync(
@@ -359,9 +364,24 @@ namespace MUS.Game.Data
             );
         }
 
-        public async Task<GameSettings?> GetGameSettings()
+        public async Task<GameSettings> GetGameSettings()
         {
-            return await GameSettings.FirstOrDefaultAsync();
+            var settings = await GameSettings.FirstOrDefaultAsync();
+            return settings!;
+        }
+
+        public async Task<ulong> GetTickCount()
+        {
+            var tickCounter = await TickCounter.FirstOrDefaultAsync();
+
+            if(tickCounter is not null)
+            {
+                return tickCounter.TickCount;
+            }
+            else
+            {
+                return 0;
+            }
         }
 
         public async Task<string> GetUniqueBeingName(string beingName)

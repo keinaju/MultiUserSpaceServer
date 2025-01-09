@@ -243,13 +243,13 @@ public class User
     {
         var texts = new List<string>();
 
-        texts.Add($"You are {Username}.");
+        texts.Add($"Your username is {Username}.");
         if(IsBuilder)
         {
             texts.Add("You have access to builder commands.");
         }
         texts.Add(GetSelectedBeingText());
-        texts.Add(GetBeingsText());
+        texts.Add(GetCreatedBeingsText());
 
         return texts;
     }
@@ -737,6 +737,12 @@ public class User
         }
     }
 
+    public CommandResult ShowUser()
+    {
+        return new CommandResult(StatusCode.Success)
+        .AddMessages(this.GetDetails());
+    }
+
     public async Task<CommandResult> TakeItem(string itemName)
     {
         if(SelectedBeing is null)
@@ -761,11 +767,11 @@ public class User
         }
     }
 
-    private string GetBeingsText()
+    private string GetCreatedBeingsText()
     {
         if(CreatedBeings.Count > 0)
         {
-            return $"You have following beings: {GetBeingNames()}.";
+            return $"You have created {Message.Quantity("beings", CreatedBeings.Count)}: {GetCreatedBeingNames()}.";
         }
         else
         {
@@ -773,7 +779,7 @@ public class User
         }
     }
 
-    private string GetBeingNames()
+    private string GetCreatedBeingNames()
     {
         var beingNames = new List<string>();
 

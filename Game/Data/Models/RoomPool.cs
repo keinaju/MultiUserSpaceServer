@@ -223,6 +223,12 @@ public class RoomPool
         );
     }
 
+    public CommandResult Show()
+    {
+        return new CommandResult(StatusCode.Success)
+        .AddMessages(this.GetDetails());
+    }
+
     private async Task<Room> GenerateExpansion(Room from)
     {
         int randomIndex = new Random().Next(0, Prototypes.Count);

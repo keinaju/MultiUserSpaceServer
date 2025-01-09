@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Models;
 using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Show;
@@ -9,15 +8,12 @@ public class ShowUserCommand : IGameCommand
 {
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn
     ];
 
     public string HelpText =>
     "Shows information about the user that is signed in.";
 
     public Regex Regex => new("^(show|s) (user|u)$");
-
-    private User User => _session.AuthenticatedUser!;
 
     private IResponsePayload _response;
     private ISessionService _session;
@@ -33,8 +29,20 @@ public class ShowUserCommand : IGameCommand
 
     public Task Run()
     {
-        _response.AddList(User.GetDetails());
+        _response.AddResult(ShowUser());
 
         return Task.CompletedTask;
+    }
+
+    private CommandResult ShowUser()
+    {
+        if(_session.AuthenticatedUser is not null)
+        {
+            return _session.AuthenticatedUser.ShowUser();
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

@@ -1,8 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
@@ -14,28 +15,36 @@ public class ShowRoomPoolsCommand : IGameCommand
 
     public Regex Regex => new("^(show|s) pools$");
 
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
-    private readonly IRoomPoolRepository _ropoRepo;
 
     public ShowRoomPoolsCommand(
-        IResponsePayload response,
-        IRoomPoolRepository ropoRepo
+        GameContext context,
+        IResponsePayload response
     )
     {
+        _context = context;
         _response = response;
-        _ropoRepo = ropoRepo;
     }
 
     public async Task Run()
     {
-        var roomPools = await _ropoRepo.FindRoomPools();
-        if(roomPools.Count == 0)
-        {
-            _response.AddText("There are no room pools.");
-            return;
-        }
+        _response.AddResult(await ShowRoomPools());
+    }
 
-        _response.AddText($"Room pools are: {GetRoomPoolNames(roomPools)}.");
+    private async Task<CommandResult> ShowRoomPools()
+    {
+        var pools = await _context.FindAllRoomPools();
+        if(pools.Count == 0)
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage("There are no room pools.");
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"All room pools are: {GetRoomPoolNames(pools)}.");
+        }
     }
 
     private string GetRoomPoolNames(IEnumerable<RoomPool> roomPools)

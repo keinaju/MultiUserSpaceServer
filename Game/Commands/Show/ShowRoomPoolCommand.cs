@@ -1,7 +1,7 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Data;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
@@ -11,61 +11,44 @@ public class ShowRoomPoolCommand : IGameCommand
 
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserIsBuilder
     ];
 
     public Regex Regex => new("^(show|s) pool (.+)$");
 
-    private string RoomPoolNameInInput =>
-    _input.GetGroup(this.Regex, 2);
+    private string RoomPoolNameInInput => _input.GetGroup(this.Regex, 2);
 
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
-    private readonly IRoomPoolRepository _roomPoolRepo;
     private readonly IInputCommand _input;
 
     public ShowRoomPoolCommand(
+        GameContext context,
         IResponsePayload response,
-        IRoomPoolRepository roomPoolRepo,
         IInputCommand input
     )
     {
+        _context = context;
         _response = response;
-        _roomPoolRepo = roomPoolRepo;
         _input = input;
     }
 
     public async Task Run()
     {
-        if(await IsValid())
-        {
-            await ShowRoomPool();
-        }
+        _response.AddResult(
+            await ShowRoomPool()
+        );
     }
 
-    private async Task<bool> IsValid()
+    private async Task<CommandResult> ShowRoomPool()
     {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(RoomPoolNameInInput);
-        
-        if(roomPool is null)
+        var pool = await _context.FindRoomPool(RoomPoolNameInInput);
+        if(pool is null)
         {
-            _response.AddText(
-                Message.DoesNotExist(
-                    "room pool", RoomPoolNameInInput
-                )
-            );
-            return false;
+            return RoomPoolDoesNotExist(RoomPoolNameInInput);
         }
-
-        return true;
-    }
-
-    private async Task ShowRoomPool()
-    {
-        var roomPool = await _roomPoolRepo
-        .FindRoomPool(RoomPoolNameInInput);
-
-        _response.AddList(roomPool!.GetDetails());
+        else
+        {
+            return pool.Show();
+        }
     }
 }
