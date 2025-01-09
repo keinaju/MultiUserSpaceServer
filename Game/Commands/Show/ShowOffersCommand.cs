@@ -10,8 +10,6 @@ public class ShowOffersCommand : IGameCommand
 {
     public string HelpText => "Shows all offers in the current room.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(show|s) offers$");
 
     private readonly GameContext _context;

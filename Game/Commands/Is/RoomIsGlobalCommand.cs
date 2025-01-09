@@ -9,10 +9,6 @@ public class RoomIsGlobalCommand : IGameCommand
     public string HelpText =>
     "Sets the global accessibility of the current room.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^room (is|is not) global$");
 
     private string WordInInput => _input.GetGroup(this.Regex, 1);

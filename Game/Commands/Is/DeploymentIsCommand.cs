@@ -10,10 +10,6 @@ public class DeploymentIsCommand : IGameCommand
     public string HelpText =>
     "Sets the deployment of an item to the current being.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     private string ItemNameInInput => _input.GetGroup(this.Regex, 1);
 
     public Regex Regex => new("^item (.+) deploy is this$");

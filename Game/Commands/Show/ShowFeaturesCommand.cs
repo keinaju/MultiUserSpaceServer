@@ -11,8 +11,6 @@ public class ShowFeaturesCommand : IGameCommand
 {
     public string HelpText => "Shows all features.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(show|s) features$");
 
     private readonly GameContext _context;

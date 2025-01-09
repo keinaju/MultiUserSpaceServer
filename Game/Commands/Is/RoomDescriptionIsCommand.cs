@@ -9,10 +9,6 @@ public class RoomDescriptionIsCommand : IGameCommand
     public string HelpText =>
     "Sets the description of the current room.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^room description is (.+)$");
 
     private string DescriptionInInput =>

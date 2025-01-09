@@ -11,10 +11,6 @@ public class ItemHatcherIntervalIsCommand : IGameCommand
 {
     public string HelpText => "Sets the interval for an item hatcher.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new(@"^hatcher (.+) interval is (\d+)$");
 
     private string ItemNameInInput =>

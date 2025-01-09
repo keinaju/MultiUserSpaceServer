@@ -9,10 +9,6 @@ public class ShowRoomPoolCommand : IGameCommand
 {
     public string HelpText => "Shows details about a room pool.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^(show|s) pool (.+)$");
 
     private string RoomPoolNameInInput => _input.GetGroup(this.Regex, 2);

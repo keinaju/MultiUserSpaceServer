@@ -8,10 +8,6 @@ public class CuriosityIsCommand : IGameCommand
 {
     public string HelpText => "Sets the curiosity of the current room.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^curiosity is (.+)$");
 
     private string RoomPoolNameInInput =>

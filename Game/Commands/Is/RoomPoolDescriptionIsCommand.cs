@@ -7,12 +7,7 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomPoolDescriptionIsCommand : IGameCommand
 {
-    public string HelpText =>
-    "Sets the description of a room pool.";
-
-    public Condition[] Conditions =>
-    [
-    ];
+    public string HelpText => "Sets the description of a room pool.";
 
     public Regex Regex =>
     new("^pool (.+) description is (.+)$");

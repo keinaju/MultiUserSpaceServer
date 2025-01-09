@@ -6,10 +6,6 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowRoomCommand : IGameCommand
 {
-    public Condition[] Conditions =>
-    [
-    ];
-    
     public string HelpText => "Shows the current room.";
 
     public Regex Regex => new("^(show|s) (room|r)$");

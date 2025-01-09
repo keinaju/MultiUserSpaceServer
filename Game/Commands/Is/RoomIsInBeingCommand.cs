@@ -9,10 +9,6 @@ public class RoomIsInBeingCommand : IGameCommand
     public string HelpText =>
     "Sets the current room as an inside room of the current being.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^room is inside$");
     
     private readonly IResponsePayload _response;

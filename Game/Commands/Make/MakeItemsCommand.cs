@@ -9,10 +9,6 @@ namespace MUS.Game.Commands.Make;
 
 public class MakeItemsCommand : IGameCommand
 {
-    public Condition[] Conditions =>
-    [
-    ];
-
     public string HelpText =>
     "Creates a stack of items in the current being's inventory.";
 

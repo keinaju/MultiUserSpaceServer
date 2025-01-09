@@ -6,10 +6,6 @@ namespace MUS.Game.Commands.Generic;
 
 public class GoCommand : IGameCommand
 {
-    public Condition[] Conditions =>
-    [
-    ];
-
     public string HelpText =>
     "Moves a selected being to another room.";
 

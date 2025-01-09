@@ -8,8 +8,6 @@ public class ExploreCommand : IGameCommand
 {
     public string HelpText => "Explores the curiosity of the current room.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^explore$");
 
     private readonly IResponsePayload _response;

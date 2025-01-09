@@ -9,10 +9,6 @@ public class RoomPoolNameIsCommand : IGameCommand
 {
     public string HelpText => "Renames a room pool.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^pool (.+) name is (.+)$");
 
     private string OldRoomPoolNameInInput =>

@@ -7,11 +7,7 @@ namespace MUS.Game.Commands.New;
 public class NewRoomPoolCommand : IGameCommand
 {
     public string HelpText => "Creates a new room pool.";
-
-    public Condition[] Conditions =>
-    [
-    ];
-
+    
     public Regex Regex => new("^new pool (.+)$");
 
     private string PoolNameInInput => _input.GetGroup(this.Regex, 1);

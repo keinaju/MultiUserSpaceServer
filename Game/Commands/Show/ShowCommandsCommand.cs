@@ -8,8 +8,6 @@ public class ShowCommandsCommand : IGameCommand
 {
     public string HelpText => "Shows all commands.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(help|show commands|s commands)$");
 
     private readonly IResponsePayload _response;

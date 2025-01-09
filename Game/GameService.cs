@@ -5,18 +5,15 @@ namespace MUS.Game;
 public class GameService : IGameService
 {
     private readonly ICommandParser _parser;
-    private readonly IConditionFilter _filter;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
 
     public GameService(
         ICommandParser parser,
-        IConditionFilter filter,
         IResponsePayload response,
         IInputCommand input
     )
     {
-        _filter = filter;
         _parser = parser;
         _response = response;
         _input = input;
@@ -37,10 +34,7 @@ public class GameService : IGameService
         {
             var command = commands.First();
 
-            if(_filter.MeetsConditions(command.Conditions))
-            {
-                await command.Run();
-            }
+            await command.Run();
         }
         else
         {

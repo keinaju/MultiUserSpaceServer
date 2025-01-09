@@ -8,10 +8,6 @@ public class DeployCommand : IGameCommand
 {
     public string HelpText => "Deploys an item to a being.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^deploy (.+)$");
 
     private string ItemNameInInput =>

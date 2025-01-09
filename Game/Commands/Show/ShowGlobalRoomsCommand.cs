@@ -11,8 +11,6 @@ public class ShowGlobalRoomsCommand : IGameCommand
 {
     public string HelpText => "Shows all globally accessible rooms.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(show|s) global rooms$");
 
     private readonly GameContext _context;

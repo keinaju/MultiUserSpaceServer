@@ -10,10 +10,6 @@ public class ItemNameIsCommand : IGameCommand
 {
     public string HelpText => "Renames an item.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^item (.+) name is (.+)$");
 
     private string OldItemNameInInput =>

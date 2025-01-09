@@ -11,8 +11,6 @@ public class ShowRoomPoolsCommand : IGameCommand
 {
     public string HelpText => "Shows all room pools.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(show|s) pools$");
 
     private readonly GameContext _context;

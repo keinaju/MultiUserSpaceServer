@@ -6,12 +6,7 @@ namespace MUS.Game.Commands.Is;
 
 public class ItemDescriptionIsCommand : IGameCommand
 {
-    public string HelpText =>
-    "Sets the description of an item.";
-
-    public Condition[] Conditions =>
-    [
-    ];
+    public string HelpText => "Sets the description of an item.";
 
     public Regex Regex => new("^item (.+) description is (.+)$");
 

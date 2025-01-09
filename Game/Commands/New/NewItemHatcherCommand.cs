@@ -9,10 +9,6 @@ public class NewItemHatcherCommand : IGameCommand
 {
     public string HelpText => "Creates a new item hatcher.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^new hatcher (.+)$");
 
     private string ItemNameInInput => _input.GetGroup(this.Regex, 1);

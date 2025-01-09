@@ -8,10 +8,6 @@ public class DeleteBeingCommand : IGameCommand
 {
     public string HelpText => "Deletes a being.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^delete being (.+)$");
 
     private string BeingNameInInput => _input.GetGroup(this.Regex, 1);

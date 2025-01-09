@@ -11,10 +11,6 @@ public class SellCommand : IGameCommand
 {
     public string HelpText => "Creates an offer to trade items.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new(@"^(offer|sell|trade) (\d+) (.+) for (\d+) (.+)$");
 
     private string SellQuantityInInput => _input.GetGroup(this.Regex, 2);

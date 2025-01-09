@@ -12,8 +12,6 @@ public class SignInCommand : IGameCommand
 {
     private const string UNSUCCESSFUL_MESSAGE = "Sign in failed.";
 
-    public Condition[] Conditions => [];
-
     public string HelpText => "Creates a user session.";
 
     public Regex Regex => new("^sign in (.+) (.+)$");

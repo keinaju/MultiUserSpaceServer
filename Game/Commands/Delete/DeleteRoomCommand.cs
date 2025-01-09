@@ -8,10 +8,6 @@ public class DeleteRoomCommand : IGameCommand
 {
     public string HelpText => "Deletes a room.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^delete room (.+)$");
 
     private string RoomNameInInput => _input.GetGroup(this.Regex, 1);

@@ -9,8 +9,6 @@ public class ShowTimeCommand : IGameCommand
 {
     public string HelpText => "Shows game's time.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(show|s) time$");
 
     private readonly GameContext _context;

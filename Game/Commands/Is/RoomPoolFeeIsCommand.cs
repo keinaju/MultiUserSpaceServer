@@ -9,10 +9,6 @@ public class RoomPoolFeeIsCommand : IGameCommand
 {
     public string HelpText => "Sets the fee item of a room pool.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^pool (.+) fee is (.+)$");
 
     private string RoomPoolNameInInput => _input.GetGroup(this.Regex, 1);

@@ -10,8 +10,6 @@ public class TickIntervalIsCommand : IGameCommand
 {
     public string HelpText => "Sets the tick interval of the game.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new(@"^tick interval is (\d+)$");
 
     private const int MINIMUM_INTERVAL_SECONDS = 5;

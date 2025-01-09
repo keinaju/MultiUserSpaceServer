@@ -11,10 +11,6 @@ public class ItemIsMadeOfCommand : IGameCommand
 {
     public string HelpText => "Sets components in a craft plan.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new(@"^item (.+) is made of (\d+) (.+)$");
 
     private string ProductNameInInput => _input.GetGroup(this.Regex, 1);

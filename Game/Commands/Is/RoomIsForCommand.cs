@@ -10,10 +10,6 @@ public class RoomIsForCommand : IGameCommand
     public string HelpText =>
     "Sets a requirement for a feature in the current room.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^room is for (.+)$");
 
     private string FeatureNameInInput =>

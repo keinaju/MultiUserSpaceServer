@@ -6,10 +6,6 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowUserCommand : IGameCommand
 {
-    public Condition[] Conditions =>
-    [
-    ];
-
     public string HelpText =>
     "Shows information about the user that is signed in.";
 

@@ -8,8 +8,6 @@ public class ShowItemCommand : IGameCommand
 {
     public string HelpText => "Shows details about an item.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(show|s) item (.+)$");
 
     private string ItemNameInInput => _input.GetGroup(this.Regex, 2);

@@ -11,10 +11,6 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
 {
     public string HelpText => "Sets the quantities for an item hatcher.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new(
         @"^hatcher (.+) quantity is (\d+) to (\d+)$"
     );

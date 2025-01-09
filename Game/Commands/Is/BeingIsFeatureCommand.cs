@@ -6,12 +6,7 @@ namespace MUS.Game.Commands.Is;
 
 public class BeingIsFeatureCommand : IGameCommand
 {
-    public string HelpText =>
-    "Adds a feature in the current being.";
-
-    public Condition[] Conditions =>
-    [
-    ];
+    public string HelpText => "Adds a feature in the current being.";
 
     public Regex Regex => new("^being feature is (.+)$");
 

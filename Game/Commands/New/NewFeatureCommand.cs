@@ -8,10 +8,6 @@ public class NewFeatureCommand : IGameCommand
 {
     public string HelpText => "Creates a new feature.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^new feature (.+)$");
 
     private string FeatureNameInInput => _input.GetGroup(this.Regex, 1);

@@ -8,10 +8,6 @@ public class DeleteFeatureCommand : IGameCommand
 {
     public string HelpText => "Deletes a feature.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^delete feature (.+)$");
 
     private string FeatureNameInInput => _input.GetGroup(this.Regex, 1);

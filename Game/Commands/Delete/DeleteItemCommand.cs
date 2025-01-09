@@ -8,10 +8,6 @@ public class DeleteItemCommand : IGameCommand
 {
     public string HelpText => "Deletes an item.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^delete item (.+)$");
 
     private string ItemNameInInput => _input.GetGroup(this.Regex, 1);

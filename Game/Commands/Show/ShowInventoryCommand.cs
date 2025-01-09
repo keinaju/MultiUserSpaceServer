@@ -6,13 +6,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowInventoryCommand : IGameCommand
 {
-    public string HelpText =>
-    "Shows the inventory of the current being.";
-
-    public Condition[] Conditions =>
-    [
-    ];
-
+    public string HelpText => "Shows the inventory of the current being.";
+    
     public Regex Regex => new("^(show|s) (inventory|i)$");
 
     private readonly IResponsePayload _response;

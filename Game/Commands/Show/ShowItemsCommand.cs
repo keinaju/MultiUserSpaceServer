@@ -11,8 +11,6 @@ public class ShowItemsCommand : IGameCommand
 {
     public string HelpText => "Shows all items.";
 
-    public Condition[] Conditions => [];
-
     public Regex Regex => new("^(show|s) items$");
 
     private readonly GameContext _context;

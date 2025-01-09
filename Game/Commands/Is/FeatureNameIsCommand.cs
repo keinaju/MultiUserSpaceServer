@@ -8,10 +8,6 @@ public class FeatureNameIsCommand : IGameCommand
 {
     public string HelpText => "Renames a feature.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^feature (.+) name is (.+)$");
 
     private string OldFeatureNameInInput =>

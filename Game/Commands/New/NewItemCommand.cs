@@ -8,10 +8,6 @@ public class NewItemCommand : IGameCommand
 {
     public string HelpText => "Creates a new item.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^new item (.+)$");
 
     private string ItemNameInInput => _input.GetGroup(this.Regex, 1);

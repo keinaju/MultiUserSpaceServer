@@ -6,10 +6,6 @@ namespace MUS.Game.Commands.New;
 
 public class NewRoomCommand : IGameCommand
 {
-    public Condition[] Conditions =>
-    [
-    ];
-
     public string HelpText =>
     "Creates a new room and connects it to the current room.";
 

@@ -10,10 +10,6 @@ public class NewBeingCommand : IGameCommand
 
     public Regex Regex => new("^new being (.+)$");
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     private string BeingNameInInput => _input.GetGroup(this.Regex, 1);
 
     private readonly IInputCommand _input;

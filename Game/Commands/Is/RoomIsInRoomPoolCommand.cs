@@ -10,10 +10,6 @@ public class RoomIsInRoomPoolCommand : IGameCommand
     public string HelpText =>
     "Adds the current room in a room pool.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^room is in pool (.+)$");
 
     private string RoomPoolNameInInput =>

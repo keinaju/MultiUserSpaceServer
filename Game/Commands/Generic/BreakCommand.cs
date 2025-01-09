@@ -8,10 +8,6 @@ public class BreakCommand : IGameCommand
 {
     public string HelpText => "Breaks an item to components.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^break (.+)$");
 
     private string ItemNameInInput =>

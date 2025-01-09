@@ -8,8 +8,6 @@ namespace MUS.Game.Commands.Generic;
 
 public class SignUpCommand : IGameCommand
 {
-    public Condition[] Conditions => [];
-
     public string HelpText => "Creates a new user.";
     
     public Regex Regex => new("^sign up (.+) (.+)$");

@@ -8,10 +8,6 @@ public class RoomNameIsCommand : IGameCommand
 {
     public string HelpText => "Renames the current room.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^room name is (.+)$");
 
     private string NewNameInInput =>

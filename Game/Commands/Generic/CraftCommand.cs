@@ -8,10 +8,6 @@ public class CraftCommand : IGameCommand
 {
     public string HelpText => "Crafts an item from components.";
 
-    public Condition[] Conditions =>
-    [
-    ];
-
     public Regex Regex => new("^craft (.+)$");
 
     private string ItemNameInInput =>
