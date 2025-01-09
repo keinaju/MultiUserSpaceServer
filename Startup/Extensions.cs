@@ -28,7 +28,6 @@ public static class Extensions
     {
         services.AddScoped<ICommandParser, CommandParser>();
         services.AddScoped<IConditionFilter, ConditionFilter>();
-        services.AddScoped<IGameCommandValidation, GameCommandValidation>();
 
         services.AddScoped<IGameCommand, BeingIsFeatureCommand>();
         services.AddScoped<IGameCommand, BeingNameIsCommand>();
