@@ -701,6 +701,27 @@ public class User
         }
     }
 
+    public async Task<CommandResult> SetTickInterval(int intervalSeconds)
+    {
+        if(IsBuilder)
+        {
+            var settings = await _context.GetGameSettings();
+
+            settings.TickIntervalSeconds = intervalSeconds;
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Set("tick interval", $"{intervalSeconds} seconds")
+            );
+        }
+        else
+        {
+            return UserIsNotBuilder();
+        }
+    }
+
     public CommandResult ShowBeing()
     {
         if (SelectedBeing is not null)

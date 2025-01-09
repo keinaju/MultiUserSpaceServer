@@ -41,6 +41,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, DeleteRoomCommand>();
         services.AddScoped<IGameCommand, DeleteRoomPoolCommand>();
         services.AddScoped<IGameCommand, DeployCommand>();
+        services.AddScoped<IGameCommand, DeploymentIsCommand>();
         services.AddScoped<IGameCommand, ExploreCommand>();
         services.AddScoped<IGameCommand, FeatureNameIsCommand>();
         services.AddScoped<IGameCommand, GoCommand>();
@@ -51,7 +52,6 @@ public static class Extensions
         services.AddScoped<IGameCommand, ItemNameIsCommand>();
         services.AddScoped<IGameCommand, MakeItemsCommand>();
         services.AddScoped<IGameCommand, NewBeingCommand>();
-        services.AddScoped<IGameCommand, DeploymentIsCommand>();
         services.AddScoped<IGameCommand, NewFeatureCommand>();
         services.AddScoped<IGameCommand, NewItemHatcherCommand>();
         services.AddScoped<IGameCommand, NewItemCommand>();
@@ -85,6 +85,7 @@ public static class Extensions
         services.AddScoped<IGameCommand, SignInCommand>();
         services.AddScoped<IGameCommand, SignUpCommand>();
         services.AddScoped<IGameCommand, TakeCommand>();
+        services.AddScoped<IGameCommand, TickIntervalIsCommand>();
     }
 
     private static void AddRepositories(this IServiceCollection services)

@@ -1,13 +1,15 @@
-﻿using MUS.Game.Data.Repositories;
+﻿using MUS.Game.Data;
+using MUS.Game.Data.Repositories;
 
 namespace MUS.Game.Clock;
 
 public class GameClock : BackgroundService
 {
-    public const int INTERVAL_MILLISECONDS = 5_000;
+    private readonly IServiceProvider _services;
+
+    private TimeSpan DEFAULT_INTERVAL = TimeSpan.FromSeconds(15);
 
     private ulong _tickCount = 0;
-    private readonly IServiceProvider _services;
 
     public GameClock(
         IServiceProvider services
@@ -19,7 +21,7 @@ public class GameClock : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         //Start a repeating timer to increase ticks
-        using (var timer = new PeriodicTimer(TimeSpan.FromMilliseconds(INTERVAL_MILLISECONDS)))
+        using (var timer = new PeriodicTimer(DEFAULT_INTERVAL))
         {
             try
             {
@@ -29,7 +31,15 @@ public class GameClock : BackgroundService
                     {
                         _tickCount =  await RetrieveTickCountFromDatabase();
                     }
-                    await OnTick(new TickEventArgs() { TickCount = _tickCount });
+                    
+                    await OnTick(
+                        new TickEventArgs()
+                        { TickCount = _tickCount }
+                    );
+
+                    // Update timer interval
+                    timer.Period = await RetrieveTickIntervalFromDatabase();
+                    
                     _tickCount++;
                 }
             }
@@ -42,7 +52,10 @@ public class GameClock : BackgroundService
     private async Task OnTick(TickEventArgs eventArgs)
     {
         using var scope = _services.CreateScope();
-        foreach (var service in scope.ServiceProvider.GetRequiredService<IEnumerable<IGameClockListener>>())
+
+        var listeners = scope.ServiceProvider
+        .GetRequiredService<IEnumerable<IGameClockListener>>();
+        foreach (var service in listeners)
         {
             await service.GetTask(this, eventArgs);
         }
@@ -62,6 +75,22 @@ public class GameClock : BackgroundService
 
         //If tick exists in database, retrieve it
         return tickCounterInDb.TickCount;
+    }
+
+    private async Task<TimeSpan> RetrieveTickIntervalFromDatabase()
+    {
+        using var scope = _services.CreateScope();
+
+        var context = scope.ServiceProvider.GetRequiredService<GameContext>();
+        var settings = await context.GetGameSettings();
+        if(settings is not null)
+        {
+            return TimeSpan.FromSeconds(settings.TickIntervalSeconds);
+        }
+        else
+        {
+            return DEFAULT_INTERVAL;
+        }
     }
 }
 
