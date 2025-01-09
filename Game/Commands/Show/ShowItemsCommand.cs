@@ -1,8 +1,9 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
@@ -14,28 +15,39 @@ public class ShowItemsCommand : IGameCommand
 
     public Regex Regex => new("^(show|s) items$");
 
-    private readonly IItemRepository _itemRepo;
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
 
     public ShowItemsCommand(
-        IItemRepository itemRepo,
+        GameContext context,
         IResponsePayload response
     )
     {
-        _itemRepo = itemRepo;
+        _context = context;
         _response = response;
     }
 
     public async Task Run()
     {
-        var items = await _itemRepo.FindItems();
+        _response.AddResult(
+            await ShowItems()
+        );
+    }
+
+    private async Task<CommandResult> ShowItems()
+    {
+        var items = await _context.FindAllItems();
+
         if(items.Count == 0)
         {
-            _response.AddText("There are no items.");
-            return;
+            return new CommandResult(StatusCode.Success)
+            .AddMessage("There are no items.");
         }
-
-        _response.AddText($"All items are: {GetItemNames(items)}.");
+        else
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"All items are: {GetItemNames(items)}.");
+        }
     }
 
     private string GetItemNames(IEnumerable<Item> items)

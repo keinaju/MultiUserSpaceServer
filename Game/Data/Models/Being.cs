@@ -337,6 +337,13 @@ public class Being
             $"{Name} has {(content is null ? "no items" : content)}."
         );
     }
+
+    public CommandResult ShowRoom()
+    {
+        return new CommandResult(StatusCode.Success)
+        .AddMessage($"{this.Name} looks at the {this.InRoom.Name}.")
+        .AddMessages(this.InRoom.GetDetails());
+    }
     
     public async Task<CommandResult> TakeItemFromRoom(string itemName)
     {
@@ -353,7 +360,7 @@ public class Being
         }
         else
         {
-            return CommandResult.ItemDoesNotExist(itemName);
+            return ItemDoesNotExist(itemName);
         }
     }
 

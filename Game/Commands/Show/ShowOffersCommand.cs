@@ -1,43 +1,63 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data;
+using MUS.Game.Data.Models;
 using MUS.Game.Utilities;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
 public class ShowOffersCommand : IGameCommand
 {
-    public string HelpText =>
-    "Shows offers.";
+    public string HelpText => "Shows all offers.";
 
     public Condition[] Conditions => [];
 
-    public Regex Regex => new("^(show|s) (.*) offers$");
+    public Regex Regex => new("^(show|s) offers$");
 
-    private string ItemNameInInput =>
-    _input.GetGroup(this.Regex, 2);
-
-    private readonly IOfferManager _offerManager;
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
-    private readonly IInputCommand _input;
 
     public ShowOffersCommand(
-        IOfferManager offerManager,
-        IResponsePayload response,
-        IInputCommand input
+        GameContext context,
+        IResponsePayload response
     )
     {
-        _offerManager = offerManager;
+        _context = context;
         _response = response;
-        _input = input;
     }
 
     public async Task Run()
     {
-        _response.AddText(
-            await _offerManager.FindOffers(
-                ItemNameInInput == "*" ?
-                "" : ItemNameInInput
-            )
+        _response.AddResult(
+            await ShowOffers()
         );
+    }
+
+    private async Task<CommandResult> ShowOffers()
+    {
+        var offers = await _context.FindAllOffers();
+        if(offers.Count == 0)
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage("There are no offers.");
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"All offers are: {GetOfferDetails(offers)}.");
+        }
+    }
+
+    private string GetOfferDetails(IEnumerable<Offer> offers)
+    {
+        var offerDetails = new List<string>();
+
+        foreach(var offer in offers)
+        {
+            offerDetails.Add(offer.GetDetails());
+        }
+
+        return Message.List(offerDetails);
     }
 }

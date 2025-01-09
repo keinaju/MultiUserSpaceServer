@@ -196,6 +196,12 @@ public class Item
         );
     }
 
+    public CommandResult Show()
+    {
+        return new CommandResult(StatusCode.Success)
+        .AddMessages(this.GetDetails());
+    }
+
     private string GetCraftPlanText()
     {
         if(CraftPlan is not null)

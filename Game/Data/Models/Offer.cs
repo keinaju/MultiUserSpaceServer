@@ -34,10 +34,6 @@ public class Offer
         set => _inventory = value;
     }
 
-    public override string ToString() =>
-    $"({Message.Quantity(ItemToSell.Name, QuantityToSell)} "
-    + $"for {Message.Quantity(ItemToBuy.Name, QuantityToBuy)})";
-
     private readonly ILazyLoader _lazyLoader;
     private Item _itemToBuy;
     private Item _itemToSell;
@@ -48,5 +44,11 @@ public class Offer
     private Offer(ILazyLoader lazyLoader)
     {
         _lazyLoader = lazyLoader;
+    }
+
+    public string GetDetails()
+    {
+        return $"{Message.Quantity(ItemToSell.Name, QuantityToSell)} " +
+        $"for {Message.Quantity(ItemToBuy.Name, QuantityToBuy)}";
     }
 }

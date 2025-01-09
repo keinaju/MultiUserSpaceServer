@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data;
-using MUS.Game.Data.Models;
+using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Show;
 
@@ -9,40 +8,40 @@ public class ShowRoomCommand : IGameCommand
 {
     public Condition[] Conditions =>
     [
-        Condition.UserIsSignedIn,
-        Condition.UserHasSelectedBeing
     ];
     
     public string HelpText => "Shows the current room.";
 
     public Regex Regex => new("^(show|s) (room|r)$");
 
-    private Being CurrentBeing => _player.GetSelectedBeing();
-
-    private Room CurrentRoom => _player.GetCurrentRoom();
-
-    private readonly IPlayerState _player;
     private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public ShowRoomCommand(
-        IPlayerState player,
-        IResponsePayload response
+        IResponsePayload response,
+        ISessionService session
     )
     {
-        _player = player;
         _response = response;
+        _session = session;
     }
 
-    public Task Run()
+    public async Task Run()
     {
-        _response.AddText(
-            $"{CurrentBeing.Name} looks at the {CurrentRoom.Name}."
+        _response.AddResult(
+            ShowRoom()
         );
+    }
 
-        _response.AddList(
-            _player.GetCurrentRoom().GetDetails()
-        );
-
-        return Task.CompletedTask;
+    private CommandResult ShowRoom()
+    {
+        if(_session.AuthenticatedUser is not null)
+        {
+            return _session.AuthenticatedUser.ShowRoom();
+        }
+        else
+        {
+            return CommandResult.UserIsNotSignedIn();
+        }
     }
 }

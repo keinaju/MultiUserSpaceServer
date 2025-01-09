@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Data.Repositories;
-using MUS.Game.Utilities;
+using MUS.Game.Data;
 
 namespace MUS.Game.Commands.Show;
 
@@ -13,36 +12,40 @@ public class ShowItemCommand : IGameCommand
 
     public Regex Regex => new("^(show|s) item (.+)$");
 
-    private string ItemName => _input.GetGroup(this.Regex, 2);
+    private string ItemNameInInput => _input.GetGroup(this.Regex, 2);
 
-    private readonly IItemRepository _itemRepo;
+    private readonly GameContext _context;
     private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
 
     public ShowItemCommand(
-        IItemRepository itemRepo,
+        GameContext context,
         IResponsePayload response,
         IInputCommand input
     )
     {
-        _itemRepo = itemRepo;
+        _context = context;
         _response = response;
         _input = input;
     }
 
     public async Task Run()
     {
-        var item = await _itemRepo.FindItem(ItemName);
+        _response.AddResult(
+            await ShowItem()
+        );
+    }
 
-        if(item is not null)
+    private async Task<CommandResult> ShowItem()
+    {
+        var item = await _context.FindItem(ItemNameInInput);
+        if(item is null)
         {
-            _response.AddList(item.GetDetails());
+            return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
         else
         {
-            _response.AddText(
-                Message.DoesNotExist("item", ItemName)
-            );
+            return item.Show();
         }
     }
 }

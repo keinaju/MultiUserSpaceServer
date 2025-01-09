@@ -307,6 +307,16 @@ namespace MUS.Game.Data
             ).ToListAsync();
         }
 
+        public async Task<ICollection<Item>> FindAllItems()
+        {
+            return await Items.ToListAsync();
+        }
+
+        public async Task<ICollection<Offer>> FindAllOffers()
+        {
+            return await Offers.ToListAsync();
+        }
+
         public async Task<bool> FeatureNameIsReserved(string featureName)
         {
             return await Features.AnyAsync(

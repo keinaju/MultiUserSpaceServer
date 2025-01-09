@@ -223,7 +223,7 @@ public class SellCommand : IGameCommand
         await _offerRepo.CreateOffer(offer);
 
         _response.AddText(
-            Message.Created($"offer {offer.ToString()}")
+            Message.Created($"offer {offer.GetDetails()}")
         );
     }
 
@@ -251,6 +251,6 @@ public class SellCommand : IGameCommand
         // Remove old offer from database
         await _offerRepo.DeleteOffer(offerToDelete.PrimaryKey);
 
-        _response.AddText($"You traded {newOffer.ToString()}.");
+        _response.AddText($"You traded {newOffer.GetDetails()}.");
     }
 }
