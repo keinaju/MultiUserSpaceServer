@@ -189,14 +189,14 @@ public class Inventory
     }
 
     public async Task TransferTo(
-        Inventory receiver,
+        Inventory receivingInventory,
         Item item,
         int quantity
     )
     {
         this.RemoveItems(item, quantity);
 
-        receiver.AddItems(item, quantity);
+        receivingInventory.AddItems(item, quantity);
 
         await _context.SaveChangesAsync();
     }

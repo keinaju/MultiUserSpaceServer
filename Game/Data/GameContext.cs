@@ -63,9 +63,10 @@ namespace MUS.Game.Data
                 new Being()
                 {
                     CreatedByUser = creator,
-                    Inventory = new Inventory(),
+                    FreeInventory = new Inventory(),
                     InRoom = settings!.DefaultSpawnRoom,
-                    Name = cleanName
+                    Name = cleanName,
+                    TradeInventory = new Inventory()
                 }
             );
 
@@ -350,6 +351,20 @@ namespace MUS.Game.Data
             );
         }
 
+        public async Task<List<Offer>> FindMatchingOffers(Offer newOffer)
+        {
+            var offers = await Offers.Where(offerInDb =>
+                (offerInDb.ItemToBuy == newOffer.ItemToSell)
+                && (offerInDb.ItemToSell == newOffer.ItemToBuy)
+                && (offerInDb.QuantityToBuy <= newOffer.QuantityToSell)
+                && (offerInDb.QuantityToSell == newOffer.QuantityToBuy)
+                && (offerInDb.CreatedByBeing.TradeInventory != newOffer.CreatedByBeing.TradeInventory)
+                && (offerInDb.CreatedByBeing.InRoom == newOffer.CreatedByBeing.InRoom)
+            ).ToListAsync();
+
+            return offers;
+        }
+        
         public async Task<Room?> FindRoom(string roomName)
         {
             return await Rooms.SingleOrDefaultAsync(

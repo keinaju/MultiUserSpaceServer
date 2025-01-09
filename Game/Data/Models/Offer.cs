@@ -9,6 +9,13 @@ public class Offer
     [Key]
     public int PrimaryKey { get; set; }
 
+    public int CreatedByBeingPrimaryKey { get; set; }
+    public required Being CreatedByBeing
+    {
+        get => _lazyLoader.Load(this, ref _createdByBeing);
+        set => _createdByBeing = value;
+    }
+
     public int ItemToSellPrimaryKey { get; set; }
     public required Item ItemToSell
     {
@@ -27,17 +34,10 @@ public class Offer
 
     public required int QuantityToBuy { get; set; }
 
-    public int InventoryPrimaryKey { get; set; }
-    public required Inventory Inventory
-    {
-        get => _lazyLoader.Load(this, ref _inventory);
-        set => _inventory = value;
-    }
-
     private readonly ILazyLoader _lazyLoader;
     private Item _itemToBuy;
     private Item _itemToSell;
-    private Inventory _inventory;
+    private Being _createdByBeing;
 
     public Offer() {}
 
@@ -48,7 +48,8 @@ public class Offer
 
     public string GetDetails()
     {
-        return $"{Message.Quantity(ItemToSell.Name, QuantityToSell)} " +
-        $"for {Message.Quantity(ItemToBuy.Name, QuantityToBuy)}";
+        return $"{CreatedByBeing.Name} trades" +
+        $" {Message.Quantity(ItemToSell.Name, QuantityToSell)}" +
+        $" for {Message.Quantity(ItemToBuy.Name, QuantityToBuy)}";
     }
 }
