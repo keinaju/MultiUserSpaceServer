@@ -1,15 +1,14 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Data.Models;
-using MUS.Game.Utilities;
+using MUS.Game.Session;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
 public class ShowOffersCommand : IGameCommand
 {
-    public string HelpText => "Shows all offers.";
+    public string HelpText => "Shows all offers in the current room.";
 
     public Condition[] Conditions => [];
 
@@ -17,14 +16,17 @@ public class ShowOffersCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IResponsePayload _response;
+    private readonly ISessionService _session;
 
     public ShowOffersCommand(
         GameContext context,
-        IResponsePayload response
+        IResponsePayload response,
+        ISessionService session
     )
     {
         _context = context;
         _response = response;
+        _session = session;
     }
 
     public async Task Run()
@@ -36,28 +38,13 @@ public class ShowOffersCommand : IGameCommand
 
     private async Task<CommandResult> ShowOffers()
     {
-        var offers = await _context.FindAllOffers();
-        if(offers.Count == 0)
+        if(_session.AuthenticatedUser is not null)
         {
-            return new CommandResult(StatusCode.Success)
-            .AddMessage("There are no offers.");
+            return await _session.AuthenticatedUser.ShowOffersInCurrentRoom();
         }
         else
         {
-            return new CommandResult(StatusCode.Success)
-            .AddMessage($"All offers are: {GetOfferDetails(offers)}.");
+            return UserIsNotSignedIn();
         }
-    }
-
-    private string GetOfferDetails(IEnumerable<Offer> offers)
-    {
-        var offerDetails = new List<string>();
-
-        foreach(var offer in offers)
-        {
-            offerDetails.Add(offer.GetDetails());
-        }
-
-        return Message.List(offerDetails);
     }
 }

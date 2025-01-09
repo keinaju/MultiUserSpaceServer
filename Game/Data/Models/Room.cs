@@ -431,6 +431,22 @@ public class Room
         );
     }
 
+    public async Task<CommandResult> ShowOffersInRoom()
+    {
+        var offers = await _context.FindAllOffersInRoom(this);
+
+        if(offers.Count == 0)
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"There are no offers in {this.Name}.");
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"All offers in {this.Name} are: {GetOfferDetails(offers)}.");
+        }
+    }
+
     private string GetBeingsText()
     {
         if(BeingsHere.Count > 0)
@@ -548,5 +564,17 @@ public class Room
         }
 
         return Message.List(featureNames);
+    }
+
+    private string GetOfferDetails(IEnumerable<Offer> offers)
+    {
+        var offerDetails = new List<string>();
+
+        foreach(var offer in offers)
+        {
+            offerDetails.Add(offer.GetDetails());
+        }
+
+        return Message.List(offerDetails);
     }
 }

@@ -313,9 +313,11 @@ namespace MUS.Game.Data
             return await Items.ToListAsync();
         }
 
-        public async Task<ICollection<Offer>> FindAllOffers()
+        public async Task<ICollection<Offer>> FindAllOffersInRoom(Room room)
         {
-            return await Offers.ToListAsync();
+            return await Offers.Where(
+                offer => offer.CreatedByBeing.InRoom == room
+            ).ToListAsync();
         }
 
         public async Task<ICollection<RoomPool>> FindAllRoomPools()

@@ -764,6 +764,18 @@ public class User
         }
     }
 
+    public async Task<CommandResult> ShowOffersInCurrentRoom()
+    {
+        if(SelectedBeing is not null)
+        {
+            return await SelectedBeing.InRoom.ShowOffersInRoom();
+        }
+        else
+        {
+            return UserHasNotSelectedBeing();
+        }
+    }
+
     public CommandResult ShowRoom()
     {
         if(SelectedBeing is not null)
