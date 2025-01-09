@@ -98,7 +98,6 @@ public static class Extensions
         services.AddScoped<IItemHatcherRepository, ItemHatcherRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemStackRepository, ItemStackRepository>();
-        services.AddScoped<IOfferRepository, OfferRepository>();
         services.AddScoped<IPlayerState, PlayerState>();
         services.AddScoped<IRoomRepository, RoomRepository>();
         services.AddScoped<IRoomPoolRepository, RoomPoolRepository>();
@@ -123,7 +122,6 @@ public static class Extensions
     private static void AddUtilities(this IServiceCollection services)
     {
         services.AddSingleton<IGameUptime, GameUptime>();
-        services.AddScoped<IOfferManager, OfferManager>();
     }
 
     public static void AddGameServices(this IServiceCollection services)
