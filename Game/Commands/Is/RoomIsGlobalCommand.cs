@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomIsGlobalCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText =>
     "Sets the global accessibility of the current room.";
 

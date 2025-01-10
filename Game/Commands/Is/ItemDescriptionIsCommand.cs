@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class ItemDescriptionIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets the description of an item.";
 
     public Regex Pattern => new("^item (.+) description is (.+)$");

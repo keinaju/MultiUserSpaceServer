@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class ExploreCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+    
     public string HelpText => "Explores the curiosity of the current room.";
 
     public Regex Pattern => new("^explore$");

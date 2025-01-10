@@ -10,7 +10,7 @@ namespace MUS.Game.Commands.Generic;
 
 public class SignInCommand : IGameCommand
 {
-    private const string UNSUCCESSFUL_MESSAGE = "Sign in failed.";
+    public bool AdminOnly => false;
 
     public string HelpText => "Creates a user session.";
 
@@ -19,6 +19,8 @@ public class SignInCommand : IGameCommand
     private string UsernameInInput => _input.GetGroup(this.Pattern, 1);
     
     private string PasswordInInput => _input.GetGroup(this.Pattern, 2);
+    
+    private const string UNSUCCESSFUL_MESSAGE = "Sign in failed.";
     
     private readonly GameContext _context;
     private readonly IInputCommand _input;

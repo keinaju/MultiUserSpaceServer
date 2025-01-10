@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomIsInBeingCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText =>
     "Sets the current room as an inside room of the current being.";
 

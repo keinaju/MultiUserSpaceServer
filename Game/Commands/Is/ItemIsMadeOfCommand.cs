@@ -9,6 +9,8 @@ namespace MUS.Game.Commands.Is;
 
 public class ItemIsMadeOfCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets components in a craft plan.";
 
     public Regex Pattern => new(@"^item (.+) is made of (\d+) (.+)$");

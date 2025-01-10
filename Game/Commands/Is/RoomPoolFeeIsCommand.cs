@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomPoolFeeIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets the fee item of a room pool.";
 
     public Regex Pattern => new("^pool (.+) fee is (.+)$");

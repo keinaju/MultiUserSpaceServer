@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class DeployCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+    
     public string HelpText => "Deploys an item to a being.";
 
     public Regex Pattern => new("^deploy (.+)$");

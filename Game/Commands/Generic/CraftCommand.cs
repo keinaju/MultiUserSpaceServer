@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class CraftCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+    
     public string HelpText => "Crafts an item from components.";
 
     public Regex Pattern => new("^craft (.+)$");

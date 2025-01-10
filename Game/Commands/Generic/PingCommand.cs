@@ -8,6 +8,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class PingCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+    
     public string HelpText => "Generates a response for a ping request.";
     
     public Regex Pattern => new("^(ping|test)$");

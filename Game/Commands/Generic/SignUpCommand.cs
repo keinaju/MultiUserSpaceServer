@@ -8,6 +8,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class SignUpCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Creates a new user.";
     
     public Regex Pattern => new("^sign up (.+) (.+)$");

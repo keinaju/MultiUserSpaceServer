@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.New;
 
 public class NewItemHatcherCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Creates a new item hatcher.";
 
     public Regex Pattern => new("^new hatcher (.+)$");

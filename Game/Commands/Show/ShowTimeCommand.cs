@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowTimeCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows game's time.";
 
     public Regex Pattern => new("^(show|s) time$");

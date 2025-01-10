@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class BreakCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+    
     public string HelpText => "Breaks an item to components.";
 
     public Regex Pattern => new("^break (.+)$");

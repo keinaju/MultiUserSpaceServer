@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.New;
 
 public class NewRoomPoolCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Creates a new room pool.";
     
     public Regex Pattern => new("^new pool (.+)$");

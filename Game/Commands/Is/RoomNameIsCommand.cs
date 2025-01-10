@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomNameIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Renames the current room.";
 
     public Regex Pattern => new("^room name is (.+)$");

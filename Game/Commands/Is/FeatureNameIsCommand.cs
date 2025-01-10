@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class FeatureNameIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Renames a feature.";
 
     public Regex Pattern => new("^feature (.+) name is (.+)$");

@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.New;
 
 public class NewItemCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Creates a new item.";
 
     public Regex Pattern => new("^new item (.+)$");

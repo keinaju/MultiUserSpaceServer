@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowBeingCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows the currently selected being.";
 
     public Regex Pattern => new("^(show|s) being$");

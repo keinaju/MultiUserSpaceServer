@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomIsForCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText =>
     "Sets a requirement for a feature in the current room.";
 

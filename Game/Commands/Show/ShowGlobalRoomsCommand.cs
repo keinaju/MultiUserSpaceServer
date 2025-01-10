@@ -9,6 +9,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowGlobalRoomsCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows all globally accessible rooms.";
 
     public Regex Pattern => new("^(show|s) global rooms$");

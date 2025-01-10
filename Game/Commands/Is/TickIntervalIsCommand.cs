@@ -8,6 +8,8 @@ namespace MUS.Game.Commands.Is;
 
 public class TickIntervalIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets the tick interval of the game.";
 
     public Regex Pattern => new(@"^tick interval is (\d+)$");

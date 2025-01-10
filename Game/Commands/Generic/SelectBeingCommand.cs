@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class SelectBeingCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+    
     public string HelpText => "Selects a being to use.";
 
     public Regex Pattern => new("^select (.+)$");

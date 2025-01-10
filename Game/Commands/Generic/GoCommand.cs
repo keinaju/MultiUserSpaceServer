@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class GoCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+    
     public string HelpText => "Moves a selected being to another room.";
 
     public Regex Pattern => new("^go (.+)$");

@@ -9,6 +9,8 @@ namespace MUS.Game.Commands.Is;
 
 public class ItemHatcherIntervalIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets the interval for an item hatcher.";
 
     public Regex Pattern => new(@"^hatcher (.+) interval is (\d+)$");

@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Delete;
 
 public class DeleteRoomPoolCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+    
     public string HelpText => "Deletes a room pool.";
 
     public Regex Pattern => new("^delete pool (.+)$");

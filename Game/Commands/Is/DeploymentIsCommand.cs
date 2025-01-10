@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Is;
 
 public class DeploymentIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText =>
     "Sets the deployment of an item to the current being.";
 

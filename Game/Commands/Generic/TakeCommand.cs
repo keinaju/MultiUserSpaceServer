@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class TakeCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Takes items from the current room's inventory.";
 
     public Regex Pattern => new("^take (.+)$");

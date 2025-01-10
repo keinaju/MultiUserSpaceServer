@@ -9,6 +9,8 @@ namespace MUS.Game.Commands.Generic;
 
 public class TradeCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Creates an offer to trade items.";
 
     public Regex Pattern => new(@"^(trade) (\d+) (.+) for (\d+) (.+)$");

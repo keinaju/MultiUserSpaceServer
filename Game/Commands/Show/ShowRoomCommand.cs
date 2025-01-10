@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowRoomCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows the current room.";
 
     public Regex Pattern => new("^(show|s) (room|r)$");

@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomPoolNameIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Renames a room pool.";
 
     public Regex Pattern => new("^pool (.+) name is (.+)$");

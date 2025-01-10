@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Delete;
 
 public class DeleteItemCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+    
     public string HelpText => "Deletes an item.";
 
     public Regex Pattern => new("^delete item (.+)$");

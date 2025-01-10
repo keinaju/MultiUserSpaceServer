@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowItemCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows details about an item.";
 
     public Regex Pattern => new("^(show|s) item (.+)$");

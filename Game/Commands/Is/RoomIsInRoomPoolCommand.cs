@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomIsInRoomPoolCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText =>
     "Adds the current room in a room pool.";
 

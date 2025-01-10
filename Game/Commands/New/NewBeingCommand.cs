@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.New;
 
 public class NewBeingCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Creates a new being.";
 
     public Regex Pattern => new("^new being (.+)$");

@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class BeingNameIsCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Renames the currently selected being.";
 
     public Regex Pattern => new("^being name is (.+)$");

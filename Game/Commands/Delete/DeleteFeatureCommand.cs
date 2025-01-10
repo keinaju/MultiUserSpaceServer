@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Delete;
 
 public class DeleteFeatureCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+    
     public string HelpText => "Deletes a feature.";
 
     public Regex Pattern => new("^delete feature (.+)$");

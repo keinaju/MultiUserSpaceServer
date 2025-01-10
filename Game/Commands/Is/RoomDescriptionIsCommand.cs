@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class RoomDescriptionIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets the description of the current room.";
 
     public Regex Pattern => new("^room description is (.+)$");

@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.New;
 
 public class NewFeatureCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Creates a new feature.";
 
     public Regex Pattern => new("^new feature (.+)$");

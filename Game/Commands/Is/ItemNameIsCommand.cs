@@ -8,6 +8,8 @@ namespace MUS.Game.Commands.Is;
 
 public class ItemNameIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Renames an item.";
 
     public Regex Pattern => new("^item (.+) name is (.+)$");

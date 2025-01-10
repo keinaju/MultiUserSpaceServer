@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowUserCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => 
     "Shows information about the user that is signed in.";
 

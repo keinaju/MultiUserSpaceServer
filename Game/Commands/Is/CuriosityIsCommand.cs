@@ -6,6 +6,8 @@ namespace MUS.Game.Commands.Is;
 
 public class CuriosityIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets the curiosity of the current room.";
 
     public Regex Pattern => new("^curiosity is (.+)$");

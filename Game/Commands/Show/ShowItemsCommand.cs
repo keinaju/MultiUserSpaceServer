@@ -9,6 +9,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowItemsCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows all items.";
 
     public Regex Pattern => new("^(show|s) items$");

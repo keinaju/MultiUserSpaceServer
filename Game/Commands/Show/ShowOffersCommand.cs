@@ -7,6 +7,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowOffersCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows all offers in the current room.";
 
     public Regex Pattern => new("^(show|s) offers$");

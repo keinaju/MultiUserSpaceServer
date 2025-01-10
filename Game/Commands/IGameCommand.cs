@@ -5,6 +5,8 @@ namespace MUS.Game.Commands;
 
 public interface IGameCommand
 {
+    bool AdminOnly { get; }
+
     string HelpText { get; }
     
     Regex Pattern { get; }

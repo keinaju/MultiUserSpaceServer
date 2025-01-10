@@ -9,6 +9,8 @@ namespace MUS.Game.Commands.Show;
 
 public class ShowRoomPoolsCommand : IGameCommand
 {
+    public bool AdminOnly => false;
+
     public string HelpText => "Shows all room pools.";
 
     public Regex Pattern => new("^(show|s) pools$");

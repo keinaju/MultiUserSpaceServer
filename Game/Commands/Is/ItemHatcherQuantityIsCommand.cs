@@ -9,6 +9,8 @@ namespace MUS.Game.Commands.Is;
 
 public class ItemHatcherQuantityIsCommand : IGameCommand
 {
+    public bool AdminOnly => true;
+
     public string HelpText => "Sets the quantities for an item hatcher.";
 
     public Regex Pattern => new(@"^hatcher (.+) quantity is (\d+) to (\d+)$");
