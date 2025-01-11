@@ -150,19 +150,6 @@ public class User
             return BeingDoesNotExist(beingName);
         }
     }
-
-    public async Task<CommandResult> SelectedBeingIsFeature(string featureName)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing
-            .BeingIsFeature(featureName);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
     
     public async Task<CommandResult> SelectedBeingNameIs(string beingName)
     {
