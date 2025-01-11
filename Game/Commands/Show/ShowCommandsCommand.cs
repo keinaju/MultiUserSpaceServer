@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
@@ -17,16 +16,13 @@ public class ShowCommandsCommand : IGameCommand
     private Regex _wildcard = new Regex("\\.\\+");
     private Regex _digit = new Regex("\\\\d\\+");
 
-    private readonly IServiceProvider _serviceProvider;
-    private readonly ISessionService _session;
+    private readonly ICommandCollection _commandCollection;
 
     public ShowCommandsCommand(
-        IServiceProvider serviceProvider,
-        ISessionService session
+        ICommandCollection commandCollection
     )
     {
-        _serviceProvider = serviceProvider;
-        _session = session;
+        _commandCollection = commandCollection;
     }
 
     public Task<CommandResult> Run()
@@ -45,15 +41,7 @@ public class ShowCommandsCommand : IGameCommand
 
     private ICollection<string> GetCommandsList()
     {
-        var commands = _serviceProvider.GetServices<IGameCommand>();
-
-        // If the user is not admin, filter out admin commands
-        if (_session.User is null || !_session.User.IsBuilder)
-        {
-            commands = commands.Where(command => !command.AdminOnly);
-        }
-
-        return GetHelpTexts(commands);
+        return GetHelpTexts(_commandCollection.GetCommands());
     }
 
     private List<string> GetHelpTexts(IEnumerable<IGameCommand> commands)

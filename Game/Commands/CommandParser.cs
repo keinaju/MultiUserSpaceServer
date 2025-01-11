@@ -1,28 +1,29 @@
 using System;
-using MUS.Game.Commands;
 
 namespace MUS.Game.Commands;
 
 public class CommandParser : ICommandParser
 {
-    private readonly IEnumerable<IGameCommand> _commands;
+    private readonly ICommandCollection _commandCollection;
     private readonly IInputCommand _input;
 
     public CommandParser(
-        IEnumerable<IGameCommand> commands,
+        ICommandCollection commandCollection,
         IInputCommand input
     )
     {
-        _commands = commands;
+        _commandCollection = commandCollection;
         _input = input;
     }
 
     public IEnumerable<IGameCommand> GetMatchingCommands()
     {
         var matchingCommands = new List<IGameCommand>();
-        foreach(var command in _commands)
+
+        foreach(var command in _commandCollection.GetCommands())
         {
             var match = command.Pattern.Match(_input.Text);
+
             if(match.Success)
             {
                 matchingCommands.Add(command);
