@@ -128,19 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.InRoom
-            .RoomDescriptionIs(roomDescription);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> RoomIsFor(Feature feature)
     {
         if(SelectedBeing is not null)

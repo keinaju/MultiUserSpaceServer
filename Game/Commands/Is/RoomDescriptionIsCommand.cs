@@ -23,6 +23,14 @@ public class RoomDescriptionIsCommand : IUserCommand
 
     public async Task<CommandResult> Run(User user)
     {
-        return await user.RoomDescriptionIs(DescriptionInInput);
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+        else
+        {
+            return await user.SelectedBeing.InRoom
+            .SetDescription(DescriptionInInput);
+        }
     }
 }
