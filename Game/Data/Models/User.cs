@@ -99,18 +99,6 @@ public class User
 
         return texts;
     }
-    
-    public async Task<CommandResult> Go(string roomName)
-    {
-        if(SelectedBeing is null)
-        {
-            return NoSelectedBeingResult();
-        }
-        else
-        {
-            return await SelectedBeing.Go(roomName);
-        }
-    }
 
     /// <summary>
     /// Static method for a hash function.

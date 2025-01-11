@@ -223,20 +223,6 @@ public class Being
         }
     }
 
-    public async Task<CommandResult> Go(string roomName)
-    {
-        var room = await _context.FindRoom(roomName);
-
-        if(room is not null)
-        {
-            return await MoveTo(room);
-        }
-        else
-        {
-            return RoomDoesNotExist(roomName);
-        }
-    }
-
     public bool HasFeature(Feature feature)
     {
         if(Features.Contains(feature))
@@ -278,20 +264,20 @@ public class Being
         if(destination == InRoom)
         {
             return new CommandResult(StatusCode.Fail)
-            .AddMessage($"{Name} is in {destination.Name}.");
+            .AddMessage($"{this.Name} is in {destination.Name}.");
         }
 
         if(destination == RoomInside)
         {
             return new CommandResult(StatusCode.Fail)
-            .AddMessage($"{Name} can not enter itself.");
+            .AddMessage($"{this.Name} can not enter itself.");
         }
 
         if(!InRoom.HasAccessTo(destination))
         {
             return new CommandResult(StatusCode.Fail)
             .AddMessage(
-                $"{destination.Name} can not be accessed from {InRoom.Name}."
+                $"{this.Name} can not access {destination.Name} from {InRoom.Name}."
             );
         }
         else
@@ -301,7 +287,7 @@ public class Being
             await _context.SaveChangesAsync();
             
             return new CommandResult(StatusCode.Success)
-            .AddMessage($"{Name} has moved in {destination.Name}.");
+            .AddMessage($"{this.Name} has moved in {destination.Name}.");
         }
     }
 
