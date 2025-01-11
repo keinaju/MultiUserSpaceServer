@@ -49,6 +49,11 @@ public class MakeItemsCommand : IUserCommand
             return ItemDoesNotExist(ItemNameInInput);
         }
 
-        return await user.MakeItems(item, quantity);
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+
+        return await user.SelectedBeing.MakeItems(item, quantity);
     }
 }

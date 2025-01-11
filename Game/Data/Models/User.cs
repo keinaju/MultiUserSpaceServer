@@ -128,18 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> MakeItems(Item item, int quantity)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.MakeItems(item, quantity);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> NewBeing(string beingName)
     {
         return await _context.CreateBeing(this, beingName);
