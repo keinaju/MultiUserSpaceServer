@@ -22,7 +22,7 @@ public class CommandCollection : ICommandCollection
         var commands = _serviceProvider.GetServices<IGameCommand>();
 
         // If the user is not admin, filter out admin commands
-        if (_session.User is null || !_session.User.IsBuilder)
+        if (_session.User is null || !_session.User.IsAdmin)
         {
             commands = commands.Where(command => !command.AdminOnly);
         }

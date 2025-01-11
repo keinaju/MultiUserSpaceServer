@@ -38,7 +38,7 @@ public class DatabaseSeeder
 
             var adminUser = new User()
             {
-                IsBuilder = true,
+                IsAdmin = true,
                 Username = "admin",
                 HashedPassword = User.HashPassword(adminPassword)
             };

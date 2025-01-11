@@ -31,9 +31,9 @@ public class User
     public required string HashedPassword { get; set; }
 
     /// <summary>
-    /// Role to determine if user can build the game world.
+    /// Role to determine if user has access to admin commands.
     /// </summary>
-    public required bool IsBuilder { get; set; }
+    public required bool IsAdmin { get; set; }
 
     /// <summary>
     /// Selected being to play the game.
@@ -90,20 +90,13 @@ public class User
 
     public async Task<CommandResult> CuriosityIs(string poolName)
     {
-        if(IsBuilder) 
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.CuriosityIs(poolName);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.CuriosityIs(poolName);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
@@ -130,50 +123,22 @@ public class User
 
     public async Task<CommandResult> DeleteFeature(string featureName)
     {
-        if(!IsBuilder)
-        {
-            return UserIsNotBuilder();
-        }
-        else
-        {
-            return await _context.DeleteFeature(featureName);
-        }
+        return await _context.DeleteFeature(featureName);
     }
 
     public async Task<CommandResult> DeleteItem(string itemName)
     {
-        if(!IsBuilder)
-        {
-            return UserIsNotBuilder();
-        }
-        else
-        {
-            return await _context.DeleteItem(itemName);
-        }
+        return await _context.DeleteItem(itemName);
     }
 
     public async Task<CommandResult> DeleteRoom(string roomName)
     {
-        if(!IsBuilder)
-        {
-            return UserIsNotBuilder();
-        }
-        else
-        {
-            return await _context.DeleteRoom(roomName);
-        }
+        return await _context.DeleteRoom(roomName);
     }
 
     public async Task<CommandResult> DeleteRoomPool(string poolName)
     {
-        if(!IsBuilder)
-        {
-            return UserIsNotBuilder();
-        }
-        else
-        {
-            return await _context.DeleteRoomPool(poolName);
-        }
+        return await _context.DeleteRoomPool(poolName);
     }
 
     public async Task<CommandResult> DeployItem(string itemName)
@@ -190,20 +155,13 @@ public class User
 
     public async Task<CommandResult> DeploymentIs(Item item)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await item.SetDeployment(SelectedBeing);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await item.SetDeployment(SelectedBeing);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
@@ -223,11 +181,6 @@ public class User
         string oldFeatureName, string newFeatureName
     )
     {
-        if(!IsBuilder)
-        {
-            return UserIsNotBuilder();
-        }
-
         var feature = await _context.FindFeature(oldFeatureName);
         if(feature is not null)
         {
@@ -244,9 +197,9 @@ public class User
         var texts = new List<string>();
 
         texts.Add($"Your username is {Username}.");
-        if(IsBuilder)
+        if(this.IsAdmin)
         {
-            texts.Add("You have access to builder commands.");
+            texts.Add("You have access to admin commands.");
         }
         texts.Add(GetSelectedBeingText());
         texts.Add(GetCreatedBeingsText());
@@ -298,21 +251,14 @@ public class User
         string itemName, string itemDescription
     )
     {
-        if(IsBuilder)
+        var item = await _context.FindItem(itemName);
+        if(item is not null)
         {
-            var item = await _context.FindItem(itemName);
-            if(item is not null)
-            {
-                return await item.DescriptionIs(itemDescription);
-            }
-            else
-            {
-                return ItemDoesNotExist(itemName);
-            }
+            return await item.DescriptionIs(itemDescription);
         }
         else
         {
-            return UserIsNotBuilder();
+            return ItemDoesNotExist(itemName);
         }
     }
 
@@ -320,21 +266,14 @@ public class User
         Item item, int interval
     )
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.InRoom
-                .ItemHatcherIntervalIs(item, interval);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.InRoom
+            .ItemHatcherIntervalIs(item, interval);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
@@ -342,21 +281,14 @@ public class User
         Item item, int minQuantity, int maxQuantity
     )
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.InRoom
-                .ItemHatcherQuantityIs(item, minQuantity, maxQuantity);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.InRoom
+            .ItemHatcherQuantityIs(item, minQuantity, maxQuantity);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
@@ -364,46 +296,25 @@ public class User
         Item product, Item component, int quantity
     )
     {
-        if(IsBuilder)
-        {
-            return await product.SetComponent(component, quantity);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await product.SetComponent(component, quantity);
     }
 
     public async Task<CommandResult> ItemNameIs(
         Item item, string newName
     )
     {
-        if(IsBuilder)
-        {
-            return await item.Rename(newName);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await item.Rename(newName);
     }
 
     public async Task<CommandResult> MakeItems(Item item, int quantity)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.MakeItems(item, quantity);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.MakeItems(item, quantity);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
@@ -414,195 +325,118 @@ public class User
 
     public async Task<CommandResult> NewFeature(string featureName)
     {
-        if(IsBuilder)
-        {
-            return await _context.CreateFeature(featureName);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await _context.CreateFeature(featureName);
     }
 
     public async Task<CommandResult> NewItem(string itemName)
     {
-        if(IsBuilder)
-        {
-            return await _context.CreateItem(itemName);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await _context.CreateItem(itemName);
     }
 
     public async Task<CommandResult> NewItemHatcher(Item item)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.InRoom.CreateItemHatcher(item);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.InRoom.CreateItemHatcher(item);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
     public async Task<CommandResult> NewRoom(string roomName)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await _context.CreateRoom(
-                    inputName: roomName,
-                    being: SelectedBeing
-                );
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await _context.CreateRoom(
+                inputName: roomName,
+                being: SelectedBeing
+            );
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
     public async Task<CommandResult> NewRoomPool(string poolName)
     {
-        if(IsBuilder)
-        {
-            return await _context.CreateRoomPool(poolName);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await _context.CreateRoomPool(poolName);
     }
 
     public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.InRoom
-                .RoomDescriptionIs(roomDescription);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.InRoom
+            .RoomDescriptionIs(roomDescription);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
     public async Task<CommandResult> RoomIsFor(Feature feature)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.InRoom.RoomIsFor(feature);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.InRoom.RoomIsFor(feature);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
     public async Task<CommandResult> RoomIsGlobal(bool newValue)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.InRoom.RoomIsGlobal(newValue);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.InRoom.RoomIsGlobal(newValue);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
     public async Task<CommandResult> RoomIsInBeing()
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.RoomIsInside();
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.RoomIsInside();
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
     public async Task<CommandResult> RoomIsInRoomPool(RoomPool pool)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await pool.RoomIsInRoomPool(
-                    SelectedBeing.InRoom
-                );
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await pool.RoomIsInRoomPool(
+                SelectedBeing.InRoom
+            );
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
     public async Task<CommandResult> RoomNameIs(string newName)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing.InRoom.Rename(newName);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing.InRoom.Rename(newName);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
 
@@ -610,40 +444,19 @@ public class User
         RoomPool pool, string poolDescription
     )
     {
-        if(IsBuilder)
-        {
-            return await pool.SetDescription(poolDescription);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await pool.SetDescription(poolDescription);
     }
 
     public async Task<CommandResult> RoomPoolFeeIs(RoomPool pool, Item item)
     {
-        if(IsBuilder)
-        {
-            return await pool.SetFeeItem(item);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await pool.SetFeeItem(item);
     }
 
     public async Task<CommandResult> RoomPoolNameIs(
         RoomPool pool, string newName
     )
     {
-        if(IsBuilder)
-        {
-            return await pool.Rename(newName);
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return await pool.Rename(newName);
     }
 
     public async Task<CommandResult> SelectBeing(string beingName)
@@ -671,21 +484,14 @@ public class User
 
     public async Task<CommandResult> SelectedBeingIsFeature(string featureName)
     {
-        if(IsBuilder)
+        if(SelectedBeing is not null)
         {
-            if(SelectedBeing is not null)
-            {
-                return await SelectedBeing
-                .BeingIsFeature(featureName);
-            }
-            else
-            {
-                return UserHasNotSelectedBeing();
-            }
+            return await SelectedBeing
+            .BeingIsFeature(featureName);
         }
         else
         {
-            return UserIsNotBuilder();
+            return UserHasNotSelectedBeing();
         }
     }
     
@@ -721,23 +527,16 @@ public class User
 
     public async Task<CommandResult> SetTickInterval(int intervalSeconds)
     {
-        if(IsBuilder)
-        {
-            var settings = await _context.GetGameSettings();
+        var settings = await _context.GetGameSettings();
 
-            settings.TickIntervalSeconds = intervalSeconds;
+        settings.TickIntervalSeconds = intervalSeconds;
 
-            await _context.SaveChangesAsync();
+        await _context.SaveChangesAsync();
 
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(
-                Message.Set("tick interval", $"{intervalSeconds} seconds")
-            );
-        }
-        else
-        {
-            return UserIsNotBuilder();
-        }
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set("tick interval", $"{intervalSeconds} seconds")
+        );
     }
 
     public CommandResult ShowBeing()
@@ -846,11 +645,5 @@ public class User
     {
         return new CommandResult(StatusCode.Fail)
         .AddMessage($"User {Username} has not selected a being.");
-    }
-
-    private CommandResult UserIsNotBuilder()
-    {
-        return new CommandResult(StatusCode.Fail)
-        .AddMessage($"User {Username} does not have a builder role.");
     }
 }

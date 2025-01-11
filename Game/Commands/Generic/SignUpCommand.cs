@@ -48,7 +48,7 @@ public class SignUpCommand : IGameCommand
             {
                 var user = new User()
                 {
-                    IsBuilder = false,
+                    IsAdmin = false,
                     Username = cleanName,
                     HashedPassword = User.HashPassword(PasswordInInput)
                 };
