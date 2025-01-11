@@ -71,6 +71,12 @@ public class CommandResult
         .AddMessage(Message.ReservedName(type, name));
     }
     
+    public static CommandResult NotSignedInResult()
+    {
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage("You are not signed in.");
+    }
+    
     public static CommandResult RoomDoesNotExist(string roomName)
     {
         return new CommandResult(StatusCode.Fail)
@@ -81,11 +87,5 @@ public class CommandResult
     {
         return new CommandResult(StatusCode.Fail)
         .AddMessage(Message.DoesNotExist("room pool", poolName));
-    }
-
-    public static CommandResult NotSignedInResult()
-    {
-        return new CommandResult(StatusCode.Fail)
-        .AddMessage("You are not signed in.");
     }
 }

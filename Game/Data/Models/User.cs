@@ -97,26 +97,6 @@ public class User
         }
     }
 
-    public async Task<CommandResult> DeleteFeature(string featureName)
-    {
-        return await _context.DeleteFeature(featureName);
-    }
-
-    public async Task<CommandResult> DeleteItem(string itemName)
-    {
-        return await _context.DeleteItem(itemName);
-    }
-
-    public async Task<CommandResult> DeleteRoom(string roomName)
-    {
-        return await _context.DeleteRoom(roomName);
-    }
-
-    public async Task<CommandResult> DeleteRoomPool(string poolName)
-    {
-        return await _context.DeleteRoomPool(poolName);
-    }
-
     public async Task<CommandResult> DeployItem(string itemName)
     {
         if(SelectedBeing is null)

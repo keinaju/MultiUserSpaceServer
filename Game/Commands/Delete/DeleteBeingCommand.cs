@@ -1,7 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Session;
-using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Delete;
 
@@ -31,7 +30,7 @@ public class DeleteBeingCommand : IGameCommand
     {
         if(_session.User is null)
         {
-            return NotSignedInResult();
+            return CommandResult.NotSignedInResult();
         }
         else
         {
