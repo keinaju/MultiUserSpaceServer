@@ -166,11 +166,6 @@ public class User
         );
     }
 
-    public async Task<CommandResult> NewRoomPool(string poolName)
-    {
-        return await _context.CreateRoomPool(poolName);
-    }
-
     public async Task<CommandResult> RoomDescriptionIs(string roomDescription)
     {
         if(SelectedBeing is not null)

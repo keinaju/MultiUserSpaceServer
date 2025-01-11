@@ -23,10 +23,9 @@ public class ResponsePayload : IResponsePayload
     {
         AddList(result.GetMessages());
 
+        // If a command fails, prevent further processing
         if(result.GetStatus() == CommandResult.StatusCode.Fail)
         {
-            // If a command has failed, prevent further processing
-            AddText("A command has failed.");
             Break();
         }
     }

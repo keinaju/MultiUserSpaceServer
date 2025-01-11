@@ -41,35 +41,6 @@ namespace MUS.Game.Data
             );
         }
 
-        public async Task<CommandResult> CreateRoomPool(string inputName)
-        {
-            var validationResult = TextSanitation.ValidateName(inputName);
-            if(validationResult.GetStatus() == StatusCode.Fail)
-            {
-                return validationResult;
-            }
-
-            var cleanName = TextSanitation.GetCleanName(inputName);
-            if(await RoomPoolNameIsReserved(cleanName))
-            {
-                return NameIsReserved("room pool", cleanName);
-            }
-
-            await RoomPools.AddAsync(
-                new RoomPool()
-                {
-                    Description = null,
-                    FeeItem = null,
-                    Name = cleanName
-                }
-            );
-
-            await SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(Message.Created("room pool", cleanName));
-        }
-
         public async Task<CommandResult> CreateUser(User user)
         {
             await Users.AddAsync(user);
