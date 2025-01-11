@@ -37,7 +37,7 @@ public class ItemDescriptionIsCommand : IGameCommand
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
         }
     }
 }

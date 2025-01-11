@@ -30,11 +30,16 @@ public class CraftCommand : IGameCommand
     {
         if(_session.User is null)
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
+        }
+        if(_session.User.SelectedBeing is null)
+        {
+            return _session.User.NoSelectedBeingResult();
         }
         else
         {
-            return await _session.User.CraftItem(ItemNameInInput);
+            return await _session.User.SelectedBeing
+            .TryCraftItem(ItemNameInInput);
         }
     }
 }

@@ -42,7 +42,7 @@ public class RoomPoolNameIsCommand : IGameCommand
 
         if(_session.User is null)
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
         }
         else
         {

@@ -83,7 +83,7 @@ public class CommandResult
         .AddMessage(Message.DoesNotExist("room pool", poolName));
     }
 
-    public static CommandResult UserIsNotSignedIn()
+    public static CommandResult NotSignedInResult()
     {
         return new CommandResult(StatusCode.Fail)
         .AddMessage("You are not signed in.");

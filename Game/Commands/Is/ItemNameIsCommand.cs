@@ -43,7 +43,7 @@ public class ItemNameIsCommand : IGameCommand
 
         if(_session.User is null)
         {
-            return UserIsNotSignedIn();
+            return NotSignedInResult();
         }
         else
         {

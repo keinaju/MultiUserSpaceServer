@@ -32,7 +32,7 @@ public class ShowInventoryCommand : IGameCommand
         else
         {
             return Task.FromResult(
-                CommandResult.UserIsNotSignedIn()
+                CommandResult.NotSignedInResult()
             );
         }
     }

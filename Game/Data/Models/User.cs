@@ -64,30 +64,6 @@ public class User
         _lazyLoader = lazyLoader;
     }
 
-    public async Task<CommandResult> BreakItem(string itemName)
-    {
-        if(SelectedBeing is null)
-        {
-            return UserHasNotSelectedBeing();
-        }
-        else
-        {
-            return await SelectedBeing.TryBreakItem(itemName);
-        }
-    }
-
-    public async Task<CommandResult> CraftItem(string itemName)
-    {
-        if(SelectedBeing is null)
-        {
-            return UserHasNotSelectedBeing();
-        }
-        else
-        {
-            return await SelectedBeing.TryCraftItem(itemName);
-        }
-    }
-
     public async Task<CommandResult> CuriosityIs(string poolName)
     {
         if(SelectedBeing is not null)
@@ -96,7 +72,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -145,7 +121,7 @@ public class User
     {
         if(SelectedBeing is null)
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
         else
         {
@@ -161,7 +137,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -169,7 +145,7 @@ public class User
     {
         if(SelectedBeing is null)
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
         else
         {
@@ -211,7 +187,7 @@ public class User
     {
         if(SelectedBeing is null)
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
         else
         {
@@ -273,7 +249,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -288,7 +264,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -314,7 +290,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -341,7 +317,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -356,7 +332,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -374,7 +350,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -386,7 +362,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -398,7 +374,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -410,7 +386,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -424,7 +400,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -436,7 +412,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -491,7 +467,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
     
@@ -503,7 +479,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -521,7 +497,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -547,7 +523,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -559,7 +535,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -571,7 +547,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -583,7 +559,7 @@ public class User
         }
         else
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
     }
 
@@ -597,12 +573,18 @@ public class User
     {
         if(SelectedBeing is null)
         {
-            return UserHasNotSelectedBeing();
+            return NoSelectedBeingResult();
         }
         else
         {
             return await SelectedBeing.TakeItemFromRoom(itemName);
         }
+    }
+
+    public CommandResult NoSelectedBeingResult()
+    {
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage($"User {Username} has not selected a being.");
     }
 
     private string GetSelectedBeingText()
@@ -639,11 +621,5 @@ public class User
         }
 
         return Message.List(beingNames);
-    }
-    
-    private CommandResult UserHasNotSelectedBeing()
-    {
-        return new CommandResult(StatusCode.Fail)
-        .AddMessage($"User {Username} has not selected a being.");
     }
 }

@@ -37,7 +37,7 @@ public class RoomIsGlobalCommand : IGameCommand
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
         }
     }
 }

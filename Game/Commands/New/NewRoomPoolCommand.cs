@@ -34,7 +34,7 @@ public class NewRoomPoolCommand : IGameCommand
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
         }
     }
 }

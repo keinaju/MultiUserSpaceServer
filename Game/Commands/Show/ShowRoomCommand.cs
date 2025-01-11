@@ -32,7 +32,7 @@ public class ShowRoomCommand : IGameCommand
         else
         {
             return Task.FromResult(
-                CommandResult.UserIsNotSignedIn()
+                CommandResult.NotSignedInResult()
             );
         }
     }

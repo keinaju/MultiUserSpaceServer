@@ -34,7 +34,7 @@ public class NewItemCommand : IGameCommand
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
         }
     }
 }

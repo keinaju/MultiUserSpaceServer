@@ -32,7 +32,7 @@ public class ShowBeingCommand : IGameCommand
         else
         {
             return Task.FromResult(
-                CommandResult.UserIsNotSignedIn()
+                CommandResult.NotSignedInResult()
             );
         }
     }

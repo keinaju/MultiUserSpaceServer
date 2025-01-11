@@ -30,7 +30,7 @@ public class SelectBeingCommand : IGameCommand
     {
         if(_session.User is null)
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
         }
         else
         {

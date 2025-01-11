@@ -8,7 +8,7 @@ public class BreakCommand : IGameCommand
 {
     public bool AdminOnly => false;
     
-    public string HelpText => "Breaks an item to components.";
+    public string HelpText => "Breaks an item to it's components.";
 
     public Regex Pattern => new("^break (.+)$");
 
@@ -30,11 +30,16 @@ public class BreakCommand : IGameCommand
     {
         if(_session.User is null)
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
+        }
+        if(_session.User.SelectedBeing is null)
+        {
+            return _session.User.NoSelectedBeingResult();
         }
         else
         {
-            return await _session.User.BreakItem(ItemNameInInput);
+            return await _session.User.SelectedBeing
+            .TryBreakItem(ItemNameInInput);
         }
     }
 }

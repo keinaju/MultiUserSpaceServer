@@ -34,7 +34,7 @@ public class RoomDescriptionIsCommand : IGameCommand
         }
         else
         {
-            return CommandResult.UserIsNotSignedIn();
+            return CommandResult.NotSignedInResult();
         }
     }
 }

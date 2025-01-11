@@ -30,7 +30,7 @@ public class ShowOffersCommand : IGameCommand
         }
         else
         {
-            return UserIsNotSignedIn();
+            return NotSignedInResult();
         }
     }
 }

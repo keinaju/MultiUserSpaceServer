@@ -72,7 +72,7 @@ public class ItemHatcherQuantityIsCommand : IGameCommand
 
         if(_session.User is null)
         {
-            return UserIsNotSignedIn();
+            return NotSignedInResult();
         }
         else
         {

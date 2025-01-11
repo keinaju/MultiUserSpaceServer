@@ -47,7 +47,7 @@ public class TickIntervalIsCommand : IGameCommand
         }
         else
         {
-            return UserIsNotSignedIn();
+            return NotSignedInResult();
         }
     }
 }

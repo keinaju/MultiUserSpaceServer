@@ -70,7 +70,7 @@ public class ItemIsMadeOfCommand : IGameCommand
         }
         else
         {
-            return UserIsNotSignedIn();
+            return NotSignedInResult();
         }
     }
 }
