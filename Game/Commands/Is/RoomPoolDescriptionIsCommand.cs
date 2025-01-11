@@ -15,8 +15,7 @@ public class RoomPoolDescriptionIsCommand : IUserCommand
 
     private string RoomPoolNameInInput => _input.GetGroup(this.Pattern, 1);
     
-    private string RoomPoolDescriptionInInput =>
-    _input.GetGroup(this.Pattern, 2);
+    private string RoomPoolDescriptionInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
@@ -38,9 +37,6 @@ public class RoomPoolDescriptionIsCommand : IUserCommand
             return CommandResult.RoomPoolDoesNotExist(RoomPoolNameInInput);
         }
 
-        return await user.RoomPoolDescriptionIs(
-            pool,
-            RoomPoolDescriptionInInput
-        );
+        return await pool.SetDescription(RoomPoolDescriptionInInput);
     }
 }

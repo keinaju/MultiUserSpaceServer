@@ -188,8 +188,7 @@ public class RoomPool
 
     public async Task<CommandResult> SetDescription(string poolDescription)
     {
-        var validationResult = TextSanitation
-        .ValidateDescription(poolDescription);
+        var validationResult = TextSanitation.ValidateDescription(poolDescription);
 
         if(validationResult.GetStatus() == StatusCode.Fail)
         {
@@ -197,8 +196,7 @@ public class RoomPool
         }
         else
         {
-            var cleanDescription = TextSanitation
-            .GetCleanDescription(poolDescription);
+            var cleanDescription = TextSanitation.GetCleanDescription(poolDescription);
 
             this.Description = cleanDescription;
 
@@ -206,7 +204,7 @@ public class RoomPool
 
             return new CommandResult(StatusCode.Success)
             .AddMessage(
-                Message.Set($"{Name}'s description", cleanDescription)
+                Message.Set($"{this.Name}'s description", cleanDescription)
             );
         }
     }
