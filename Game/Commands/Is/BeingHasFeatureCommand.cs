@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class BeingIsFeatureCommand : IUserCommand
+public class BeingHasFeatureCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -18,7 +18,7 @@ public class BeingIsFeatureCommand : IUserCommand
     private readonly GameContext _context;
     private readonly IInputCommand _input;
 
-    public BeingIsFeatureCommand(
+    public BeingHasFeatureCommand(
         GameContext context,
         IInputCommand input
     )

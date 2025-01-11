@@ -11,7 +11,7 @@ public class RoomIsInRoomPoolCommand : IUserCommand
 
     public string HelpText => "Adds the current room in a room pool.";
 
-    public Regex Pattern => new("^room is in pool (.+)$");
+    public Regex Pattern => new("^pool (.+) has this$");
 
     private string RoomPoolNameInInput => _input.GetGroup(this.Pattern, 1);
 

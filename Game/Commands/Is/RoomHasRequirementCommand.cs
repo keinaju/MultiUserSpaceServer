@@ -5,21 +5,21 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class RoomIsForCommand : IUserCommand
+public class RoomHasRequirementCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
     public string HelpText =>
     "Sets a requirement for a feature in the current room.";
 
-    public Regex Pattern => new("^room is for (.+)$");
+    public Regex Pattern => new("^room has requirement (.+)$");
 
     private string FeatureNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
     
-    public RoomIsForCommand(
+    public RoomHasRequirementCommand(
         GameContext context,
         IInputCommand input
     )

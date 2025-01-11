@@ -29,7 +29,7 @@ public static class Extensions
         services.AddScoped<ICommandCollection, CommandCollection>();
         services.AddScoped<ICommandParser, CommandParser>();
 
-        services.AddScoped<IUserCommand, BeingIsFeatureCommand>();
+        services.AddScoped<IUserCommand, BeingHasFeatureCommand>();
         services.AddScoped<IUserCommand, BeingNameIsCommand>();
         services.AddScoped<IUserCommand, BreakCommand>();
         services.AddScoped<IUserCommand, CraftCommand>();
@@ -59,7 +59,7 @@ public static class Extensions
         services.AddScoped<IUserCommand, NewRoomPoolCommand>();
         services.AddScoped<IUserCommand, PingCommand>();
         services.AddScoped<IUserCommand, RoomDescriptionIsCommand>();
-        services.AddScoped<IUserCommand, RoomIsForCommand>();
+        services.AddScoped<IUserCommand, RoomHasRequirementCommand>();
         services.AddScoped<IUserCommand, RoomIsGlobalCommand>();
         services.AddScoped<IUserCommand, RoomIsInRoomPoolCommand>();
         services.AddScoped<IUserCommand, RoomIsInsideCommand>();
