@@ -41,45 +41,6 @@ namespace MUS.Game.Data
             );
         }
 
-        public async Task<CommandResult> CreateRoom(
-            string inputName, Being being
-        )
-        {
-            var validationResult = TextSanitation.ValidateName(inputName);
-            if(validationResult.GetStatus() == StatusCode.Fail)
-            {
-                return validationResult;
-            }
-            
-            var cleanName = TextSanitation.GetCleanName(inputName);
-            if(await RoomNameIsReserved(cleanName))
-            {
-                return NameIsReserved("room", cleanName);
-            }
-
-            EntityEntry<Room> entry = await Rooms.AddAsync(
-                new Room()
-                {
-                    GlobalAccess = false,
-                    Inventory = new Inventory(),
-                    InBeing = null,
-                    Name = cleanName
-                }
-            );
-
-            var newRoom = entry.Entity;
-
-            newRoom.ConnectBidirectionally(being.InRoom);
-
-            being.InRoom = newRoom;
-
-            await SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(Message.Created("room", newRoom.Name))
-            .AddMessage($"{being.Name} has moved in {newRoom.Name} automatically.");
-        }
-
         public async Task<CommandResult> CreateRoomPool(string inputName)
         {
             var validationResult = TextSanitation.ValidateName(inputName);
