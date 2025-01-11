@@ -158,34 +158,6 @@ public class RoomPool
         return string.Join(" ", sentences);
     }
 
-    public async Task<CommandResult> Rename(string newName)
-    {
-        var validationResult = TextSanitation.ValidateName(newName);
-        if(validationResult.GetStatus() == StatusCode.Fail)
-        {
-            return validationResult;
-        }
-        else
-        {
-            var cleanName = TextSanitation.GetCleanName(newName);
-            if(await _context.RoomPoolNameIsReserved(cleanName))
-            {
-                return NameIsReserved("room pool", cleanName);
-            }
-            else
-            {
-                var message = Message.Renamed(this.Name, cleanName);
-
-                this.Name = cleanName;
-
-                await _context.SaveChangesAsync();
-
-                return new CommandResult(StatusCode.Success)
-                .AddMessage(message);
-            }
-        }
-    }
-
     public async Task<CommandResult> SetDescription(string poolDescription)
     {
         var validationResult = TextSanitation.ValidateDescription(poolDescription);
@@ -221,6 +193,34 @@ public class RoomPool
         );
     }
 
+    public async Task<CommandResult> SetName(string newName)
+    {
+        var validationResult = TextSanitation.ValidateName(newName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanName = TextSanitation.GetCleanName(newName);
+            if(await _context.RoomPoolNameIsReserved(cleanName))
+            {
+                return NameIsReserved("room pool", cleanName);
+            }
+            else
+            {
+                var message = Message.Renamed(this.Name, cleanName);
+
+                this.Name = cleanName;
+
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(message);
+            }
+        }
+    }
+    
     public CommandResult Show()
     {
         return new CommandResult(StatusCode.Success)

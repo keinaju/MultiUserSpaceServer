@@ -38,10 +38,7 @@ public class RoomPoolNameIsCommand : IUserCommand
         }
         else
         {
-            return await user.RoomPoolNameIs(
-                pool,
-                NewRoomPoolNameInInput
-            );
+            return await pool.SetName(NewRoomPoolNameInInput);
         }
     }
 }

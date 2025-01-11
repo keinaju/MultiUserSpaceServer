@@ -128,13 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> RoomPoolNameIs(
-        RoomPool pool, string newName
-    )
-    {
-        return await pool.Rename(newName);
-    }
-
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(
