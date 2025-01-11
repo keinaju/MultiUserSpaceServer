@@ -41,30 +41,6 @@ namespace MUS.Game.Data
             );
         }
 
-        public async Task<CommandResult> CreateFeature(string inputName)
-        {
-            var validationResult = TextSanitation.ValidateName(inputName);
-            if(validationResult.GetStatus() == StatusCode.Fail)
-            {
-                return validationResult;
-            }
-
-            var cleanName = TextSanitation.GetCleanName(inputName);
-            if (await FeatureNameIsReserved(cleanName))
-            {
-                return NameIsReserved("feature", cleanName);
-            }
-
-            await Features.AddAsync(
-                new Feature() { Name = cleanName }
-            );
-
-            await SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(Message.Created("feature", cleanName));
-        }
-
         public async Task<CommandResult> CreateItem(string inputName)
         {
             var validationResult = TextSanitation.ValidateName(inputName);

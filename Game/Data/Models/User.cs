@@ -166,11 +166,6 @@ public class User
         );
     }
 
-    public async Task<CommandResult> NewFeature(string featureName)
-    {
-        return await _context.CreateFeature(featureName);
-    }
-
     public async Task<CommandResult> NewItem(string itemName)
     {
         return await _context.CreateItem(itemName);
