@@ -23,6 +23,13 @@ public class BeingNameIsCommand : IUserCommand
 
     public async Task<CommandResult> Run(User user)
     {
-        return await user.SelectedBeingNameIs(BeingNameInInput);
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+        else
+        {
+            return await user.SelectedBeing.SetName(BeingNameInInput);
+        }
     }
 }

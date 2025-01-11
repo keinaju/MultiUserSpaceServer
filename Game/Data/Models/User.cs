@@ -150,18 +150,6 @@ public class User
             return BeingDoesNotExist(beingName);
         }
     }
-    
-    public async Task<CommandResult> SelectedBeingNameIs(string beingName)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.BeingNameIs(beingName);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
 
     public async Task<CommandResult> Sell(
         int sellQuantity, int buyQuantity,
