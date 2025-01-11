@@ -128,13 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> ItemIsMadeOf(
-        Item product, Item component, int quantity
-    )
-    {
-        return await product.SetComponent(component, quantity);
-    }
-
     public async Task<CommandResult> ItemNameIs(
         Item item, string newName
     )

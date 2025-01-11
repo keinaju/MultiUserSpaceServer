@@ -59,11 +59,7 @@ public class ItemIsMadeOfCommand : IUserCommand
             return new CommandResult(StatusCode.Fail)
             .AddMessage("Component and product can not be the same item.");
         }
-
-        return await user.ItemIsMadeOf(
-            product,
-            component,
-            quantity
-        );
+        
+        return await product.SetComponent(component, quantity);
     }
 }
