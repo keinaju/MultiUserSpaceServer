@@ -166,11 +166,6 @@ public class User
         );
     }
 
-    public async Task<CommandResult> NewItem(string itemName)
-    {
-        return await _context.CreateItem(itemName);
-    }
-
     public async Task<CommandResult> NewItemHatcher(Item item)
     {
         if(SelectedBeing is not null)

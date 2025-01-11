@@ -41,36 +41,6 @@ namespace MUS.Game.Data
             );
         }
 
-        public async Task<CommandResult> CreateItem(string inputName)
-        {
-            var validationResult = TextSanitation.ValidateName(inputName);
-            if(validationResult.GetStatus() == StatusCode.Fail)
-            {
-                return validationResult;
-            }
-
-            var cleanName = TextSanitation.GetCleanName(inputName);
-            if(await ItemNameIsReserved(cleanName))
-            {
-                return NameIsReserved("item", cleanName);
-            }
-
-            await Items.AddAsync(
-                new Item()
-                {
-                    CraftPlan = null,
-                    DeploymentPrototype = null,
-                    Description = null,
-                    Name = cleanName
-                }
-            );
-
-            await SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(Message.Created("item", cleanName));
-        }
-
         public async Task<CommandResult> CreateRoom(
             string inputName, Being being
         )
