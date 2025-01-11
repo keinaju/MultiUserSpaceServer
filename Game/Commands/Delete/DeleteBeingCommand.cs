@@ -1,10 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data.Models;
 using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Delete;
 
-public class DeleteBeingCommand : IGameCommand
+public class DeleteBeingCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -15,26 +16,14 @@ public class DeleteBeingCommand : IGameCommand
     private string BeingNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
-    public DeleteBeingCommand(
-        IInputCommand input,
-        ISessionService session
-    )
+    public DeleteBeingCommand(IInputCommand input)
     {
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is null)
-        {
-            return CommandResult.NotSignedInResult();
-        }
-        else
-        {
-            return await _session.User.DeleteBeing(BeingNameInInput);
-        }
+        return await user.DeleteBeing(BeingNameInInput);
     }
 }

@@ -10,13 +10,13 @@ public class GameController : ControllerBase
 {
     private readonly IGameService _game;
     private readonly IResponsePayload _response;
-    private readonly ISessionService _session;
+    private readonly IUserSession _session;
     private readonly IInputCommand _input;
 
     public GameController(
         IGameService game,
         IResponsePayload response,
-        ISessionService session,
+        IUserSession session,
         IInputCommand input
     )
     {

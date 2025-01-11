@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowInventoryCommand : IGameCommand
+public class ShowInventoryCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -12,28 +12,10 @@ public class ShowInventoryCommand : IGameCommand
     
     public Regex Pattern => new("^(show|s) (inventory|i)$");
 
-    private readonly ISessionService _session;
+    public ShowInventoryCommand() {}
 
-    public ShowInventoryCommand(
-        ISessionService session
-    )
+    public Task<CommandResult> Run(User user)
     {
-        _session = session;
-    }
-
-    public Task<CommandResult> Run()
-    {
-        if(_session.User is not null)
-        {
-            return Task.FromResult(
-                _session.User.ShowInventory()
-            );
-        }
-        else
-        {
-            return Task.FromResult(
-                CommandResult.NotSignedInResult()
-            );
-        }
+        return Task.FromResult(user.ShowInventory());
     }
 }

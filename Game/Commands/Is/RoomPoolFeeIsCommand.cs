@@ -1,11 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class RoomPoolFeeIsCommand : IGameCommand
+public class RoomPoolFeeIsCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -19,20 +19,17 @@ public class RoomPoolFeeIsCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
     public RoomPoolFeeIsCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var pool = await _context.FindRoomPool(RoomPoolNameInInput);
         if(pool is null)
@@ -46,13 +43,6 @@ public class RoomPoolFeeIsCommand : IGameCommand
             return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
 
-        if(_session.User is null)
-        {
-            return CommandResult.NotSignedInResult();
-        }
-        else
-        {
-            return await _session.User.RoomPoolFeeIs(pool, item);
-        }
+        return await user.RoomPoolFeeIs(pool, item);
     }
 }

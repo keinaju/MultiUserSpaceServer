@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowGlobalRoomsCommand : IGameCommand
+public class ShowGlobalRoomsCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -17,14 +17,12 @@ public class ShowGlobalRoomsCommand : IGameCommand
 
     private readonly GameContext _context;
 
-    public ShowGlobalRoomsCommand(
-        GameContext context
-    )
+    public ShowGlobalRoomsCommand(GameContext context)
     {
         _context = context;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var globalRooms = await _context.FindAllGlobalRooms();
 

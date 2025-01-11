@@ -1,10 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data.Models;
 using static MUS.Game.Commands.CommandResult;
 
-namespace MUS.Game.Commands.Show;
+namespace MUS.Game.Commands.Generic;
 
-public class ShowCommandsCommand : IGameCommand
+public class HelpCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -18,21 +19,17 @@ public class ShowCommandsCommand : IGameCommand
 
     private readonly ICommandCollection _commandCollection;
 
-    public ShowCommandsCommand(
-        ICommandCollection commandCollection
-    )
+    public HelpCommand(ICommandCollection commandCollection)
     {
         _commandCollection = commandCollection;
     }
 
-    public Task<CommandResult> Run()
+    public Task<CommandResult> Run(User user)
     {
-        return Task.FromResult(
-            ShowCommands()
-        );
+        return Task.FromResult(Help());
     }
 
-    private CommandResult ShowCommands()
+    public CommandResult Help()
     {
         return new CommandResult(StatusCode.Success)
         .AddMessage("All commands are:")
@@ -44,7 +41,7 @@ public class ShowCommandsCommand : IGameCommand
         return GetHelpTexts(_commandCollection.GetCommands());
     }
 
-    private List<string> GetHelpTexts(IEnumerable<IGameCommand> commands)
+    private List<string> GetHelpTexts(IEnumerable<IUserCommand> commands)
     {
         var helpTexts = new List<string>();
 

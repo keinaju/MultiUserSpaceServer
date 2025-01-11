@@ -1,16 +1,15 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class RoomIsInRoomPoolCommand : IGameCommand
+public class RoomIsInRoomPoolCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
-    public string HelpText =>
-    "Adds the current room in a room pool.";
+    public string HelpText => "Adds the current room in a room pool.";
 
     public Regex Pattern => new("^room is in pool (.+)$");
 
@@ -18,34 +17,26 @@ public class RoomIsInRoomPoolCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
     public RoomIsInRoomPoolCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var pool = await _context.FindRoomPool(RoomPoolNameInInput);
         if(pool is null)
         {
             return CommandResult.RoomPoolDoesNotExist(RoomPoolNameInInput);
         }
-
-        if(_session.User is null)
-        {
-            return CommandResult.NotSignedInResult();
-        }
         else
         {
-            return await _session.User.RoomIsInRoomPool(pool);
+            return await user.RoomIsInRoomPool(pool);
         }
     }
 }

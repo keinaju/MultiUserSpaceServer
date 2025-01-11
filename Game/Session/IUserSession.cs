@@ -5,7 +5,7 @@ namespace MUS.Game.Session;
 /// <summary>
 /// Session service that is scoped per request.
 /// </summary>
-public interface ISessionService
+public interface IUserSession
 {    
     /// <summary>
     /// Returns information about user if user is authenticated in some point of request pipeline.

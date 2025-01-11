@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowBeingCommand : IGameCommand
+public class ShowBeingCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -12,28 +12,10 @@ public class ShowBeingCommand : IGameCommand
 
     public Regex Pattern => new("^(show|s) being$");
 
-    private readonly ISessionService _session;
+    public ShowBeingCommand() {}
 
-    public ShowBeingCommand(
-        ISessionService session
-    )
+    public Task<CommandResult> Run(User user)
     {
-        _session = session;
-    }
-
-    public Task<CommandResult> Run()
-    {
-        if (_session.User is not null)
-        {
-            return Task.FromResult(
-                _session.User.ShowBeing()
-            );
-        }
-        else
-        {
-            return Task.FromResult(
-                CommandResult.NotSignedInResult()
-            );
-        }
+        return Task.FromResult(user.ShowBeing());
     }
 }

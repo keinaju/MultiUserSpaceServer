@@ -1,11 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class RoomIsForCommand : IGameCommand
+public class RoomIsForCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -18,34 +18,26 @@ public class RoomIsForCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
     
     public RoomIsForCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var feature = await _context.FindFeature(FeatureNameInInput);
         if(feature is null)
         {
             return CommandResult.FeatureDoesNotExist(FeatureNameInInput);
         }
-
-        if(_session.User is null)
-        {
-            return CommandResult.NotSignedInResult();
-        }
         else
         {
-            return await _session.User.RoomIsFor(feature);
+            return await user.RoomIsFor(feature);
         }
     }
 }

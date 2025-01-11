@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class CuriosityIsCommand : IGameCommand
+public class CuriosityIsCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -15,30 +15,21 @@ public class CuriosityIsCommand : IGameCommand
     private string RoomPoolNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
-    public CuriosityIsCommand(
-        IInputCommand input,
-        ISessionService session
-    )
+    public CuriosityIsCommand(IInputCommand input)
     {
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is null)
+        if(user.SelectedBeing is null)
         {
-            return CommandResult.NotSignedInResult();
-        }
-        if(_session.User.SelectedBeing is null)
-        {
-            return _session.User.NoSelectedBeingResult();
+            return user.NoSelectedBeingResult();
         }
         else
         {
-            return await _session.User.SelectedBeing.InRoom
+            return await user.SelectedBeing.InRoom
             .CuriosityIs(RoomPoolNameInInput);
         }
     }

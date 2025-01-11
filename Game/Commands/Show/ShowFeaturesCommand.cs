@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowFeaturesCommand : IGameCommand
+public class ShowFeaturesCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -17,14 +17,12 @@ public class ShowFeaturesCommand : IGameCommand
 
     private readonly GameContext _context;
 
-    public ShowFeaturesCommand(
-        GameContext context
-    )
+    public ShowFeaturesCommand(GameContext context)
     {
         _context = context;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var features = await _context.FindAllFeatures();
         if(features.Count == 0)

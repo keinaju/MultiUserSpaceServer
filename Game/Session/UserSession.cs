@@ -3,7 +3,7 @@ using MUS.Game.Data.Repositories;
 
 namespace MUS.Game.Session;
 
-public class SessionService : ISessionService
+public class UserSession : IUserSession
 {
     /// <summary>
     /// User that has been authenticated.
@@ -14,7 +14,7 @@ public class SessionService : ISessionService
     private readonly IUserRepository _userRepo;
     private User? _user = null;
 
-    public SessionService(
+    public UserSession(
         ITokenService tokenService,
         IUserRepository userRepo
     )

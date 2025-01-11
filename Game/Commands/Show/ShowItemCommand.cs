@@ -1,10 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowItemCommand : IGameCommand
+public class ShowItemCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -26,7 +27,7 @@ public class ShowItemCommand : IGameCommand
         _input = input;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var item = await _context.FindItem(ItemNameInInput);
         if(item is null)

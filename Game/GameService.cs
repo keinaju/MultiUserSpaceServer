@@ -1,53 +1,110 @@
 ﻿using MUS.Game.Commands;
+using MUS.Game.Commands.Generic;
+using MUS.Game.Session;
+using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game;
 
 public class GameService : IGameService
 {
     private readonly ICommandParser _parser;
-    private readonly IResponsePayload _response;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
+    private readonly IUserSession _session;
 
     public GameService(
         ICommandParser parser,
+        IInputCommand input,
         IResponsePayload response,
-        IInputCommand input
+        IUserSession session
     )
     {
         _parser = parser;
-        _response = response;
         _input = input;
+        _response = response;
+        _session = session;
     }
 
     public async Task Respond()
     {
-        // Test all commands for matches
-        var commands = _parser.GetMatchingCommands();
+        _response.AddResult(await GetResult());
+    }
 
-        if(commands.Count() == 0)
+    private async Task<CommandResult> GetResult()
+    {
+        // Test command patterns for a match
+        var matches = _parser.GetMatchingCommands();
+
+        switch(matches.Count())
         {
-            _response.AddText(
-                $"'{_input.Text}' does not match any known command."
-            );
+            // Input has matched with only one command
+            case 1: return await GetSingleMatchResult(matches.First());
+
+            // Input has not matched with any commands
+            case 0: return GetNoMatchResult();
+            
+            // Input has matched with multiple commands
+            default: return GetMultipleMatchResult(matches);
         }
-        else if(commands.Count() == 1)
+    }
+
+    private CommandResult GetNoMatchResult()
+    {
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage(
+            $"Input '{_input.Text}' does not match with any command patterns."
+        );
+    }
+
+    private async Task<CommandResult> GetSingleMatchResult(IUserCommand command)
+    {
+        // If user is signed in
+        if(_session.User is not null)
         {
-            _response.AddResult(
-                await commands.First().Run()
-            );
+            return await command.Run(_session.User);
         }
+        // If user is not signed in, try commands 
+        // that do not require a user session
         else
         {
-            _response.AddText(
-                $"'{_input.Text}' matches with " +
-                $"{commands.Count()} different commands:"
-            );
-            foreach(var command in commands)
+            if(command is SignUpCommand)
             {
-                _response.AddText(
-                    $"{command.Pattern} = {command.HelpText}"
-                );
+                var signUpCommand = (SignUpCommand)command;
+                return await signUpCommand.SignUp();
+            }
+            else if(command is SignInCommand)
+            {
+                var signInCommand = (SignInCommand)command;
+                return await signInCommand.SignIn();
+            }
+            else if(command is HelpCommand)
+            {
+                var helpCommand = (HelpCommand)command;
+                return helpCommand.Help();
+            }
+            else
+            {
+                return CommandResult.NotSignedInResult();
             }
         }
+    }
+
+    private CommandResult GetMultipleMatchResult(
+        IEnumerable<IUserCommand> commands
+    )
+    {
+        var messages = new List<string>();
+
+        messages.Add(
+            $"Input '{_input.Text}' matches with {commands.Count()} different commands:"
+        );
+
+        foreach(var command in commands)
+        {
+            messages.Add($"{command.Pattern} = {command.HelpText}");
+        }
+
+        return new CommandResult(StatusCode.Fail)
+        .AddMessages(messages);
     }
 }

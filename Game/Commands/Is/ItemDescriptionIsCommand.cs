@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class ItemDescriptionIsCommand : IGameCommand
+public class ItemDescriptionIsCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -17,27 +17,17 @@ public class ItemDescriptionIsCommand : IGameCommand
     private string DescriptionInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
-    public ItemDescriptionIsCommand(
-        IInputCommand input,
-        ISessionService session
-    )
+    public ItemDescriptionIsCommand(IInputCommand input)
     {
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is not null)
-        {
-            return await _session.User
-            .ItemDescriptionIs(ItemNameInInput, DescriptionInInput);
-        }
-        else
-        {
-            return CommandResult.NotSignedInResult();
-        }
+        return await user.ItemDescriptionIs(
+            ItemNameInInput,
+            DescriptionInInput
+        );
     }
 }

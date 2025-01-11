@@ -6,20 +6,20 @@ namespace MUS.Game.Commands;
 public class CommandCollection : ICommandCollection
 {
     private readonly IServiceProvider _serviceProvider;
-    private readonly ISessionService _session;
+    private readonly IUserSession _session;
 
     public CommandCollection(
         IServiceProvider serviceProvider,
-        ISessionService session
+        IUserSession session
     )
     {
         _serviceProvider = serviceProvider;
         _session = session;        
     }
 
-    public IEnumerable<IGameCommand> GetCommands()
+    public IEnumerable<IUserCommand> GetCommands()
     {
-        var commands = _serviceProvider.GetServices<IGameCommand>();
+        var commands = _serviceProvider.GetServices<IUserCommand>();
 
         // If the user is not admin, filter out admin commands
         if (_session.User is null || !_session.User.IsAdmin)

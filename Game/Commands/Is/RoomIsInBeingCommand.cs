@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class RoomIsInBeingCommand : IGameCommand
+public class RoomIsInBeingCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -12,25 +12,11 @@ public class RoomIsInBeingCommand : IGameCommand
     "Sets the current room as an inside room of the current being.";
 
     public Regex Pattern => new("^room is inside$");
-    
-    private readonly ISessionService _session;
 
-    public RoomIsInBeingCommand(
-        ISessionService session
-    )
-    {
-        _session = session;
-    }
+    public RoomIsInBeingCommand() {}
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is not null)
-        {
-            return await _session.User.RoomIsInBeing();
-        }
-        else
-        {
-            return CommandResult.NotSignedInResult();
-        }
+        return await user.RoomIsInBeing();
     }
 }

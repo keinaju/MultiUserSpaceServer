@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class FeatureNameIsCommand : IGameCommand
+public class FeatureNameIsCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -17,28 +17,17 @@ public class FeatureNameIsCommand : IGameCommand
     private string NewFeatureNameInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
-    public FeatureNameIsCommand(
-        IInputCommand input,
-        ISessionService session
-    )
+    public FeatureNameIsCommand(IInputCommand input)
     {
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is not null)
-        {
-            return await _session.User.FeatureNameIs(
-                OldFeatureNameInInput, NewFeatureNameInInput
-            );
-        }
-        else
-        {
-            return CommandResult.NotSignedInResult();
-        }
+        return await user.FeatureNameIs(
+            OldFeatureNameInInput,
+            NewFeatureNameInInput
+        );
     }
 }

@@ -16,9 +16,9 @@ public class CommandParser : ICommandParser
         _input = input;
     }
 
-    public IEnumerable<IGameCommand> GetMatchingCommands()
+    public IEnumerable<IUserCommand> GetMatchingCommands()
     {
-        var matchingCommands = new List<IGameCommand>();
+        var matchingCommands = new List<IUserCommand>();
 
         foreach(var command in _commandCollection.GetCommands())
         {

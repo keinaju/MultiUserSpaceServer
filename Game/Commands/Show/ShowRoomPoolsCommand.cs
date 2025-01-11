@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowRoomPoolsCommand : IGameCommand
+public class ShowRoomPoolsCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -17,14 +17,12 @@ public class ShowRoomPoolsCommand : IGameCommand
 
     private readonly GameContext _context;
 
-    public ShowRoomPoolsCommand(
-        GameContext context
-    )
+    public ShowRoomPoolsCommand(GameContext context)
     {
         _context = context;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var pools = await _context.FindAllRoomPools();
         if(pools.Count == 0)

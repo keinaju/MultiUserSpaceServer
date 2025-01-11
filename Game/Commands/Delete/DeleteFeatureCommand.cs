@@ -1,11 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Delete;
 
-public class DeleteFeatureCommand : IGameCommand
+public class DeleteFeatureCommand : IUserCommand
 {
     public bool AdminOnly => true;
     
@@ -17,28 +17,18 @@ public class DeleteFeatureCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
     public DeleteFeatureCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is null)
-        {
-            return CommandResult.NotSignedInResult();
-        }
-        else
-        {
-            return await _context.DeleteFeature(FeatureNameInInput);
-        }
+        return await _context.DeleteFeature(FeatureNameInInput);
     }
 }

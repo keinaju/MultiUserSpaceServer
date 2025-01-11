@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Generic;
 
-public class BreakCommand : IGameCommand
+public class BreakCommand : IUserCommand
 {
     public bool AdminOnly => false;
     
@@ -15,31 +15,21 @@ public class BreakCommand : IGameCommand
     private string ItemNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
-    public BreakCommand(
-        IInputCommand input,
-        ISessionService session
-    )
+    public BreakCommand(IInputCommand input)
     {
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is null)
+        if(user.SelectedBeing is null)
         {
-            return CommandResult.NotSignedInResult();
-        }
-        if(_session.User.SelectedBeing is null)
-        {
-            return _session.User.NoSelectedBeingResult();
+            return user.NoSelectedBeingResult();
         }
         else
         {
-            return await _session.User.SelectedBeing
-            .TryBreakItem(ItemNameInInput);
+            return await user.SelectedBeing.TryBreakItem(ItemNameInInput);
         }
     }
 }

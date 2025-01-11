@@ -1,12 +1,13 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
+using MUS.Game.Data.Models;
 using MUS.Game.Utilities;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class PingCommand : IGameCommand
+public class PingCommand : IUserCommand
 {
     public bool AdminOnly => false;
     
@@ -26,7 +27,7 @@ public class PingCommand : IGameCommand
         _uptime = uptime;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         return new CommandResult(StatusCode.Success)
         .AddMessage($"{await GetGameName()} responds.")

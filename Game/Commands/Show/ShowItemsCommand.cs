@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowItemsCommand : IGameCommand
+public class ShowItemsCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -17,14 +17,12 @@ public class ShowItemsCommand : IGameCommand
 
     private readonly GameContext _context;
 
-    public ShowItemsCommand(
-        GameContext context
-    )
+    public ShowItemsCommand(GameContext context)
     {
         _context = context;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var items = await _context.FindAllItems();
 

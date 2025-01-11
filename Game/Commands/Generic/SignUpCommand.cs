@@ -6,7 +6,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class SignUpCommand : IGameCommand
+public class SignUpCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -30,7 +30,12 @@ public class SignUpCommand : IGameCommand
         _input = input;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
+    {
+        return await SignUp();
+    }
+
+    public async Task<CommandResult> SignUp()
     {
         var validationResult = TextSanitation.ValidateName(UsernameInInput);
         if(validationResult.GetStatus() == StatusCode.Fail)
@@ -46,14 +51,14 @@ public class SignUpCommand : IGameCommand
             }
             else
             {
-                var user = new User()
+                var newUser = new User()
                 {
                     IsAdmin = false,
                     Username = cleanName,
                     HashedPassword = User.HashPassword(PasswordInInput)
                 };
 
-                return await _context.CreateUser(user);
+                return await _context.CreateUser(newUser);
             }
         }
     }

@@ -1,11 +1,12 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
+using MUS.Game.Data.Models;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowTimeCommand : IGameCommand
+public class ShowTimeCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -15,14 +16,12 @@ public class ShowTimeCommand : IGameCommand
 
     private readonly GameContext _context;
 
-    public ShowTimeCommand(
-        GameContext context
-    )
+    public ShowTimeCommand(GameContext context)
     {
         _context = context;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var tick = await _context.GetTickCount();
         var settings = await _context.GetGameSettings();

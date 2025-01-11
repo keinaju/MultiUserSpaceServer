@@ -1,11 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class DeploymentIsCommand : IGameCommand
+public class DeploymentIsCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -18,39 +18,30 @@ public class DeploymentIsCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
     public DeploymentIsCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var item = await _context.FindItem(ItemNameInInput);
         if(item is null)
         {
             return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
-        if(_session.User is null)
+        if(user.SelectedBeing is null)
         {
-            return CommandResult.NotSignedInResult();
-        }
-        if(_session.User.SelectedBeing is null)
-        {
-            return _session.User.NoSelectedBeingResult();
+            return user.NoSelectedBeingResult();
         }
         else
         {
-            return await item.SetDeployment(
-                _session.User.SelectedBeing
-            );
+            return await item.SetDeployment(user.SelectedBeing);
         }
     }
 }

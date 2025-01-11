@@ -1,13 +1,13 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 using MUS.Game.Utilities;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class TradeCommand : IGameCommand
+public class TradeCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -25,25 +25,17 @@ public class TradeCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
     public TradeCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
-    {
-        return await Trade();
-    }
-
-    private async Task<CommandResult> Trade()
+    public async Task<CommandResult> Run(User user)
     {
         bool buyOk = int.TryParse(BuyQuantityInInput, out int buyQuantity);
         if(!buyOk || buyQuantity < 1)
@@ -77,18 +69,11 @@ public class TradeCommand : IGameCommand
             .AddMessage("The item to sell can not be the item to buy.");
         }
 
-        if(_session.User is null)
-        {
-            return NotSignedInResult();
-        }
-        else
-        {
-            return await _session.User.Sell(
-                sellQuantity: sellQuantity,
-                buyQuantity: buyQuantity,
-                sellItem: sellItem,
-                buyItem: buyItem
-            );
-        }
+        return await user.Sell(
+            sellQuantity: sellQuantity,
+            buyQuantity: buyQuantity,
+            sellItem: sellItem,
+            buyItem: buyItem
+        );
     }
 }

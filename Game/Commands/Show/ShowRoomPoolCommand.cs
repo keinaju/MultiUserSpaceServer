@@ -1,11 +1,12 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
+using MUS.Game.Data.Models;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowRoomPoolCommand : IGameCommand
+public class ShowRoomPoolCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -27,7 +28,7 @@ public class ShowRoomPoolCommand : IGameCommand
         _input = input;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var pool = await _context.FindRoomPool(RoomPoolNameInInput);
         if(pool is null)

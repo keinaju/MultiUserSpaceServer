@@ -9,5 +9,5 @@ namespace MUS.Game.Commands;
 /// </summary>
 public interface ICommandCollection
 {
-    IEnumerable<IGameCommand> GetCommands();
+    IEnumerable<IUserCommand> GetCommands();
 }

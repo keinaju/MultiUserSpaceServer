@@ -1,12 +1,12 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Is;
 
-public class ItemNameIsCommand : IGameCommand
+public class ItemNameIsCommand : IUserCommand
 {
     public bool AdminOnly => true;
 
@@ -20,34 +20,26 @@ public class ItemNameIsCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
     public ItemNameIsCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         var item = await _context.FindItem(OldItemNameInInput);
         if(item is null)
         {
             return ItemDoesNotExist(OldItemNameInInput);
         }
-
-        if(_session.User is null)
-        {
-            return NotSignedInResult();
-        }
         else
         {
-            return await _session.User.ItemNameIs(item, NewItemNameInInput);
+            return await user.ItemNameIs(item, NewItemNameInInput);
         }
     }
 }

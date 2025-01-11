@@ -1,11 +1,11 @@
 using System;
 using System.Text.RegularExpressions;
 using MUS.Game.Data;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Delete;
 
-public class DeleteRoomCommand : IGameCommand
+public class DeleteRoomCommand : IUserCommand
 {
     public bool AdminOnly => true;
     
@@ -17,28 +17,18 @@ public class DeleteRoomCommand : IGameCommand
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
     public DeleteRoomCommand(
         GameContext context,
-        IInputCommand input,
-        ISessionService session
+        IInputCommand input
     )
     {
         _context = context;
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is null)
-        {
-            return CommandResult.NotSignedInResult();
-        }
-        else
-        {
-            return await _context.DeleteRoom(RoomNameInInput);
-        }
+        return await _context.DeleteRoom(RoomNameInInput);
     }
 }

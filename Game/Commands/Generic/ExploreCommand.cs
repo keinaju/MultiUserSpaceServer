@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Generic;
 
-public class ExploreCommand : IGameCommand
+public class ExploreCommand : IUserCommand
 {
     public bool AdminOnly => false;
     
@@ -12,28 +12,17 @@ public class ExploreCommand : IGameCommand
 
     public Regex Pattern => new("^explore$");
 
-    private readonly ISessionService _session;
+    public ExploreCommand() {}
 
-    public ExploreCommand(
-        ISessionService session
-    )
+    public async Task<CommandResult> Run(User user)
     {
-        _session = session;
-    }
-
-    public async Task<CommandResult> Run()
-    {
-        if(_session.User is null)
+        if(user.SelectedBeing is null)
         {
-            return CommandResult.NotSignedInResult();
-        }
-        if(_session.User.SelectedBeing is null)
-        {
-            return _session.User.NoSelectedBeingResult();
+            return user.NoSelectedBeingResult();
         }
         else
         {
-            return await _session.User.SelectedBeing.Explore();
+            return await user.SelectedBeing.Explore();
         }
     }
 }

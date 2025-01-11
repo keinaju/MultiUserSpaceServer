@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using Microsoft.EntityFrameworkCore;
 using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Session;
@@ -8,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class SignInCommand : IGameCommand
+public class SignInCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -40,12 +39,12 @@ public class SignInCommand : IGameCommand
         _tokenService = tokenService;
     }
     
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
         return await SignIn();
     }
 
-    private async Task<CommandResult> SignIn()
+    public async Task<CommandResult> SignIn()
     {
         var user = await _context.FindUser(UsernameInInput);
 

@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class BeingNameIsCommand : IGameCommand
+public class BeingNameIsCommand : IUserCommand
 {
     public bool AdminOnly => false;
 
@@ -15,26 +15,14 @@ public class BeingNameIsCommand : IGameCommand
     private string BeingNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
-    public BeingNameIsCommand(
-        IInputCommand input,
-        ISessionService session
-    )
+    public BeingNameIsCommand(IInputCommand input)
     {
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is not null)
-        {
-            return await _session.User.SelectedBeingNameIs(BeingNameInInput);
-        }
-        else
-        {
-            return CommandResult.NotSignedInResult();
-        }
+        return await user.SelectedBeingNameIs(BeingNameInInput);
     }
 }

@@ -1,10 +1,10 @@
 using System;
 using System.Text.RegularExpressions;
-using MUS.Game.Session;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Generic;
 
-public class CraftCommand : IGameCommand
+public class CraftCommand : IUserCommand
 {
     public bool AdminOnly => false;
     
@@ -15,31 +15,21 @@ public class CraftCommand : IGameCommand
     private string ItemNameInInput => _input.GetGroup(this.Pattern, 1);
 
     private readonly IInputCommand _input;
-    private readonly ISessionService _session;
 
-    public CraftCommand(
-        IInputCommand input,
-        ISessionService session
-    )
+    public CraftCommand(IInputCommand input)
     {
         _input = input;
-        _session = session;
     }
 
-    public async Task<CommandResult> Run()
+    public async Task<CommandResult> Run(User user)
     {
-        if(_session.User is null)
+        if(user.SelectedBeing is null)
         {
-            return CommandResult.NotSignedInResult();
-        }
-        if(_session.User.SelectedBeing is null)
-        {
-            return _session.User.NoSelectedBeingResult();
+            return user.NoSelectedBeingResult();
         }
         else
         {
-            return await _session.User.SelectedBeing
-            .TryCraftItem(ItemNameInInput);
+            return await user.SelectedBeing.TryCraftItem(ItemNameInInput);
         }
     }
 }
