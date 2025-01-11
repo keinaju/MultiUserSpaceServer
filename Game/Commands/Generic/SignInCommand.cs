@@ -41,10 +41,10 @@ public class SignInCommand : IUserCommand
     
     public async Task<CommandResult> Run(User user)
     {
-        return await SignIn();
+        return await SignInResult();
     }
 
-    public async Task<CommandResult> SignIn()
+    public async Task<CommandResult> SignInResult()
     {
         var user = await _context.FindUser(UsernameInInput);
 

@@ -26,10 +26,10 @@ public class HelpCommand : IUserCommand
 
     public Task<CommandResult> Run(User user)
     {
-        return Task.FromResult(Help());
+        return Task.FromResult(HelpResult());
     }
 
-    public CommandResult Help()
+    public CommandResult HelpResult()
     {
         return new CommandResult(StatusCode.Success)
         .AddMessage("All commands are:")

@@ -70,17 +70,17 @@ public class GameService : IGameService
             if(command is SignUpCommand)
             {
                 var signUpCommand = (SignUpCommand)command;
-                return await signUpCommand.SignUp();
+                return await signUpCommand.SignUpResult();
             }
             else if(command is SignInCommand)
             {
                 var signInCommand = (SignInCommand)command;
-                return await signInCommand.SignIn();
+                return await signInCommand.SignInResult();
             }
             else if(command is HelpCommand)
             {
                 var helpCommand = (HelpCommand)command;
-                return helpCommand.Help();
+                return helpCommand.HelpResult();
             }
             else
             {

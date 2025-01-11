@@ -32,10 +32,10 @@ public class SignUpCommand : IUserCommand
 
     public async Task<CommandResult> Run(User user)
     {
-        return await SignUp();
+        return await SignUpResult();
     }
 
-    public async Task<CommandResult> SignUp()
+    public async Task<CommandResult> SignUpResult()
     {
         var validationResult = TextSanitation.ValidateName(UsernameInInput);
         if(validationResult.GetStatus() == StatusCode.Fail)
