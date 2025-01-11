@@ -128,18 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> RoomIsGlobal(bool newValue)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.InRoom.RoomIsGlobal(newValue);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> RoomIsInBeing()
     {
         if(SelectedBeing is not null)

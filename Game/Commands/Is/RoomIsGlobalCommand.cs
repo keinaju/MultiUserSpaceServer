@@ -26,6 +26,13 @@ public class RoomIsGlobalCommand : IUserCommand
 
     public async Task<CommandResult> Run(User user)
     {
-        return await user.RoomIsGlobal(NewValue);
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+        else
+        {
+            return await user.SelectedBeing.InRoom.RoomIsGlobal(NewValue);
+        }
     }
 }
