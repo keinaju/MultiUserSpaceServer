@@ -61,8 +61,8 @@ public static class Extensions
         services.AddScoped<IUserCommand, RoomDescriptionIsCommand>();
         services.AddScoped<IUserCommand, RoomIsForCommand>();
         services.AddScoped<IUserCommand, RoomIsGlobalCommand>();
-        services.AddScoped<IUserCommand, RoomIsInBeingCommand>();
         services.AddScoped<IUserCommand, RoomIsInRoomPoolCommand>();
+        services.AddScoped<IUserCommand, RoomIsInsideCommand>();
         services.AddScoped<IUserCommand, RoomNameIsCommand>();
         services.AddScoped<IUserCommand, RoomPoolDescriptionIsCommand>();
         services.AddScoped<IUserCommand, RoomPoolFeeIsCommand>();

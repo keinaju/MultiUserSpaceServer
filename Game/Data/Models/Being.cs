@@ -296,16 +296,16 @@ public class Being
         FreeInventory.RemoveItems(item, quantity);
     }
 
-    public async Task<CommandResult> RoomIsInside()
+    public async Task<CommandResult> SetInsideRoom(Room room)
     {
-        this.RoomInside = this.InRoom;
+        this.RoomInside = room;
 
         await _context.SaveChangesAsync();
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(
             Message.Set(
-                $"{Name}'s inside room", RoomInside.Name
+                $"{Name}'s inside room", room.Name
             )
         );
     }
