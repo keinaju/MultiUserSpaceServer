@@ -6,7 +6,7 @@ namespace MUS.Game.Commands.New;
 
 public class NewBeingCommand : IUserCommand
 {
-    public bool AdminOnly => false;
+    public bool AdminOnly => true;
 
     public string HelpText => "Creates a new being.";
 

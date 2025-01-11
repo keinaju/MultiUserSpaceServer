@@ -41,43 +41,6 @@ namespace MUS.Game.Data
             );
         }
 
-        public async Task<CommandResult> CreateBeing(
-            User creator, string inputName
-        )
-        {
-            var validationResult = TextSanitation.ValidateName(inputName);
-            if(validationResult.GetStatus() == StatusCode.Fail)
-            {
-                return validationResult;
-            }
-            
-            var cleanName = TextSanitation.GetCleanName(inputName);
-            if(await BeingNameIsReserved(cleanName))
-            {
-                return NameIsReserved("being", cleanName);
-            }
-
-            var settings = await GetGameSettings();
-
-            await Beings.AddAsync(
-                new Being()
-                {
-                    CreatedByUser = creator,
-                    FreeInventory = new Inventory(),
-                    InRoom = settings!.DefaultSpawnRoom,
-                    Name = cleanName,
-                    TradeInventory = new Inventory()
-                }
-            );
-
-            await SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(
-                Message.Created("being", cleanName)
-            );
-        }
-
         public async Task<CommandResult> CreateFeature(string inputName)
         {
             var validationResult = TextSanitation.ValidateName(inputName);
@@ -203,6 +166,19 @@ namespace MUS.Game.Data
         public async Task<CommandResult> CreateUser(User user)
         {
             await Users.AddAsync(user);
+
+            var settings = await GetGameSettings();
+
+            user.CreatedBeings.Add(
+                new Being()
+                {
+                    CreatedByUser = user,
+                    FreeInventory = new Inventory(),
+                    InRoom = settings.DefaultSpawnRoom,
+                    Name = await GetUniqueBeingName("BEING #"),
+                    TradeInventory = new Inventory()
+                }
+            );
 
             await SaveChangesAsync();
 

@@ -130,7 +130,40 @@ public class User
 
     public async Task<CommandResult> NewBeing(string beingName)
     {
-        return await _context.CreateBeing(this, beingName);
+        var validationResult = TextSanitation.ValidateName(beingName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        
+        var cleanName = TextSanitation.GetCleanName(beingName);
+        if(await _context.BeingNameIsReserved(cleanName))
+        {
+            return NameIsReserved("being", cleanName);
+        }
+
+        if(SelectedBeing is null)
+        {
+            return NoSelectedBeingResult();
+        }
+
+        this.CreatedBeings.Add(
+            new Being()
+            {
+                CreatedByUser = this,
+                FreeInventory = new Inventory(),
+                InRoom = SelectedBeing.InRoom,
+                Name = cleanName,
+                TradeInventory = new Inventory()
+            }
+        );
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Created("being", cleanName)
+        );
     }
 
     public async Task<CommandResult> NewFeature(string featureName)
