@@ -41,7 +41,7 @@ public class Feature
         _lazyLoader = lazyLoader;
     }
 
-    public async Task<CommandResult> Rename(string newName)
+    public async Task<CommandResult> SetName(string newName)
     {
         var validationResult = TextSanitation.ValidateName(newName);
         if(validationResult.GetStatus() == StatusCode.Fail)

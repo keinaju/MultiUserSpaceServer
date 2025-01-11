@@ -85,21 +85,6 @@ public class User
         }
     }
 
-    public async Task<CommandResult> FeatureNameIs(
-        string oldFeatureName, string newFeatureName
-    )
-    {
-        var feature = await _context.FindFeature(oldFeatureName);
-        if(feature is not null)
-        {
-            return await feature.Rename(newFeatureName);
-        }
-        else
-        {
-            return FeatureDoesNotExist(oldFeatureName);
-        }
-    }
-
     public List<string> GetDetails()
     {
         var texts = new List<string>();
