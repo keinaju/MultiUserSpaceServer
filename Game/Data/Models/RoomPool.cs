@@ -65,13 +65,13 @@ public class RoomPool
         _lazyLoader = lazyLoader;
     }
 
-    public async Task<CommandResult> RoomIsInRoomPool(Room room)
+    public async Task<CommandResult> AddRoom(Room room)
     {
         if(this.HasRoom(room))
         {
             return new CommandResult(StatusCode.Fail)
             .AddMessage(
-                $"Room pool {Name} already has the room {room.Name}."
+                $"Room pool {this.Name} already has the room {room.Name}."
             );
         }
         else

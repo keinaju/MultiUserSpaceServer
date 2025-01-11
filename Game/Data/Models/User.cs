@@ -128,20 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> RoomIsInRoomPool(RoomPool pool)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await pool.RoomIsInRoomPool(
-                SelectedBeing.InRoom
-            );
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> RoomNameIs(string newName)
     {
         if(SelectedBeing is not null)

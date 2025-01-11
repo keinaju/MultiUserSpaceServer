@@ -34,9 +34,12 @@ public class RoomIsInRoomPoolCommand : IUserCommand
         {
             return CommandResult.RoomPoolDoesNotExist(RoomPoolNameInInput);
         }
-        else
+
+        if(user.SelectedBeing is null)
         {
-            return await user.RoomIsInRoomPool(pool);
+            return user.NoSelectedBeingResult();
         }
+        
+        return await pool.AddRoom(user.SelectedBeing.InRoom);
     }
 }
