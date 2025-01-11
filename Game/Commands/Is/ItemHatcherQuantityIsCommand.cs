@@ -67,7 +67,12 @@ public class ItemHatcherQuantityIsCommand : IUserCommand
             return ItemDoesNotExist(ItemNameInInput);
         }
 
-        return await user.ItemHatcherQuantityIs(
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+
+        return await user.SelectedBeing.InRoom.ItemHatcherQuantityIs(
             item,
             minQuantity,
             maxQuantity

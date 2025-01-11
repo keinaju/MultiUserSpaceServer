@@ -128,36 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> ItemHatcherIntervalIs(
-        Item item, int interval
-    )
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.InRoom
-            .ItemHatcherIntervalIs(item, interval);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
-    public async Task<CommandResult> ItemHatcherQuantityIs(
-        Item item, int minQuantity, int maxQuantity
-    )
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.InRoom
-            .ItemHatcherQuantityIs(item, minQuantity, maxQuantity);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> ItemIsMadeOf(
         Item product, Item component, int quantity
     )

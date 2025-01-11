@@ -46,6 +46,12 @@ public class ItemHatcherIntervalIsCommand : IUserCommand
             return ItemDoesNotExist(ItemNameInInput);
         }
 
-        return await user.ItemHatcherIntervalIs(item, interval);
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+
+        return await user.SelectedBeing.InRoom
+        .ItemHatcherIntervalIs(item, interval);
     }
 }
