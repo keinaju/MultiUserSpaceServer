@@ -43,6 +43,6 @@ public class RoomPoolFeeIsCommand : IUserCommand
             return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
 
-        return await user.RoomPoolFeeIs(pool, item);
+        return await pool.SetFeeItem(item);
     }
 }

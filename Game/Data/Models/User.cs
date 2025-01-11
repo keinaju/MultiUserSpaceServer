@@ -128,11 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> RoomPoolFeeIs(RoomPool pool, Item item)
-    {
-        return await pool.SetFeeItem(item);
-    }
-
     public async Task<CommandResult> RoomPoolNameIs(
         RoomPool pool, string newName
     )
