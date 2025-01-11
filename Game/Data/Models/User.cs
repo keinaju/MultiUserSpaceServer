@@ -64,18 +64,6 @@ public class User
         _lazyLoader = lazyLoader;
     }
 
-    public async Task<CommandResult> CuriosityIs(string poolName)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.CuriosityIs(poolName);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> DeleteBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(
@@ -94,42 +82,6 @@ public class User
         else
         {
             return BeingDoesNotExist(beingName);
-        }
-    }
-
-    public async Task<CommandResult> DeployItem(string itemName)
-    {
-        if(SelectedBeing is null)
-        {
-            return NoSelectedBeingResult();
-        }
-        else
-        {
-            return await SelectedBeing.DeployItem(itemName);
-        }
-    }
-
-    public async Task<CommandResult> DeploymentIs(Item item)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await item.SetDeployment(SelectedBeing);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
-    public async Task<CommandResult> Explore()
-    {
-        if(SelectedBeing is null)
-        {
-            return NoSelectedBeingResult();
-        }
-        else
-        {
-            return await SelectedBeing.Explore();
         }
     }
 

@@ -28,13 +28,18 @@ public class CuriosityIsCommand : IGameCommand
 
     public async Task<CommandResult> Run()
     {
-        if(_session.User is not null)
+        if(_session.User is null)
         {
-            return await _session.User.CuriosityIs(RoomPoolNameInInput);
+            return CommandResult.NotSignedInResult();
+        }
+        if(_session.User.SelectedBeing is null)
+        {
+            return _session.User.NoSelectedBeingResult();
         }
         else
         {
-            return CommandResult.NotSignedInResult();
+            return await _session.User.SelectedBeing.InRoom
+            .CuriosityIs(RoomPoolNameInInput);
         }
     }
 }

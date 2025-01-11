@@ -200,9 +200,8 @@ public class Room
     {
         if(Curiosity is null)
         {
-            return new CommandResult(
-                CommandResult.StatusCode.Fail
-            ).AddMessage(Message.DoesNotHave(Name, "a curiosity"));
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(Message.DoesNotHave(Name, "a curiosity"));
         }
         else
         {

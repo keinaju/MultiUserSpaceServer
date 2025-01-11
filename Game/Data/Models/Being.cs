@@ -151,11 +151,6 @@ public class Being
         }
     }
 
-    public async Task<CommandResult> CuriosityIs(string poolName)
-    {
-        return await InRoom.CuriosityIs(poolName);
-    }
-
     public async Task<CommandResult> Explore()
     {
         return await InRoom.Expand(this);

@@ -42,9 +42,15 @@ public class DeploymentIsCommand : IGameCommand
         {
             return CommandResult.NotSignedInResult();
         }
+        if(_session.User.SelectedBeing is null)
+        {
+            return _session.User.NoSelectedBeingResult();
+        }
         else
         {
-            return await _session.User.DeploymentIs(item);
+            return await item.SetDeployment(
+                _session.User.SelectedBeing
+            );
         }
     }
 }

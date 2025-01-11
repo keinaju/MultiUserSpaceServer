@@ -27,9 +27,13 @@ public class ExploreCommand : IGameCommand
         {
             return CommandResult.NotSignedInResult();
         }
+        if(_session.User.SelectedBeing is null)
+        {
+            return _session.User.NoSelectedBeingResult();
+        }
         else
         {
-            return await _session.User.Explore();
+            return await _session.User.SelectedBeing.Explore();
         }
     }
 }
