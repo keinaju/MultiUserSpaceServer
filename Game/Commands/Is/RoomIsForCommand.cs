@@ -35,9 +35,12 @@ public class RoomIsForCommand : IUserCommand
         {
             return CommandResult.FeatureDoesNotExist(FeatureNameInInput);
         }
-        else
+
+        if(user.SelectedBeing is null)
         {
-            return await user.RoomIsFor(feature);
+            return user.NoSelectedBeingResult();
         }
+        
+        return await user.SelectedBeing.InRoom.AddFeature(feature);
     }
 }
