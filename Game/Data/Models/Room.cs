@@ -359,34 +359,6 @@ public class Room
             .AddMessage($"{Name} already has an item hatcher ({existingHatcher.GetDetails()}).");
         }
     }
-    
-    public async Task<CommandResult> Rename(string newName)
-    {
-        var validationResult = TextSanitation.ValidateName(newName);
-        if(validationResult.GetStatus() == StatusCode.Fail)
-        {
-            return validationResult;
-        }
-        else
-        {
-            var cleanName = TextSanitation.GetCleanName(newName);
-            if(await _context.RoomNameIsReserved(cleanName))
-            {
-                return NameIsReserved("room", cleanName);
-            }
-            else
-            {
-                var message = Message.Renamed(Name, cleanName);
-
-                Name = cleanName;
-
-                await _context.SaveChangesAsync();
-
-                return new CommandResult(StatusCode.Success)
-                .AddMessage(message);
-            }
-        }
-    }
 
     public async Task<CommandResult> RoomIsGlobal(bool newValue)
     {
@@ -425,6 +397,34 @@ public class Room
             .AddMessage(
                 Message.Set($"{Name}'s description", cleanDescription)
             );
+        }
+    }
+    
+    public async Task<CommandResult> SetName(string newName)
+    {
+        var validationResult = TextSanitation.ValidateName(newName);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+        else
+        {
+            var cleanName = TextSanitation.GetCleanName(newName);
+            if(await _context.RoomNameIsReserved(cleanName))
+            {
+                return NameIsReserved("room", cleanName);
+            }
+            else
+            {
+                var message = Message.Renamed(Name, cleanName);
+
+                Name = cleanName;
+
+                await _context.SaveChangesAsync();
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(message);
+            }
         }
     }
     

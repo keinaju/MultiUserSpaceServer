@@ -23,6 +23,13 @@ public class RoomNameIsCommand : IUserCommand
 
     public async Task<CommandResult> Run(User user)
     {
-        return await user.RoomNameIs(NewNameInInput);
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+        else
+        {
+            return await user.SelectedBeing.InRoom.SetName(NewNameInInput);
+        }
     }
 }
