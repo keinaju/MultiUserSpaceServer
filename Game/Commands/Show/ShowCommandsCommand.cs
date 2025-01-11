@@ -13,6 +13,10 @@ public class ShowCommandsCommand : IGameCommand
 
     public Regex Pattern => new("^help$");
 
+    private Regex _removableCharacters = new Regex("\\(|\\)|\\^|\\$");
+    private Regex _wildcard = new Regex("\\.\\+");
+    private Regex _digit = new Regex("\\\\d\\+");
+
     private readonly IServiceProvider _serviceProvider;
     private readonly ISessionService _session;
 
@@ -43,37 +47,36 @@ public class ShowCommandsCommand : IGameCommand
     {
         var commands = _serviceProvider.GetServices<IGameCommand>();
 
-        
-        var commandsList = new List<string>();
+        // If the user is not admin, filter out admin commands
+        if (_session.User is null || !_session.User.IsBuilder)
+        {
+            commands = commands.Where(command => !command.AdminOnly);
+        }
+
+        return GetHelpTexts(commands);
+    }
+
+    private List<string> GetHelpTexts(IEnumerable<IGameCommand> commands)
+    {
+        var helpTexts = new List<string>();
+
         foreach(var command in commands)
         {
-            // Do not confuse the player by showing a list 
-            // of admin commands, unless the user is admin
-            if(command.AdminOnly)
-            {
-                if (_session.User is null) continue;
-                if (!_session.User.IsBuilder) continue;
-            }
-
-            commandsList.Add(
+            helpTexts.Add(
                 $"{GetReadablePattern(command.Pattern.ToString())} => {command.HelpText}"
             );
         }
-        commandsList.Sort();
 
-        return commandsList;
+        helpTexts.Sort();
+
+        return helpTexts;
     }
 
     private string GetReadablePattern(string pattern)
     {
-        var removableCharacters = new Regex("\\(|\\)|\\^|\\$");
-        var wildcard = new Regex("\\.\\+");
-        var digit = new Regex("\\\\d\\+");
-
-        string readablePattern = removableCharacters.Replace(pattern, "");
-        readablePattern = wildcard.Replace(readablePattern, "<...>");
-        readablePattern = digit.Replace(readablePattern, "<num>");
-
-        return readablePattern;
+        pattern = _removableCharacters.Replace(pattern, "");
+        pattern = _wildcard.Replace(pattern, "<...>");
+        pattern = _digit.Replace(pattern, "<num>");
+        return pattern;
     }
 }
