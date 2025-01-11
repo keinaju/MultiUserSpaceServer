@@ -143,38 +143,6 @@ public class Room
         destination.ConnectedToRooms.Add(this);
     }
 
-    public async Task<CommandResult> CreateItemHatcher(Item item)
-    {
-        var existingHatcher = this.Inventory.GetItemHatcher(item);
-
-        if(existingHatcher is null)
-        {
-            var hatcher = new ItemHatcher()
-            {
-                IntervalInTicks = 1,
-                Item = item,
-                MinimumQuantity = 1,
-                MaximumQuantity = 1
-            };
-
-            await _context.ItemHatchers.AddAsync(hatcher);
-
-            hatcher.Inventories.Add(this.Inventory);
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(
-                Message.Created($"{item.Name} item hatcher ({hatcher.GetDetails()})")
-            );
-        }
-        else
-        {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage($"{Name} already has an item hatcher ({existingHatcher.GetDetails()}).");
-        }
-    }
-
     public async Task<CommandResult> CuriosityIs(string poolName)
     {
         var pool = await _context.FindRoomPool(poolName);
@@ -338,6 +306,38 @@ public class Room
         }
     }
 
+    public async Task<CommandResult> NewItemHatcher(Item item)
+    {
+        var existingHatcher = this.Inventory.GetItemHatcher(item);
+
+        if(existingHatcher is null)
+        {
+            var hatcher = new ItemHatcher()
+            {
+                IntervalInTicks = 1,
+                Item = item,
+                MinimumQuantity = 1,
+                MaximumQuantity = 1
+            };
+
+            await _context.ItemHatchers.AddAsync(hatcher);
+
+            hatcher.Inventories.Add(this.Inventory);
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Created($"{item.Name} item hatcher ({hatcher.GetDetails()})")
+            );
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{Name} already has an item hatcher ({existingHatcher.GetDetails()}).");
+        }
+    }
+    
     public async Task<CommandResult> Rename(string newName)
     {
         var validationResult = TextSanitation.ValidateName(newName);

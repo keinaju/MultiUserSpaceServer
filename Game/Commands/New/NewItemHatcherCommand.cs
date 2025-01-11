@@ -34,9 +34,12 @@ public class NewItemHatcherCommand : IUserCommand
         {
             return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
-        else
+
+        if(user.SelectedBeing is null)
         {
-            return await user.NewItemHatcher(item);
+            return user.NoSelectedBeingResult();
         }
+
+        return await user.SelectedBeing.InRoom.NewItemHatcher(item);
     }
 }

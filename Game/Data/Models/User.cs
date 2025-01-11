@@ -166,18 +166,6 @@ public class User
         );
     }
 
-    public async Task<CommandResult> NewItemHatcher(Item item)
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.InRoom.CreateItemHatcher(item);
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> NewRoom(string roomName)
     {
         if(SelectedBeing is not null)
