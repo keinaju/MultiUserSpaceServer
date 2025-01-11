@@ -131,7 +131,7 @@ public class User
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(
-            being => being.Name == beingName
+            being => being.Name.ToUpper() == beingName.ToUpper()
         );
 
         if(being is not null)
