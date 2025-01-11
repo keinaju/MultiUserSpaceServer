@@ -47,31 +47,6 @@ public class Item
         _lazyLoader = lazyLoader;
     }
 
-    public async Task<CommandResult> DescriptionIs(string itemDescription)
-    {
-        var validationResult = TextSanitation
-        .ValidateDescription(itemDescription);
-        if(validationResult.GetStatus() == StatusCode.Fail)
-        {
-            return validationResult;
-        }
-
-        else
-        {
-            var cleanDescription = TextSanitation
-            .GetCleanDescription(itemDescription);
-
-            Description = cleanDescription;
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(
-                Message.Set($"{Name}'s description", cleanDescription)
-            );
-        }
-    }
-
     public async Task<CommandResult> Deploy(Being being)
     {
         if(DeploymentPrototype is null)
@@ -196,6 +171,31 @@ public class Item
         );
     }
 
+    public async Task<CommandResult> SetDescription(string itemDescription)
+    {
+        var validationResult = TextSanitation
+        .ValidateDescription(itemDescription);
+        if(validationResult.GetStatus() == StatusCode.Fail)
+        {
+            return validationResult;
+        }
+
+        else
+        {
+            var cleanDescription = TextSanitation
+            .GetCleanDescription(itemDescription);
+
+            Description = cleanDescription;
+
+            await _context.SaveChangesAsync();
+
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                Message.Set($"{Name}'s description", cleanDescription)
+            );
+        }
+    }
+    
     public CommandResult Show()
     {
         return new CommandResult(StatusCode.Success)

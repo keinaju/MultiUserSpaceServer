@@ -128,21 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> ItemDescriptionIs(
-        string itemName, string itemDescription
-    )
-    {
-        var item = await _context.FindItem(itemName);
-        if(item is not null)
-        {
-            return await item.DescriptionIs(itemDescription);
-        }
-        else
-        {
-            return ItemDoesNotExist(itemName);
-        }
-    }
-
     public async Task<CommandResult> ItemHatcherIntervalIs(
         Item item, int interval
     )
