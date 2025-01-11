@@ -128,13 +128,6 @@ public class User
         return isValid;
     }
 
-    public async Task<CommandResult> ItemNameIs(
-        Item item, string newName
-    )
-    {
-        return await item.Rename(newName);
-    }
-
     public async Task<CommandResult> MakeItems(Item item, int quantity)
     {
         if(SelectedBeing is not null)

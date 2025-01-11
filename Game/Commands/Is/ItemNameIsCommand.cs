@@ -39,7 +39,7 @@ public class ItemNameIsCommand : IUserCommand
         }
         else
         {
-            return await user.ItemNameIs(item, NewItemNameInInput);
+            return await item.SetName(NewItemNameInInput);
         }
     }
 }
