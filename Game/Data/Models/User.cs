@@ -151,18 +151,6 @@ public class User
         }
     }
 
-    public CommandResult ShowInventory()
-    {
-        if(SelectedBeing is not null)
-        {
-            return SelectedBeing.ShowInventory();
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> ShowOffersInCurrentRoom()
     {
         if(SelectedBeing is not null)

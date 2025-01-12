@@ -16,6 +16,17 @@ public class ShowInventoryCommand : IUserCommand
 
     public Task<CommandResult> Run(User user)
     {
-        return Task.FromResult(user.ShowInventory());
+        if(user.SelectedBeing is null)
+        {
+            return Task.FromResult(
+                user.NoSelectedBeingResult()
+            );
+        }
+        else
+        {
+            return Task.FromResult(
+                user.SelectedBeing.ShowInventory()
+            );
+        }
     }
 }
