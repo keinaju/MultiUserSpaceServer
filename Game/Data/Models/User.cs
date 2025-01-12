@@ -128,6 +128,12 @@ public class User
         return isValid;
     }
 
+    public CommandResult NoSelectedBeingResult()
+    {
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage($"User {Username} has not selected a being.");
+    }
+    
     public async Task<CommandResult> SelectBeing(string beingName)
     {
         var being = CreatedBeings.SingleOrDefault(
@@ -155,12 +161,6 @@ public class User
     {
         return new CommandResult(StatusCode.Success)
         .AddMessages(this.GetDetails());
-    }
-
-    public CommandResult NoSelectedBeingResult()
-    {
-        return new CommandResult(StatusCode.Fail)
-        .AddMessage($"User {Username} has not selected a being.");
     }
 
     private string GetSelectedBeingText()
