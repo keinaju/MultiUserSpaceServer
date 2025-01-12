@@ -151,18 +151,6 @@ public class User
         }
     }
 
-    public CommandResult ShowRoom()
-    {
-        if(SelectedBeing is not null)
-        {
-            return SelectedBeing.ShowRoom();
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public CommandResult ShowUser()
     {
         return new CommandResult(StatusCode.Success)

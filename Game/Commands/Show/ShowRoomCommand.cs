@@ -16,6 +16,17 @@ public class ShowRoomCommand : IUserCommand
 
     public Task<CommandResult> Run(User user)
     {
-        return Task.FromResult(user.ShowRoom());
+        if(user.SelectedBeing is null)
+        {
+            return Task.FromResult(
+                user.NoSelectedBeingResult()
+            );
+        }
+        else
+        {
+            return Task.FromResult(
+                user.SelectedBeing.ShowRoom()
+            );
+        }
     }
 }
