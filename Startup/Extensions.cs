@@ -75,7 +75,6 @@ public static class Extensions
         services.AddScoped<IUserCommand, ShowInventoryCommand>();
         services.AddScoped<IUserCommand, ShowItemCommand>();
         services.AddScoped<IUserCommand, ShowItemsCommand>();
-        services.AddScoped<IUserCommand, ShowOffersCommand>();
         services.AddScoped<IUserCommand, ShowRoomCommand>();
         services.AddScoped<IUserCommand, ShowRoomPoolCommand>();
         services.AddScoped<IUserCommand, ShowRoomPoolsCommand>();

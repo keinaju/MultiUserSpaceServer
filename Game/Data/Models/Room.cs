@@ -207,16 +207,17 @@ public class Room
         {
             texts.Add(Description);
         }
-        texts.Add(GetBeingsText());
         texts.Add(GetLeadsToText());
         if(GlobalAccess)
         {
             texts.Add($"{Name} can be accessed globally.");
         }
-        texts.Add(GetFeaturesText());
+        texts.Add(GetCuriosityText());
         texts.Add(GetInventoryText());
         texts.Add(GetItemHatchersText());
-        texts.Add(GetCuriosityText());
+        texts.Add(GetBeingsText());
+        texts.Add(GetOfferDetailsOfBeings());
+        texts.Add(GetFeaturesText());
 
         return texts;
     }
@@ -427,22 +428,6 @@ public class Room
             }
         }
     }
-    
-    public async Task<CommandResult> ShowOffersInRoom()
-    {
-        var offers = await _context.FindAllOffersInRoom(this);
-
-        if(offers.Count == 0)
-        {
-            return new CommandResult(StatusCode.Success)
-            .AddMessage($"There are no offers in {this.Name}.");
-        }
-        else
-        {
-            return new CommandResult(StatusCode.Success)
-            .AddMessage($"All offers in {this.Name} are: {GetOfferDetails(offers)}.");
-        }
-    }
 
     private string GetBeingsText()
     {
@@ -561,6 +546,27 @@ public class Room
         }
 
         return Message.List(featureNames);
+    }
+
+    private string GetOfferDetailsOfBeings()
+    {
+        var offersInRoom = new List<Offer>();
+        foreach(var being in this.BeingsHere)
+        {
+            foreach(var offer in being.CreatedOffers)
+            {
+                offersInRoom.Add(offer);
+            }
+        }
+
+        if(offersInRoom.Count == 0)
+        {
+            return $"{this.Name} has no offers.";
+        }
+        else
+        {
+            return $"{this.Name} has offers: {GetOfferDetails(offersInRoom)}.";
+        }
     }
 
     private string GetOfferDetails(IEnumerable<Offer> offers)
