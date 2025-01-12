@@ -157,18 +157,6 @@ public class User
         .AddMessages(this.GetDetails());
     }
 
-    public async Task<CommandResult> TakeItem(string itemName)
-    {
-        if(SelectedBeing is null)
-        {
-            return NoSelectedBeingResult();
-        }
-        else
-        {
-            return await SelectedBeing.TakeItemFromRoom(itemName);
-        }
-    }
-
     public CommandResult NoSelectedBeingResult()
     {
         return new CommandResult(StatusCode.Fail)

@@ -445,23 +445,14 @@ public class Being
         .AddMessages(this.InRoom.GetDetails());
     }
     
-    public async Task<CommandResult> TakeItemFromRoom(string itemName)
+    public async Task<CommandResult> TakeItemStackFromCurrentRoom(Item item)
     {
-        var item = await _context.FindItem(itemName);
-
-        if(item is not null)
-        {
-            return await InRoom.Inventory.TakeItemStack(
-                item: item,
-                takerInventory: this.FreeInventory,
-                takerName: this.Name,
-                giverName: InRoom.Name
-            );
-        }
-        else
-        {
-            return ItemDoesNotExist(itemName);
-        }
+        return await InRoom.Inventory.TakeItemStack(
+            item: item,
+            takerInventory: this.FreeInventory,
+            takerName: this.Name,
+            giverName: InRoom.Name
+        );
     }
 
     public async Task<CommandResult> TryBreakItem(string itemName)

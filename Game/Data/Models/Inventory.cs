@@ -177,7 +177,9 @@ public class Inventory
             await this.TransferTo(takerInventory, item, quantity);
 
             return new CommandResult(StatusCode.Success)
-            .AddMessage($"{takerName} took {Message.Quantity(item.Name, quantity)} from {giverName}.");
+            .AddMessage(
+                $"{takerName} took {Message.Quantity(item.Name, quantity)} from {giverName}."
+            );
         }
         else
         {
