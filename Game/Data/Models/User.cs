@@ -151,18 +151,6 @@ public class User
         }
     }
 
-    public CommandResult ShowBeing()
-    {
-        if (SelectedBeing is not null)
-        {
-            return SelectedBeing.Show();
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public CommandResult ShowInventory()
     {
         if(SelectedBeing is not null)

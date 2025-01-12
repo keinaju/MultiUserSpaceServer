@@ -16,6 +16,17 @@ public class ShowBeingCommand : IUserCommand
 
     public Task<CommandResult> Run(User user)
     {
-        return Task.FromResult(user.ShowBeing());
+        if(user.SelectedBeing is null)
+        {
+            return Task.FromResult(
+                user.NoSelectedBeingResult()
+            );
+        }
+        else
+        {
+            return Task.FromResult(
+                user.SelectedBeing.Show()
+            );
+        }
     }
 }
