@@ -69,7 +69,12 @@ public class TradeCommand : IUserCommand
             .AddMessage("The item to sell can not be the item to buy.");
         }
 
-        return await user.Sell(
+        if(user.SelectedBeing is null)
+        {
+            return user.NoSelectedBeingResult();
+        }
+
+        return await user.SelectedBeing.Offer(
             sellQuantity: sellQuantity,
             buyQuantity: buyQuantity,
             sellItem: sellItem,

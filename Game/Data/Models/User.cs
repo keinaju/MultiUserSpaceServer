@@ -151,24 +151,6 @@ public class User
         }
     }
 
-    public async Task<CommandResult> Sell(
-        int sellQuantity, int buyQuantity,
-        Item sellItem, Item buyItem
-    )
-    {
-        if(SelectedBeing is not null)
-        {
-            return await SelectedBeing.Sell(
-                sellQuantity, buyQuantity,
-                sellItem, buyItem
-            );
-        }
-        else
-        {
-            return NoSelectedBeingResult();
-        }
-    }
-
     public async Task<CommandResult> SetTickInterval(int intervalSeconds)
     {
         var settings = await _context.GetGameSettings();

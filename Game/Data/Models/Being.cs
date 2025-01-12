@@ -290,64 +290,55 @@ public class Being
         return texts;
     }
 
-    public async Task<CommandResult> Sell(
-        int sellQuantity, int buyQuantity,
-        Item sellItem, Item buyItem
+
+    public async Task<CommandResult> Offer(
+        int sellQuantity,
+        int buyQuantity,
+        Item sellItem,
+        Item buyItem
     )
     {
-        if(this.FreeInventory.Contains(sellItem, sellQuantity))
+        if(!this.FreeInventory.Contains(sellItem, sellQuantity))
         {
-            var newOffer = new Offer()
-            {
-                CreatedByBeing = this,
-                ItemToBuy = buyItem,
-                ItemToSell = sellItem,
-                QuantityToBuy = buyQuantity,
-                QuantityToSell = sellQuantity
-            };
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"{this.Name} does not have the required items: {Message.Quantity(sellItem.Name, sellQuantity)}."
+            );
+        }
 
-            var matchingOffer = await FindMatchingOffer(newOffer);
+        var newOffer = new Offer()
+        {
+            CreatedByBeing = this,
+            ItemToBuy = buyItem,
+            ItemToSell = sellItem,
+            QuantityToBuy = buyQuantity,
+            QuantityToSell = sellQuantity
+        };
+        await _context.Offers.AddAsync(newOffer);
+        await _context.SaveChangesAsync();
 
-            if(matchingOffer is null)
-            {
-                // Offer can not be resolved
-                
-                // Transfer items to trade inventory
-                await this.FreeInventory.TransferTo(
-                    this.TradeInventory, sellItem, sellQuantity
-                );
+        // Transfer items to trade inventory
+        await this.FreeInventory.TransferTo(
+            this.TradeInventory, sellItem, sellQuantity
+        );
 
-                // Save offer to database
-                await _context.Offers.AddAsync(newOffer);
-                await _context.SaveChangesAsync();
+        var matchingOffer = await FindMatchingOffer(newOffer);
 
-                return new CommandResult(StatusCode.Success)
-                .AddMessage($"{Name} has made an offer: {newOffer.GetDetails()}.");
-            }
-            else
-            {
-                // Offer can be resolved
+        if(matchingOffer is null)
+        {
+            // Offer can not be resolved
 
-                if(newOffer.QuantityToSell > matchingOffer.QuantityToBuy)
-                {
-                    // The new offer can take advantage of an existing offer
-                    // by decreasing it's own sell amount
-
-                    // Adjust the new offer to match the existing offer's price
-                    newOffer.QuantityToSell = matchingOffer.QuantityToBuy;
-                }
-
-                // Trade items between matching offers
-                return await TradeItems(
-                    offerToDelete: matchingOffer,
-                    newOffer: newOffer
-                );
-            }
+            return new CommandResult(StatusCode.Success)
+            .AddMessage(
+                $"{Name} has made a new offer: {newOffer.GetDetails()}."
+            );
         }
         else
         {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage($"{this.Name} does not have the required items: {Message.Quantity(sellItem.Name, sellQuantity)}.");
+            // Offer can be resolved
+
+            // Trade items between matching offers
+            return await newOffer.TradeItems(matchingOffer);
         }
     }
 
@@ -608,32 +599,5 @@ public class Being
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(Message.Renamed(oldName, newName));
-    }
-
-    private async Task<CommandResult> TradeItems(
-        Offer offerToDelete, Offer newOffer
-    )
-    {
-        // The old offer transfers from trade inventory to free inventory
-        await offerToDelete.CreatedByBeing.TradeInventory.TransferTo(
-            newOffer.CreatedByBeing.FreeInventory,
-            newOffer.ItemToBuy,
-            newOffer.QuantityToBuy
-        );
-
-        // The new offer transfers from free inventory to free inventory
-        await newOffer.CreatedByBeing.FreeInventory.TransferTo(
-            offerToDelete.CreatedByBeing.FreeInventory,
-            newOffer.ItemToSell,
-            newOffer.QuantityToSell
-        );
-
-        // Remove old offer from database
-        _context.Offers.Remove(offerToDelete);
-
-        await _context.SaveChangesAsync();
-
-        return new CommandResult(StatusCode.Success)
-        .AddMessage($"Transaction has been resolved: {newOffer.GetDetails()} with {offerToDelete.CreatedByBeing.Name}.");
     }
 }
