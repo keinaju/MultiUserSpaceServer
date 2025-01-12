@@ -34,16 +34,6 @@ public class Being
     }
 
     /// <summary>
-    /// Location of being.
-    /// </summary>
-    public int InRoomPrimaryKey { get; set; }
-    public required Room InRoom
-    {
-        get => _lazyLoader.Load(this, ref _inRoom);
-        set => _inRoom = value;
-    }
-
-    /// <summary>
     /// Inventory for items that are not reserved for offers.
     /// </summary>
     public int FreeInventoryPrimaryKey { get; set; }
@@ -52,7 +42,39 @@ public class Being
         get => _lazyLoader.Load(this, ref _freeInventory);
         set => _freeInventory = value;
     }
+
+    /// <summary>
+    /// Location of being.
+    /// </summary>
+    public int InRoomPrimaryKey { get; set; }
+    public required Room InRoom
+    {
+        get => _lazyLoader.Load(this, ref _inRoom);
+        set => _inRoom = value;
+    }
     
+    public required string Name { get; set; }
+
+    /// <summary>
+    /// Active offers created by this being.
+    /// </summary>
+    public ICollection<Offer> CreatedOffers
+    {
+        get => _lazyLoader.Load(this, ref _createdOffers);
+        set => _createdOffers = value;
+    }
+
+    /// <summary>
+    /// Optional room inside being, e.g. vehicle room.
+    /// </summary>
+    public int? RoomInsidePrimaryKey { get; set; }
+    [InverseProperty(nameof(Room.InBeing))]
+    public Room? RoomInside
+    {
+        get => _lazyLoader.Load(this, ref _roomInside);
+        set => _roomInside = value;
+    }
+
     /// <summary>
     /// Inventory for items that are reserved for offers,
     /// and can not be used for other activities such as crafting.
@@ -67,23 +89,11 @@ public class Being
         set => _tradeInventory = value;
     }
 
-    public required string Name { get; set; }
-
-    /// <summary>
-    /// Optional room inside being, e.g. vehicle room.
-    /// </summary>
-    public int? RoomInsidePrimaryKey { get; set; }
-    [InverseProperty(nameof(Room.InBeing))]
-    public Room? RoomInside
-    {
-        get => _lazyLoader.Load(this, ref _roomInside);
-        set => _roomInside = value;
-    }
-
     private readonly ILazyLoader _lazyLoader;
     private readonly GameContext _context;
 
     private ICollection<Feature> _features;
+    private ICollection<Offer> _createdOffers;
     private Inventory _freeInventory;
     private Inventory _tradeInventory;
     private Room _inRoom;
@@ -372,15 +382,32 @@ public class Being
 
     public CommandResult ShowInventory()
     {
-        var freeContent = this.FreeInventory.Contents();
-        var tradeContent = this.TradeInventory.Contents();
+        var result = new CommandResult(StatusCode.Success);
 
-        return new CommandResult(StatusCode.Success)
-        .AddMessage(
-            $"{Name}'s free inventory has {(freeContent is null ? "no items" : freeContent)}."
-        ).AddMessage(
-            $"{Name} is trading {(tradeContent is null ? "no items" : tradeContent)}."
+        var freeContent = this.FreeInventory.Contents();
+        result.AddMessage(
+            $"{this.Name}'s free inventory has {(freeContent is null ? "no items" : freeContent)}."
         );
+
+        if(this.CreatedOffers.Count > 0)
+        {
+            var offerDetails = new List<string>();
+            foreach(var offer in this.CreatedOffers)
+            {
+                offerDetails.Add(offer.GetDetails());
+            }
+
+            result.AddMessage(
+                $"{this.Name}'s trade inventory has items that have been reserved for offers." +
+                $" {this.Name}'s offers are: {Message.List(offerDetails)}."
+            );
+        }
+        else
+        {
+            result.AddMessage($"{this.Name} does not have offers.");
+        }
+
+        return result;
     }
 
     public CommandResult ShowRoom()
