@@ -28,7 +28,7 @@ public static class Extensions
     {
         services.AddScoped<ICommandCollection, CommandCollection>();
         services.AddScoped<ICommandParser, CommandParser>();
-
+        
         services.AddScoped<IUserCommand, BeingHasFeatureCommand>();
         services.AddScoped<IUserCommand, BeingNameIsCommand>();
         services.AddScoped<IUserCommand, BreakCommand>();
@@ -43,6 +43,7 @@ public static class Extensions
         services.AddScoped<IUserCommand, DeploymentIsCommand>();
         services.AddScoped<IUserCommand, ExploreCommand>();
         services.AddScoped<IUserCommand, FeatureNameIsCommand>();
+        services.AddScoped<IUserCommand, GameNameIsCommand>();
         services.AddScoped<IUserCommand, GoCommand>();
         services.AddScoped<IUserCommand, HelpCommand>();
         services.AddScoped<IUserCommand, ItemDescriptionIsCommand>();
