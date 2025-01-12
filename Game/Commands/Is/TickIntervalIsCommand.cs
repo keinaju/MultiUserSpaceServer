@@ -1,5 +1,6 @@
 using System;
 using System.Text.RegularExpressions;
+using MUS.Game.Data;
 using MUS.Game.Data.Models;
 using MUS.Game.Utilities;
 using static MUS.Game.Commands.CommandResult;
@@ -18,10 +19,15 @@ public class TickIntervalIsCommand : IUserCommand
 
     private string IntervalInInput => _input.GetGroup(this.Pattern, 1);
 
+    private readonly GameContext _context;
     private readonly IInputCommand _input;
 
-    public TickIntervalIsCommand(IInputCommand input)
+    public TickIntervalIsCommand(
+        GameContext context,
+        IInputCommand input
+    )
     {
+        _context = context;
         _input = input;
     }
 
@@ -37,7 +43,21 @@ public class TickIntervalIsCommand : IUserCommand
         }
         else
         {
-            return await user.SetTickInterval(intervalSeconds);
+            return await SetTickInterval(intervalSeconds);
         }
+
+    }
+
+    private async Task<CommandResult> SetTickInterval(int intervalSeconds)
+    {
+        var settings = await _context.GetGameSettings();
+        settings.TickIntervalSeconds = intervalSeconds;
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set("tick interval", $"{intervalSeconds} seconds")
+        );
     }
 }
