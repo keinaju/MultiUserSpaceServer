@@ -66,7 +66,7 @@ public class Offer
     /// <returns>A command result with messages describing the transaction.</returns>
     public async Task<CommandResult> TradeItems(Offer earlierOffer)
     {
-        var messages = new List<string>();
+        var sentences = new List<string>();
 
         // Orders can be matched even if later offer's sell quantity
         // does not match to earlier offer's buy quantity.
@@ -78,6 +78,12 @@ public class Offer
             // The new offer can take advantage of an existing offer
             // by decreasing it's own sell amount.
 
+            string adjustment = Message.Quantity(this.ItemToSell.Name, -priceDifference);
+
+            sentences.Add(
+                $"Offer ({this.GetDetails()}) has been adjusted: {adjustment}."
+            );
+
             // Adjust the new offer to match the existing offer's price
             this.QuantityToSell -= priceDifference;
 
@@ -86,13 +92,6 @@ public class Offer
                 this.CreatedByBeing.FreeInventory,
                 this.ItemToSell,
                 priceDifference
-            );
-
-            string adjustment = Message.Quantity(this.ItemToSell.Name, priceDifference);
-            string matchingBuy = Message.Quantity(earlierOffer.ItemToBuy.Name, earlierOffer.QuantityToBuy);
-
-            messages.Add(
-                $"Sell amount in {this.CreatedByBeing.Name}'s offer has been lowered by {adjustment} because the matching offer buys for {matchingBuy}."
             );
         }
 
@@ -113,10 +112,11 @@ public class Offer
         _context.Offers.Remove(this);
         await _context.SaveChangesAsync();
 
-        messages.Add(
-            $"Transaction has been resolved: {this.GetDetails()} with {earlierOffer.CreatedByBeing.Name}."
+        sentences.Add(
+            $"A transaction has been resolved: {this.GetDetails()} with {earlierOffer.CreatedByBeing.Name}."
         );
 
-        return new CommandResult(StatusCode.Success).AddMessages(messages);
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(string.Join(" ", sentences));
     }
 }

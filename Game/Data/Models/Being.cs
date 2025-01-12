@@ -263,10 +263,34 @@ public class Being
         {
             InRoom = destination;
 
-            await _context.SaveChangesAsync();
-            
-            return new CommandResult(StatusCode.Success)
+            var moveResult = new CommandResult(StatusCode.Success)
             .AddMessage($"{this.Name} has moved in {destination.Name}.");
+
+            await _context.SaveChangesAsync();
+
+            // Try to match active offers created by this being
+            // with offers in new room
+            var resolvedOfferResults = new List<CommandResult>();
+            foreach(var offer in this.CreatedOffers)
+            {
+                var matchingOffer = await FindMatchingOffer(offer);
+                if(matchingOffer is not null)
+                {
+                    resolvedOfferResults.Add(
+                        await offer.TradeItems(matchingOffer)
+                    );
+                }
+            }
+            // Get messages from successful transactions 
+            if(resolvedOfferResults.Count > 0)
+            {
+                foreach(var result in resolvedOfferResults)
+                {
+                    moveResult.AddMessages(result.GetMessages());
+                }
+            }
+
+            return moveResult;
         }
     }
 
@@ -389,6 +413,11 @@ public class Being
             $"{this.Name}'s free inventory has {(freeContent is null ? "no items" : freeContent)}."
         );
 
+        var tradeContent = this.TradeInventory.Contents();
+        result.AddMessage(
+            $"{this.Name}'s trade inventory has {(tradeContent is null ? "no items" : tradeContent)}."
+        );
+
         if(this.CreatedOffers.Count > 0)
         {
             var offerDetails = new List<string>();
@@ -398,7 +427,6 @@ public class Being
             }
 
             result.AddMessage(
-                $"{this.Name}'s trade inventory has items that have been reserved for offers." +
                 $" {this.Name}'s offers are: {Message.List(offerDetails)}."
             );
         }
