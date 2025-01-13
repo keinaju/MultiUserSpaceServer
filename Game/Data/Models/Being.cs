@@ -228,9 +228,7 @@ public class Being
 
     public async Task<CommandResult> MakeItems(Item item, int quantity)
     {
-        this.FreeInventory.AddItems(item, quantity);
-
-        await _context.SaveChangesAsync();
+        await this.FreeInventory.AddItems(item, quantity);
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(
@@ -509,18 +507,16 @@ public class Being
 
     private async Task<CommandResult> BreakItem(CraftPlan craftPlan)
     {
-        FreeInventory.RemoveItems(craftPlan.Product, 1);
+        await this.FreeInventory.RemoveItems(craftPlan.Product, 1);
 
         foreach(var component in craftPlan.Components)
         {
-            FreeInventory.AddItems(component.Item, component.Quantity);
+            await this.FreeInventory.AddItems(component.Item, component.Quantity);
         }
-
-        await _context.SaveChangesAsync();
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(
-            $"{Name} breaked {Message.Quantity(craftPlan.Product.Name, 1)} to {craftPlan.MadeOf()}."
+            $"{this.Name} breaked {Message.Quantity(craftPlan.Product.Name, 1)} to {craftPlan.MadeOf()}."
         );
     }
 
@@ -543,16 +539,14 @@ public class Being
     {
         foreach(var component in craftPlan.Components)
         {
-            FreeInventory.RemoveItems(component.Item, component.Quantity);
+            await this.FreeInventory.RemoveItems(component.Item, component.Quantity);
         }
 
-        FreeInventory.AddItems(craftPlan.Product, 1);
-
-        await _context.SaveChangesAsync();
+        await this.FreeInventory.AddItems(craftPlan.Product, 1);
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(
-            $"{Name} crafted {craftPlan.MadeOf()} to {Message.Quantity(craftPlan.Product.Name, 1)}."
+            $"{this.Name} crafted {craftPlan.MadeOf()} to {Message.Quantity(craftPlan.Product.Name, 1)}."
         );
     }
 

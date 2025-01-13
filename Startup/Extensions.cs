@@ -89,11 +89,7 @@ public static class Extensions
 
     private static void AddRepositories(this IServiceCollection services)
     {
-        // services.AddScoped<IBeingRepository, BeingRepository>();
-        services.AddScoped<ICraftPlanRepository, CraftPlanRepository>();
-        services.AddScoped<IFeatureRepository, FeatureRepository>();
         services.AddScoped<IGameSettingsRepository, GameSettingsRepository>();
-        services.AddScoped<IInventoryRepository, InventoryRepository>();
         services.AddScoped<IItemHatcherRepository, ItemHatcherRepository>();
         services.AddScoped<IItemRepository, ItemRepository>();
         services.AddScoped<IItemStackRepository, ItemStackRepository>();

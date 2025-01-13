@@ -43,7 +43,7 @@ public class Inventory
         _lazyLoader = lazyLoader;
     }
 
-    public void AddItems(Item item, int quantity)
+    public async Task AddItems(Item item, int quantity)
     {
         ItemStack? stack = null;
         try
@@ -66,6 +66,8 @@ public class Inventory
         }
 
         stack.Quantity += quantity;
+
+        await _context.SaveChangesAsync();
     }
 
     public Inventory Clone()
@@ -148,7 +150,7 @@ public class Inventory
         return null;
     }
 
-    public void RemoveItems(Item item, int quantity)
+    public async Task RemoveItems(Item item, int quantity)
     {
         var stack = this.ItemStacks.Single(
             stack => stack.Item.PrimaryKey == item.PrimaryKey
@@ -161,6 +163,8 @@ public class Inventory
         }
 
         stack.Quantity -= quantity;
+
+        await _context.SaveChangesAsync();
     }
 
     public async Task<CommandResult> TakeItemStack(
@@ -191,16 +195,14 @@ public class Inventory
     }
 
     public async Task TransferTo(
-        Inventory receivingInventory,
+        Inventory receiver,
         Item item,
         int quantity
     )
     {
-        this.RemoveItems(item, quantity);
+        await this.RemoveItems(item, quantity);
 
-        receivingInventory.AddItems(item, quantity);
-
-        await _context.SaveChangesAsync();
+        await receiver.AddItems(item, quantity);
     }
 
     /// <summary>

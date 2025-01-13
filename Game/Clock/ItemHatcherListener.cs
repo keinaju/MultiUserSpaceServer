@@ -1,20 +1,18 @@
-﻿using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using MUS.Game.Data;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Clock;
 
 public class ItemHatcherListener : IGameClockListener
 {
-    private IInventoryRepository _inventoryRepository;
-    private IItemHatcherRepository _itemHatcherRepository;
+    private readonly GameContext _context;
 
     public ItemHatcherListener(
-        IInventoryRepository inventoryRepository,
-        IItemHatcherRepository itemHatcherRepository
+        GameContext context
     )
     {
-        _inventoryRepository = inventoryRepository;
-        _itemHatcherRepository = itemHatcherRepository;
+        _context = context;
     }
 
     public Task GetTask(object sender, TickEventArgs eventArgs)
@@ -23,13 +21,13 @@ public class ItemHatcherListener : IGameClockListener
     }
 
     /// <summary>
-    /// Iterate all item hatchers in game and invoke item generations.
+    /// Iterate all item hatchers in the game and invoke item generations.
     /// </summary>
     /// <param name="eventArgs">Event arguments provided by game clock.</param>
     /// <returns>Task</returns>
     private async Task UseItemHatchers(TickEventArgs eventArgs)
     {
-        var hatchers = await _itemHatcherRepository.FindAllItemHatchers();
+        var hatchers = await _context.ItemHatchers.ToListAsync();
 
         foreach (var hatcher in hatchers)
         {
@@ -44,7 +42,7 @@ public class ItemHatcherListener : IGameClockListener
     /// <summary>
     /// Method that is called on each item hatcher on interval defined 
     /// by hatcher. Chooses randomly one inventory from all subscribed 
-    /// inventories and adds specified item and quantity.
+    /// inventories and adds a specified item and quantity.
     /// </summary>
     /// <param name="hatcher">Item hatcher to invoke.</param>
     /// <returns>Task</returns>
@@ -62,14 +60,9 @@ public class ItemHatcherListener : IGameClockListener
             hatcher.MaximumQuantity + 1
         );
 
-        // Populate item stacks
-        randomInventory = await _inventoryRepository
-            .FindInventory(randomInventory.PrimaryKey);
-
-        // Do not generate, if inventory already contains this item
+        // Do not generate if inventory already contains this item
         if (randomInventory.Contains(hatcher.Item, 1)) return;
 
-        randomInventory.AddItems(hatcher.Item, randomQuantity);
-        await _inventoryRepository.UpdateInventory(randomInventory);
+        await randomInventory.AddItems(hatcher.Item, randomQuantity);
     }
 }
