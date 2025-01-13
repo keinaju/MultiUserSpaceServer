@@ -455,75 +455,55 @@ public class Being
         );
     }
 
-    public async Task<CommandResult> TryBreakItem(string itemName)
+    public async Task<CommandResult> TryBreakItem(Item item)
     {
-        var item = await _context.FindItem(itemName);
-
-        if(item is not null)
+        if(item.IsCraftable() && item.CraftPlan is not null)
         {
-            if(item.IsCraftable() && item.CraftPlan is not null)
+            if(FreeInventory.Contains(item, 1))
             {
-                if(FreeInventory.Contains(item, 1))
-                {
-                    return await BreakItem(item.CraftPlan);
-                }
-                else
+                return await BreakItem(item.CraftPlan);
+            }
+            else
+            {
+                return new CommandResult(StatusCode.Fail)
+                .AddMessage(
+                    Message.DoesNotHave(
+                        Name, Message.Quantity(item.Name, 1)
+                    )
+                );
+            }
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{item.Name} is not a breakable item.");
+        }
+    }
+
+    public async Task<CommandResult> TryCraftItem(Item item)
+    {
+        if (item.IsCraftable() && item.CraftPlan is not null)
+        {
+            // Check that player has each item of craft plan
+            foreach(var comp in item.CraftPlan.Components)
+            {
+                if(!FreeInventory.Contains(comp.Item, comp.Quantity))
                 {
                     return new CommandResult(StatusCode.Fail)
                     .AddMessage(
                         Message.DoesNotHave(
-                            Name, Message.Quantity(item.Name, 1)
+                            Name, Message.Quantity(comp.Item.Name, comp.Quantity)
                         )
                     );
                 }
             }
-            else
-            {
-                return new CommandResult(
-                    StatusCode.Fail
-                ).AddMessage($"{itemName} is not a craftable item.");
-            }
+
+            return await CraftItem(item.CraftPlan);
         }
         else
         {
-            return ItemDoesNotExist(itemName);
-        }
-    }
-
-    public async Task<CommandResult> TryCraftItem(string itemName)
-    {
-        var item = await _context.FindItem(itemName);
-
-        if(item is not null)
-        {
-            if (item.IsCraftable() && item.CraftPlan is not null)
-            {
-                // Check that player has each item of craft plan
-                foreach(var comp in item.CraftPlan.Components)
-                {
-                    if(!FreeInventory.Contains(comp.Item, comp.Quantity))
-                    {
-                        return new CommandResult(StatusCode.Fail)
-                        .AddMessage(
-                            Message.DoesNotHave(
-                                Name, Message.Quantity(comp.Item.Name, comp.Quantity)
-                            )
-                        );
-                    }
-                }
-
-                return await CraftItem(item.CraftPlan);
-            }
-            else
-            {
-                return new CommandResult(
-                    StatusCode.Fail
-                ).AddMessage($"{itemName} is not a craftable item.");
-            }
-        }
-        else
-        {
-            return ItemDoesNotExist(itemName);
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{item.Name} is not a craftable item.");
         }
     }
 
