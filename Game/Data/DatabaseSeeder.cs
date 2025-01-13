@@ -1,23 +1,18 @@
-﻿using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
+﻿using Microsoft.EntityFrameworkCore;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Data;
 
 public class DatabaseSeeder
 {
-    private readonly IGameSettingsRepository _gameSettingsRepository;
-    private readonly IRoomRepository _roomRepository;
-    private readonly IUserRepository _userRepository;
+    private const string ADMIN_USERNAME = "admin";
+    private const string SECRET_ENVIRONMENT_VARIABLE_NAME = "MUS_256-BIT_KEY";
 
-    public DatabaseSeeder(
-        IGameSettingsRepository gameSettingsRepository,
-        IRoomRepository roomRepository,
-        IUserRepository userRepository
-    )
+    private readonly GameContext _context;
+
+    public DatabaseSeeder(GameContext context)
     {
-        _gameSettingsRepository = gameSettingsRepository;
-        _roomRepository = roomRepository;
-        _userRepository = userRepository;
+        _context = context;
     }
 
     //Seed database with initial data
@@ -30,55 +25,68 @@ public class DatabaseSeeder
 
     async Task EnsureAdminUserExists()
     {
-        var adminInDb = await _userRepository.FindUser("admin");
-        if (adminInDb is null)
+        var adminUser = await _context.FindUser(username: ADMIN_USERNAME);
+        if(adminUser is null)
         {
-            string adminPassword = 
-                Environment.GetEnvironmentVariable("MUS_256-BIT_KEY");
-
-            var adminUser = new User()
+            var secret = Environment.GetEnvironmentVariable(SECRET_ENVIRONMENT_VARIABLE_NAME);
+            if(secret is null)
             {
-                IsAdmin = true,
-                Username = "admin",
-                HashedPassword = User.HashPassword(adminPassword)
-            };
+                throw new Exception($"Environment variable {SECRET_ENVIRONMENT_VARIABLE_NAME} is not defined.");
+            }
             
-            await _userRepository.CreateUser(adminUser);
+            await _context.Users.AddAsync(
+                new User()
+                {
+                    IsAdmin = true,
+                    Username = ADMIN_USERNAME,
+                    HashedPassword = User.HashPassword(secret)
+                }
+            );
+
+            await _context.SaveChangesAsync();
         }
     }
 
     async Task EnsureFirstRoomExists()
     {
-        var roomInDb = await _roomRepository.GetFirstRoom();
-        if (roomInDb is null)
+        var firstRoom = await _context.Rooms.FirstOrDefaultAsync();
+
+        if (firstRoom is null)
         {
-            var roomOne = new Room()
-            {
-                Name = "DEFAULT",
-                Description = "This is the default room of the application.",
-                GlobalAccess = false,
-                Inventory = new Inventory(),
-                InBeing = null
-            };
-            await _roomRepository.CreateRoom(roomOne);
+            await _context.Rooms.AddAsync(
+                new Room()
+                {
+                    Name = "MAIN",
+                    Description = "This is the default room of the application.",
+                    GlobalAccess = false,
+                    Inventory = new Inventory(),
+                    InBeing = null
+                }
+            );
+            
+            await _context.SaveChangesAsync();
         }
     }
 
     async Task EnsureGameSettingsExist()
     {
-        var settingsInDb = await _gameSettingsRepository.GetGameSettings();
-        if (settingsInDb is null)
-        {
-            var firstRoom = await _roomRepository.GetFirstRoom();
-            var gameSettings = new GameSettings()
-            {
-                DefaultSpawnRoom = firstRoom!,
-                GameName = "DEFAULT",
-                GameDescription = null,
-                TickIntervalSeconds = 10
-            };
+        var settings = await _context.GetGameSettings();
 
-            await _gameSettingsRepository.SetGameSettings(gameSettings);
+        if (settings is null)
+        {
+            var firstRoom = await _context.Rooms.FirstAsync();
+
+            await _context.GameSettings.AddAsync(
+                new GameSettings()
+                {
+                    DefaultSpawnRoom = firstRoom,
+                    GameName = "TEX Online -application",
+                    GameDescription = null,
+                    TickIntervalSeconds = 10
+                }
+            );
+
+            await _context.SaveChangesAsync();
         }
     }
 }

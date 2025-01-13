@@ -9,7 +9,6 @@ using MUS.Game.Commands.Make;
 using MUS.Game.Commands.New;
 using MUS.Game.Commands.Show;
 using MUS.Game.Data;
-using MUS.Game.Data.Repositories;
 using MUS.Game.Session;
 using MUS.Game.Utilities;
 
@@ -87,18 +86,6 @@ public static class Extensions
         services.AddScoped<ICommandPattern, TradeCommand>();
     }
 
-    private static void AddRepositories(this IServiceCollection services)
-    {
-        services.AddScoped<IGameSettingsRepository, GameSettingsRepository>();
-        services.AddScoped<IItemHatcherRepository, ItemHatcherRepository>();
-        services.AddScoped<IItemRepository, ItemRepository>();
-        services.AddScoped<IItemStackRepository, ItemStackRepository>();
-        services.AddScoped<IRoomRepository, RoomRepository>();
-        services.AddScoped<IRoomPoolRepository, RoomPoolRepository>();
-        services.AddScoped<ITickCounterRepository, TickCounterRepository>();
-        services.AddScoped<IUserRepository, UserRepository>();
-    }
-
     private static void AddRequestHandling(this IServiceCollection services)
     {
         services.AddScoped<IResponsePayload, ResponsePayload>();
@@ -122,7 +109,6 @@ public static class Extensions
     {
         services.AddBackgroundServices();
         services.AddCommands();
-        services.AddRepositories();
         services.AddRequestHandling();
         services.AddSessions();
         services.AddUtilities();
@@ -138,12 +124,8 @@ public static class Extensions
             context.Database.Migrate();
 
             new DatabaseSeeder(
-                gameSettingsRepository: provider.GetRequiredService<IGameSettingsRepository>(),
-                roomRepository: provider.GetRequiredService<IRoomRepository>(),
-                userRepository: provider.GetRequiredService<IUserRepository>()
-            )
-            .Seed()
-            .Wait();
+                context: provider.GetRequiredService<GameContext>()
+            ).Seed().Wait();
         }
     }
 }

@@ -2,6 +2,7 @@
 
 public interface ITokenService
 {
-    string CreateToken(string userId);
+    string CreateToken(string username);
+    
     Task<string?> ValidateToken(string token);
 }

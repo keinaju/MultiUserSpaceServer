@@ -1,5 +1,4 @@
 ﻿using MUS.Game.Data;
-using MUS.Game.Data.Repositories;
 
 namespace MUS.Game.Clock;
 
@@ -64,17 +63,8 @@ public class GameClock : BackgroundService
     private async Task<ulong> RetrieveTickCountFromDatabase()
     {
         using var scope = _services.CreateScope();
-        var repository = scope.ServiceProvider.GetRequiredService<ITickCounterRepository>();
-        var tickCounterInDb = await repository.GetTickCount();
-
-        //If tick does not exist in database, start from 1
-        if (tickCounterInDb is null)
-        {
-            return 1;
-        }
-
-        //If tick exists in database, retrieve it
-        return tickCounterInDb.TickCount;
+        var context = scope.ServiceProvider.GetRequiredService<GameContext>();
+        return await context.GetTickCount();
     }
 
     private async Task<TimeSpan> RetrieveTickIntervalFromDatabase()

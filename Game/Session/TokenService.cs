@@ -11,7 +11,7 @@ public class TokenService : ITokenService
 
     public TokenService() { }
 
-    public string CreateToken(string userId)
+    public string CreateToken(string username)
     {
         var securityKey = new SymmetricSecurityKey(
             Encoding.UTF8.GetBytes(_secret)
@@ -25,7 +25,7 @@ public class TokenService : ITokenService
             issuer: "MUS",
             claims: new List<Claim>
             {
-                new Claim(ClaimTypes.Authentication, userId),
+                new Claim(ClaimTypes.Authentication, username),
             },
             notBefore: null,
             expires: DateTime.Now.AddHours(24),

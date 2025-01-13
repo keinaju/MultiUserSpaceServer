@@ -1,16 +1,14 @@
-﻿
-using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
+﻿using MUS.Game.Data;
 
 namespace MUS.Game.Clock;
 
 public class TickSaveListener : IGameClockListener
 {
-    private ITickCounterRepository _tickCounterRepository;
+    private readonly GameContext _context;
 
-    public TickSaveListener(ITickCounterRepository tickCounterRepository)
+    public TickSaveListener(GameContext context)
     {
-        _tickCounterRepository = tickCounterRepository;
+        _context = context;
     }
 
     public Task GetTask(object sender, TickEventArgs eventArgs)
@@ -18,9 +16,8 @@ public class TickSaveListener : IGameClockListener
         return SaveTickCountToDatabase(eventArgs.TickCount);
     }
 
-    private async Task SaveTickCountToDatabase(ulong tickCount)
+    private async Task SaveTickCountToDatabase(ulong tick)
     {
-        var tickCounter = new TickCounter() { TickCount = tickCount };
-        await _tickCounterRepository.SetTickCount(tickCounter);
+        await _context.SetTickCount(tick);
     }
 }

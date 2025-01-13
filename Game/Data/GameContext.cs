@@ -312,6 +312,23 @@ namespace MUS.Game.Data
             await SaveChangesAsync();
         }
 
+        public async Task SetTickCount(ulong tick)
+        {
+            var counter = await this.TickCounter.FirstOrDefaultAsync();
+            if(counter is null)
+            {
+                await this.TickCounter.AddAsync(
+                    new TickCounter() { TickCount = tick }
+                );
+            }
+            else
+            {
+                counter.TickCount = tick;
+            }
+
+            await SaveChangesAsync();
+        }
+
         public async Task<bool> UsernameIsReserved(string username)
         {
             return await Users.AnyAsync(

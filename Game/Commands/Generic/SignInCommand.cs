@@ -62,7 +62,7 @@ public class SignInCommand : ICommandPattern, IUserlessCommand
     private CommandResult SignInSuccess(User user)
     {
         var token = _tokenService.CreateToken(
-            user.PrimaryKey.ToString()
+            user.Username
         );
         _response.SetToken(token);
 

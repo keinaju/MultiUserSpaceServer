@@ -1,5 +1,5 @@
-﻿using MUS.Game.Data.Models;
-using MUS.Game.Data.Repositories;
+﻿using MUS.Game.Data;
+using MUS.Game.Data.Models;
 
 namespace MUS.Game.Session;
 
@@ -11,27 +11,25 @@ public class UserSession : IUserSession
     public User? User => _user;
 
     private readonly ITokenService _tokenService;
-    private readonly IUserRepository _userRepo;
+    private readonly GameContext _context;
     private User? _user = null;
 
     public UserSession(
-        ITokenService tokenService,
-        IUserRepository userRepo
+        GameContext context,
+        ITokenService tokenService
     )
     {
+        _context = context;
         _tokenService = tokenService;
-        _userRepo = userRepo;
     }
 
     public async Task AuthenticateUser(string token)
     {
-        var userPrimaryKey = await _tokenService.ValidateToken(token);
+        var userNameInToken = await _tokenService.ValidateToken(token);
 
-        var ok = int.TryParse(userPrimaryKey, out int parsedPrimaryKey);
-
-        if(ok)
+        if(userNameInToken is not null)
         {
-            _user = await _userRepo.FindUser(parsedPrimaryKey);
+            _user = await _context.FindUser(userNameInToken);
         }
     }
 }
