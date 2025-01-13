@@ -5,7 +5,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class HelpCommand : IUserCommand
+public class HelpCommand : ICommandPattern, IUserlessCommand
 {
     public bool AdminOnly => false;
 
@@ -17,23 +17,25 @@ public class HelpCommand : IUserCommand
     private Regex _wildcard = new Regex("\\.\\+");
     private Regex _digit = new Regex("\\\\d\\+");
 
-    private readonly ICommandCollection _commandCollection;
+    private readonly ICommandProvider _commandCollection;
 
-    public HelpCommand(ICommandCollection commandCollection)
+    public HelpCommand(ICommandProvider commandCollection)
     {
         _commandCollection = commandCollection;
     }
 
     public Task<CommandResult> Run(User user)
     {
-        return Task.FromResult(HelpResult());
+        return this.Run();
     }
 
-    public CommandResult HelpResult()
+    public Task<CommandResult> Run()
     {
-        return new CommandResult(StatusCode.Success)
-        .AddMessage("All commands are:")
-        .AddMessages(GetCommandsList());
+        return Task.FromResult(
+            new CommandResult(StatusCode.Success)
+            .AddMessage("All commands are:")
+            .AddMessages(GetCommandsList())
+        );
     }
 
     private ICollection<string> GetCommandsList()
@@ -41,7 +43,7 @@ public class HelpCommand : IUserCommand
         return GetHelpTexts(_commandCollection.GetCommands());
     }
 
-    private List<string> GetHelpTexts(IEnumerable<IUserCommand> commands)
+    private List<string> GetHelpTexts(IEnumerable<ICommandPattern> commands)
     {
         var helpTexts = new List<string>();
 

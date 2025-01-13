@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.New;
 
-public class NewItemHatcherCommand : IUserCommand
+public class NewItemHatcherCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class SignInCommand : IUserCommand
+public class SignInCommand : ICommandPattern, IUserlessCommand
 {
     public bool AdminOnly => false;
 
@@ -41,10 +41,10 @@ public class SignInCommand : IUserCommand
     
     public async Task<CommandResult> Run(User user)
     {
-        return await SignInResult();
+        return await this.Run();
     }
 
-    public async Task<CommandResult> SignInResult()
+    public async Task<CommandResult> Run()
     {
         var user = await _context.FindUser(UsernameInInput);
 

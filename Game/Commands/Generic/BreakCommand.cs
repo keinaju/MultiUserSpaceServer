@@ -4,7 +4,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Generic;
 
-public class BreakCommand : IUserCommand
+public class BreakCommand : ICommandPattern
 {
     public bool AdminOnly => false;
     

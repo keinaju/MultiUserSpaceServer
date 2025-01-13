@@ -5,7 +5,7 @@ using MUS.Game.Session;
 
 namespace MUS.Game.Commands.Delete;
 
-public class DeleteBeingCommand : IUserCommand
+public class DeleteBeingCommand : ICommandPattern
 {
     public bool AdminOnly => false;
 

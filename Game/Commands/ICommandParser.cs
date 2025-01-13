@@ -5,5 +5,5 @@ namespace MUS.Game.Commands;
 
 public interface ICommandParser
 {
-    IEnumerable<IUserCommand> GetMatchingCommands();
+    IEnumerable<ICommandPattern> GetMatchingCommands();
 }

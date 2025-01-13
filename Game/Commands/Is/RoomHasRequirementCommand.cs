@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class RoomHasRequirementCommand : IUserCommand
+public class RoomHasRequirementCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

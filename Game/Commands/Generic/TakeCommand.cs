@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Generic;
 
-public class TakeCommand : IUserCommand
+public class TakeCommand : ICommandPattern
 {
     public bool AdminOnly => false;
 

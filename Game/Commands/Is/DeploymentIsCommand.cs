@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class DeploymentIsCommand : IUserCommand
+public class DeploymentIsCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

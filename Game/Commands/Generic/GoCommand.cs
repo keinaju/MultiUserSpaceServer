@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Generic;
 
-public class GoCommand : IUserCommand
+public class GoCommand : ICommandPattern
 {
     public bool AdminOnly => false;
     

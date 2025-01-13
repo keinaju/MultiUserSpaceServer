@@ -4,7 +4,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Is;
 
-public class RoomNameIsCommand : IUserCommand
+public class RoomNameIsCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

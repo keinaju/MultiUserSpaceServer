@@ -4,7 +4,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Generic;
 
-public class SelectBeingCommand : IUserCommand
+public class SelectBeingCommand : ICommandPattern
 {
     public bool AdminOnly => false;
     

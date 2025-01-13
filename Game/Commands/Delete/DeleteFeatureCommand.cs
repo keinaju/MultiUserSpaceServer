@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Delete;
 
-public class DeleteFeatureCommand : IUserCommand
+public class DeleteFeatureCommand : ICommandPattern
 {
     public bool AdminOnly => true;
     

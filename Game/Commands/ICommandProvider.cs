@@ -7,7 +7,7 @@ namespace MUS.Game.Commands;
 /// on user's privileges.  A different set of commands
 /// is provided for admin users than regular users.
 /// </summary>
-public interface ICommandCollection
+public interface ICommandProvider
 {
-    IEnumerable<IUserCommand> GetCommands();
+    IEnumerable<ICommandPattern> GetCommands();
 }

@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.New;
 
-public class NewFeatureCommand : IUserCommand
+public class NewFeatureCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

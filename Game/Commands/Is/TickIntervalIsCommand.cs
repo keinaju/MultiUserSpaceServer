@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Is;
 
-public class TickIntervalIsCommand : IUserCommand
+public class TickIntervalIsCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

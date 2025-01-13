@@ -4,21 +4,21 @@ namespace MUS.Game.Commands;
 
 public class CommandParser : ICommandParser
 {
-    private readonly ICommandCollection _commandCollection;
+    private readonly ICommandProvider _commandCollection;
     private readonly IInputCommand _input;
 
     public CommandParser(
-        ICommandCollection commandCollection,
+        ICommandProvider commandProvider,
         IInputCommand input
     )
     {
-        _commandCollection = commandCollection;
+        _commandCollection = commandProvider;
         _input = input;
     }
 
-    public IEnumerable<IUserCommand> GetMatchingCommands()
+    public IEnumerable<ICommandPattern> GetMatchingCommands()
     {
-        var matchingCommands = new List<IUserCommand>();
+        var matchingCommands = new List<ICommandPattern>();
 
         foreach(var command in _commandCollection.GetCommands())
         {

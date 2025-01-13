@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class PingCommand : IUserCommand
+public class PingCommand : ICommandPattern, IUserlessCommand
 {
     public bool AdminOnly => false;
     
@@ -28,6 +28,11 @@ public class PingCommand : IUserCommand
     }
 
     public async Task<CommandResult> Run(User user)
+    {
+        return await this.Run();
+    }
+
+    public async Task<CommandResult> Run()
     {
         return new CommandResult(StatusCode.Success)
         .AddMessage($"{await GetGameName()} responds.")

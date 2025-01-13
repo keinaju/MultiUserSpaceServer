@@ -1,5 +1,4 @@
 ﻿using MUS.Game.Commands;
-using MUS.Game.Commands.Generic;
 using MUS.Game.Session;
 using static MUS.Game.Commands.CommandResult;
 
@@ -56,41 +55,27 @@ public class GameService : IGameService
         );
     }
 
-    private async Task<CommandResult> GetSingleMatchResult(IUserCommand command)
+    private async Task<CommandResult> GetSingleMatchResult(ICommandPattern command)
     {
-        // If user is signed in
-        if(_session.User is not null)
+        // If user is signed in, run with user
+        if (_session.User is not null)
         {
             return await command.Run(_session.User);
         }
-        // If user is not signed in, try commands 
-        // that do not require a user session
+        // If user is not signed in but the command does not require a user
+        else if (command is IUserlessCommand)
+        {
+            var userless = (IUserlessCommand)command;
+            return await userless.Run();
+        }
         else
         {
-            if(command is SignUpCommand)
-            {
-                var signUpCommand = (SignUpCommand)command;
-                return await signUpCommand.SignUpResult();
-            }
-            else if(command is SignInCommand)
-            {
-                var signInCommand = (SignInCommand)command;
-                return await signInCommand.SignInResult();
-            }
-            else if(command is HelpCommand)
-            {
-                var helpCommand = (HelpCommand)command;
-                return helpCommand.HelpResult();
-            }
-            else
-            {
-                return CommandResult.NotSignedInResult();
-            }
+            return CommandResult.NotSignedInResult();
         }
     }
 
     private CommandResult GetMultipleMatchResult(
-        IEnumerable<IUserCommand> commands
+        IEnumerable<ICommandPattern> commands
     )
     {
         var messages = new List<string>();

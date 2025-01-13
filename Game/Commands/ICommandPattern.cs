@@ -5,9 +5,9 @@ using MUS.Game.Data.Models;
 namespace MUS.Game.Commands;
 
 /// <summary>
-/// Commands that require authenticated user to be used.
+/// A pattern that input must match to run a command.
 /// </summary>
-public interface IUserCommand
+public interface ICommandPattern
 {
     bool AdminOnly { get; }
 
@@ -19,13 +19,9 @@ public interface IUserCommand
 }
 
 /// <summary>
-/// Commands that do not need authenticated user to be used.
+/// A command that does not require a user to run.
 /// </summary>
 public interface IUserlessCommand
 {
-    string HelpText { get; }
-    
-    Regex Pattern { get; }
-
     Task<CommandResult> Run();
 }

@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowGlobalRoomsCommand : IUserCommand
+public class ShowGlobalRoomsCommand : ICommandPattern
 {
     public bool AdminOnly => false;
 

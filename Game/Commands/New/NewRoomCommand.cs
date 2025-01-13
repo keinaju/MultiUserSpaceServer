@@ -8,7 +8,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.New;
 
-public class NewRoomCommand : IUserCommand
+public class NewRoomCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

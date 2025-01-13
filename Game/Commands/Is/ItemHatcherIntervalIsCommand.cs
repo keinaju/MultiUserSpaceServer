@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Is;
 
-public class ItemHatcherIntervalIsCommand : IUserCommand
+public class ItemHatcherIntervalIsCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 

@@ -5,7 +5,7 @@ using MUS.Game.Data.Models;
 
 namespace MUS.Game.Commands.Delete;
 
-public class DeleteRoomPoolCommand : IUserCommand
+public class DeleteRoomPoolCommand : ICommandPattern
 {
     public bool AdminOnly => true;
     

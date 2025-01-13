@@ -6,7 +6,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Generic;
 
-public class SignUpCommand : IUserCommand
+public class SignUpCommand : ICommandPattern, IUserlessCommand
 {
     public bool AdminOnly => false;
 
@@ -32,10 +32,10 @@ public class SignUpCommand : IUserCommand
 
     public async Task<CommandResult> Run(User user)
     {
-        return await SignUpResult();
+        return await this.Run();
     }
 
-    public async Task<CommandResult> SignUpResult()
+    public async Task<CommandResult> Run()
     {
         var validationResult = TextSanitation.ValidateName(UsernameInInput);
         if(validationResult.GetStatus() == StatusCode.Fail)

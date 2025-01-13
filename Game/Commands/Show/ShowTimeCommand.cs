@@ -6,7 +6,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowTimeCommand : IUserCommand
+public class ShowTimeCommand : ICommandPattern
 {
     public bool AdminOnly => false;
 

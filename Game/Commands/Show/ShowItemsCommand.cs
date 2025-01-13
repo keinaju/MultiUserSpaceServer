@@ -7,7 +7,7 @@ using static MUS.Game.Commands.CommandResult;
 
 namespace MUS.Game.Commands.Show;
 
-public class ShowItemsCommand : IUserCommand
+public class ShowItemsCommand : ICommandPattern
 {
     public bool AdminOnly => false;
 
