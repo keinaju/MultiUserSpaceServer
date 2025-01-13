@@ -18,8 +18,8 @@ public class DatabaseSeeder
     //Seed database with initial data
     public async Task Seed()
     {
-        await EnsureAdminUserExists();
         await EnsureFirstRoomExists();
+        await EnsureAdminUserExists();
         await EnsureGameSettingsExist();
     }
 
@@ -33,15 +33,26 @@ public class DatabaseSeeder
             {
                 throw new Exception($"Environment variable {SECRET_ENVIRONMENT_VARIABLE_NAME} is not defined.");
             }
-            
-            await _context.Users.AddAsync(
-                new User()
-                {
-                    IsAdmin = true,
-                    Username = ADMIN_USERNAME,
-                    HashedPassword = User.HashPassword(secret)
-                }
-            );
+
+            var newUser = new User()
+            {
+                IsAdmin = true,
+                Username = ADMIN_USERNAME,
+                HashedPassword = User.HashPassword(secret)
+            };
+
+            await _context.Users.AddAsync(newUser);
+
+            var newBeing = new Being()
+            {   
+                CreatedByUser = newUser,
+                FreeInventory = new Inventory(),
+                InRoom = await _context.Rooms.FirstAsync(),
+                Name = "ALAN",
+                TradeInventory = new Inventory()
+            };
+
+            newUser.CreatedBeings.Add(newBeing);
 
             await _context.SaveChangesAsync();
         }
