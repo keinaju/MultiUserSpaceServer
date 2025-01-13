@@ -119,13 +119,11 @@ public static class Extensions
         using (var scope = app.ApplicationServices.CreateScope())
         {
             var provider = scope.ServiceProvider;
-
             var context = provider.GetRequiredService<GameContext>();
+
             context.Database.Migrate();
 
-            new DatabaseSeeder(
-                context: provider.GetRequiredService<GameContext>()
-            ).Seed().Wait();
+            new DatabaseSeeder(context).Seed().Wait();
         }
     }
 }
