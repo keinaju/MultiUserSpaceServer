@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
@@ -236,9 +237,9 @@ public class Being
         );
     }
 
-    public void RemoveItems(int quantity, Item item)
+    public async Task RemoveItems(int quantity, Item item)
     {
-        FreeInventory.RemoveItems(item, quantity);
+        await this.FreeInventory.RemoveItems(item, quantity);
     }
 
     public async Task<CommandResult> SetInsideRoom(Room room)

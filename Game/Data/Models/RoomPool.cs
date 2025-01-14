@@ -100,7 +100,7 @@ public class RoomPool
             {
                 if(being.HasItems(1, FeeItem))
                 {
-                    being.RemoveItems(1, FeeItem);
+                    await being.RemoveItems(1, FeeItem);
                 }
                 else
                 {
@@ -230,7 +230,8 @@ public class RoomPool
     private async Task<Room> GenerateExpansion(Room from)
     {
         int randomIndex = new Random().Next(0, Prototypes.Count);
-        var randomPrototype = Prototypes.ToArray()[randomIndex];
+        // var randomPrototype = Prototypes.ToArray()[randomIndex];
+        var randomPrototype = Prototypes.ElementAt(randomIndex);
         var expansion = randomPrototype.Clone();
 
         await _context.Rooms.AddAsync(expansion);

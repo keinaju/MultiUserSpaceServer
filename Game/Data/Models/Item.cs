@@ -59,7 +59,7 @@ public class Item
             var clone = await being
             .CreateDeployedBeing(DeploymentPrototype);
 
-            being.RemoveItems(1, this);
+            await being.RemoveItems(1, this);
 
             await _context.SaveChangesAsync();
 
