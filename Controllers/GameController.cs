@@ -27,9 +27,7 @@ public class GameController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult> ParseRequest(
-        RequestPayload payload
-    )
+    public async Task<ActionResult> ParseRequest(RequestPayload payload)
     {
         if (ModelState.IsValid == false)
         {
@@ -39,21 +37,26 @@ public class GameController : ControllerBase
         // Identify user from token
         await _session.AuthenticateUser(payload.Token);
 
-        for(int i = 0; i < payload.Commands.Length; i++)
+        await ExecuteCommands(payload.Commands);
+
+        return Ok(_response.GetPayload());
+    }
+
+    private async Task ExecuteCommands(string[] commands)
+    {
+        for(int i = 0; i < commands.Length; i++)
         {
-            var commandNow = payload.Commands[i];
+            var commandNow = commands[i];
 
             _response.AddText($"[{i}] {commandNow}:");
 
             _input.Text = commandNow;
-            await _game.Respond();
+            _response.AddResult(await _game.ResolveCommand());
 
             if(_response.IsBreaked())
             {
                 break;
             }
         }
-
-        return Ok(_response.GetPayload());
     }
 }

@@ -8,25 +8,22 @@ public class GameService : IGameService
 {
     private readonly ICommandParser _parser;
     private readonly IInputCommand _input;
-    private readonly IResponsePayload _response;
     private readonly IUserSession _session;
 
     public GameService(
         ICommandParser parser,
         IInputCommand input,
-        IResponsePayload response,
         IUserSession session
     )
     {
         _parser = parser;
         _input = input;
-        _response = response;
         _session = session;
     }
 
-    public async Task Respond()
+    public async Task<CommandResult> ResolveCommand()
     {
-        _response.AddResult(await GetResult());
+        return await GetResult();
     }
 
     private async Task<CommandResult> GetResult()

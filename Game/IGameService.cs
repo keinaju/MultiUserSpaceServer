@@ -1,6 +1,8 @@
-﻿namespace MUS.Game;
+﻿using MUS.Game.Commands;
+
+namespace MUS.Game;
 
 public interface IGameService
 {
-    Task Respond();
+    Task<CommandResult> ResolveCommand();
 }
