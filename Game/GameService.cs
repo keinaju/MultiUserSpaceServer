@@ -8,22 +8,50 @@ public class GameService : IGameService
 {
     private readonly ICommandParser _parser;
     private readonly IInputCommand _input;
+    private readonly IResponsePayload _response;
     private readonly IUserSession _session;
 
     public GameService(
         ICommandParser parser,
         IInputCommand input,
+        IResponsePayload response,
         IUserSession session
     )
     {
         _parser = parser;
         _input = input;
+        _response = response;
         _session = session;
     }
 
-    public async Task<CommandResult> ResolveCommand()
+    public async Task ResolveCommands(string[] commands)
     {
-        return await GetResult();
+        int total = commands.Length;
+        int successful = 0;
+
+        for(int i = 0; i < commands.Length; i++)
+        {
+            _input.Text = commands[i];
+
+            _response.AddText($"[{i + 1}]: {_input.Text};");
+
+            _response.AddResult(await this.GetResult());
+
+            if(_response.IsBreaked())
+            {
+                // If a command has failed, prevent further 
+                // commands from executing
+                break;
+            }
+            else
+            {
+                successful++;
+            }
+        }
+
+        _response.PrependText(
+            $"{successful}/{total} commands executed successfully."
+        );
     }
 
     private async Task<CommandResult> GetResult()

@@ -56,8 +56,10 @@ public class TickIntervalIsCommand : ICommandPattern
         await _context.SaveChangesAsync();
 
         return new CommandResult(StatusCode.Success)
-        .AddMessage(
-            Message.Set("tick interval", $"{intervalSeconds} seconds")
+            .AddMessage(
+                Message.Set("tick interval",
+                Message.Quantity("seconds", intervalSeconds)
+            )
         );
     }
 }

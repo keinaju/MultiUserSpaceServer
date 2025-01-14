@@ -4,5 +4,5 @@ namespace MUS.Game;
 
 public interface IGameService
 {
-    Task<CommandResult> ResolveCommand();
+    Task ResolveCommands(string[] commands);
 }

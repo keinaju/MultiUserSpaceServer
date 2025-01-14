@@ -17,5 +17,7 @@ public interface IResponsePayload
 
     bool IsBreaked();
 
+    void PrependText(string text);
+
     void SetToken(string token);
 }

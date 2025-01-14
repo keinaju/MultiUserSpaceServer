@@ -58,6 +58,11 @@ public class ResponsePayload : IResponsePayload
         return _isBreaked;
     }
 
+    public void PrependText(string text)
+    {
+        _texts = _texts.Prepend(text).ToList();
+    }
+    
     public void SetToken(string token)
     {
         _token = token;
