@@ -11,9 +11,11 @@ public class RoomIsInRoomPoolCommand : ICommandPattern
 
     public string HelpText => "Adds the current room in a room pool.";
 
-    public Regex Pattern => new("^pool (.+) has this$");
+    public Regex Pattern => new("^room (.+) is in pool (.+)$");
 
-    private string RoomPoolNameInInput => _input.GetGroup(this.Pattern, 1);
+    private string RoomNameInInput => _input.GetGroup(this.Pattern, 1);
+
+    private string RoomPoolNameInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
@@ -29,17 +31,18 @@ public class RoomIsInRoomPoolCommand : ICommandPattern
 
     public async Task<CommandResult> Run(User user)
     {
+        var room = await _context.FindRoom(RoomNameInInput);
+        if(room is null)
+        {
+            return CommandResult.RoomDoesNotExist(RoomNameInInput);
+        }
+
         var pool = await _context.FindRoomPool(RoomPoolNameInInput);
         if(pool is null)
         {
             return CommandResult.RoomPoolDoesNotExist(RoomPoolNameInInput);
         }
-
-        if(user.SelectedBeing is null)
-        {
-            return user.NoSelectedBeingResult();
-        }
         
-        return await pool.AddRoom(user.SelectedBeing.InRoom);
+        return await pool.AddRoom(room);
     }
 }

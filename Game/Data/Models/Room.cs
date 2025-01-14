@@ -165,27 +165,6 @@ public class Room
         destination.ConnectedToRooms.Add(this);
     }
 
-    public async Task<CommandResult> CuriosityIs(string poolName)
-    {
-        var pool = await _context.FindRoomPool(poolName);
-
-        if(pool is not null)
-        {
-            Curiosity = pool;
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage(
-                Message.Set($"{Name}'s curiosity", pool.Name)
-            );
-        }
-        else
-        {
-            return RoomPoolDoesNotExist(poolName);
-        }
-    }
-
     public async Task<CommandResult> Expand(Being being)
     {
         if(Curiosity is null)
@@ -376,6 +355,18 @@ public class Room
         );
     }
 
+    public async Task<CommandResult> SetCuriosity(RoomPool pool)
+    {
+        this.Curiosity = pool;
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set($"{Name}'s curiosity", pool.Name)
+        );
+    }
+    
     public async Task<CommandResult> SetDescription(string roomDescription)
     {
         var validationResult = TextSanitation
