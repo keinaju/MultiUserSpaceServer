@@ -42,7 +42,10 @@ public class GoCommand : ICommandPattern
             }
             else
             {
-                return await user.SelectedBeing.MoveTo(room);
+                return await user.SelectedBeing.TryToMove(
+                    destination: room,
+                    admin: user.IsAdmin
+                );
             }
         }
     }

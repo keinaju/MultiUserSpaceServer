@@ -236,62 +236,6 @@ public class Being
         );
     }
 
-    public async Task<CommandResult> MoveTo(Room destination)
-    {
-        if(destination == InRoom)
-        {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage($"{this.Name} is in {destination.Name}.");
-        }
-
-        if(destination == RoomInside)
-        {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage($"{this.Name} can not enter itself.");
-        }
-
-        if(!InRoom.HasAccessTo(destination))
-        {
-            return new CommandResult(StatusCode.Fail)
-            .AddMessage(
-                $"{this.Name} can not access {destination.Name} from {InRoom.Name}."
-            );
-        }
-        else
-        {
-            InRoom = destination;
-
-            var moveResult = new CommandResult(StatusCode.Success)
-            .AddMessage($"{this.Name} has moved in {destination.Name}.");
-
-            await _context.SaveChangesAsync();
-
-            // Try to match active offers created by this being
-            // with offers in new room
-            var resolvedOfferResults = new List<CommandResult>();
-            foreach(var offer in this.CreatedOffers)
-            {
-                var matchingOffer = await FindMatchingOffer(offer);
-                if(matchingOffer is not null)
-                {
-                    resolvedOfferResults.Add(
-                        await offer.TradeItems(matchingOffer)
-                    );
-                }
-            }
-            // Get messages from successful transactions 
-            if(resolvedOfferResults.Count > 0)
-            {
-                foreach(var result in resolvedOfferResults)
-                {
-                    moveResult.AddMessages(result.GetMessages());
-                }
-            }
-
-            return moveResult;
-        }
-    }
-
     public void RemoveItems(int quantity, Item item)
     {
         FreeInventory.RemoveItems(item, quantity);
@@ -372,6 +316,40 @@ public class Being
             // Trade items between matching offers
             return await newOffer.TradeItems(matchingOffer);
         }
+    }
+
+    public async Task<CommandResult> SetInRoom(Room destination)
+    {
+        InRoom = destination;
+        
+        var moveResult = new CommandResult(StatusCode.Success)
+        .AddMessage($"{this.Name} has moved in {destination.Name}.");
+
+        await _context.SaveChangesAsync();
+
+        // Try to match active offers created by this being
+        // with offers in new room
+        var resolvedOfferResults = new List<CommandResult>();
+        foreach(var offer in this.CreatedOffers)
+        {
+            var matchingOffer = await FindMatchingOffer(offer);
+            if(matchingOffer is not null)
+            {
+                resolvedOfferResults.Add(
+                    await offer.TradeItems(matchingOffer)
+                );
+            }
+        }
+        // Get messages from successful transactions 
+        if(resolvedOfferResults.Count > 0)
+        {
+            foreach(var result in resolvedOfferResults)
+            {
+                moveResult.AddMessages(result.GetMessages());
+            }
+        }
+
+        return moveResult;
     }
 
     public async Task<CommandResult> SetName(string beingName)
@@ -502,6 +480,33 @@ public class Being
         {
             return new CommandResult(StatusCode.Fail)
             .AddMessage($"{item.Name} is not a craftable item.");
+        }
+    }
+
+    public async Task<CommandResult> TryToMove(Room destination, bool admin = false)
+    {
+        if(destination == InRoom)
+        {
+            return new CommandResult(StatusCode.Success)
+            .AddMessage($"{this.Name} is in {destination.Name}.");
+        }
+
+        if(destination == RoomInside)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{this.Name} can not enter itself.");
+        }
+
+        if(!admin && !InRoom.HasAccessTo(destination))
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                $"{this.Name} can not access {destination.Name} from {InRoom.Name}."
+            );
+        }
+        else
+        {
+            return await SetInRoom(destination);
         }
     }
 
