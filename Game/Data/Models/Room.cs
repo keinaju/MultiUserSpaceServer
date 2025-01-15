@@ -143,6 +143,33 @@ public class Room
             );
         }
     }
+
+    public CommandResult BeingMeetsRequiredFeatures(Being being)
+    {
+        if(this.RequiredFeatures.Count() == 0)
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage($"{being.Name} can not go in {this.Name} because no required features have been defined in the room.");
+        }
+
+        foreach(var requiredFeature in this.RequiredFeatures)
+        {
+            if(being.Features.Contains(requiredFeature))
+            {
+                return new CommandResult(StatusCode.Success)
+                .AddMessage($"{being.Name} meets the requirements of {this.Name}.");
+            }
+        }
+
+        var featureNames = new List<string>();
+        foreach(var feature in this.RequiredFeatures)
+        {
+            featureNames.Add(feature.Name);
+        }
+
+        return new CommandResult(StatusCode.Fail)
+        .AddMessage($"{being.Name} does not have any of the required features: {Message.List(featureNames)}.");
+    }
     
     public Room Clone()
     {

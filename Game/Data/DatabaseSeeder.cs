@@ -91,6 +91,7 @@ public class DatabaseSeeder
             await _context.GameSettings.AddAsync(
                 new GameSettings()
                 {
+                    DefaultBeing = await _context.Beings.FirstAsync(),
                     DefaultSpawnRoom = firstRoom,
                     GameName = "TEX Online -application",
                     GameDescription = null,

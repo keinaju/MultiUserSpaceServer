@@ -8,6 +8,19 @@ public class GameSettings
     [Key]
     public int PrimaryKey { get; set; }
 
+    /// <summary>
+    /// Being that is used to clone initial beings for new players.
+    /// </summary>
+    public int DefaultBeingPrimaryKey { get; set; }
+    public required Being DefaultBeing
+    {
+        get => _lazyLoader.Load(this, ref _defaultBeing);
+        set => _defaultBeing = value;
+    }
+
+    /// <summary>
+    /// Room to spawn new beings.
+    /// </summary>
     public int DefaultSpawnRoomPrimaryKey { get; set; }
     public required Room DefaultSpawnRoom
     {
@@ -22,6 +35,7 @@ public class GameSettings
     public required int TickIntervalSeconds { get; set; }
 
     private readonly ILazyLoader _lazyLoader;
+    private Being _defaultBeing;
     private Room _defaultSpawnRoom;
 
     public GameSettings() {}

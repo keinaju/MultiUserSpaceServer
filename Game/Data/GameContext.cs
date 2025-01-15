@@ -47,16 +47,11 @@ namespace MUS.Game.Data
 
             var settings = await GetGameSettings();
 
-            user.CreatedBeings.Add(
-                new Being()
-                {
-                    CreatedByUser = user,
-                    FreeInventory = new Inventory(),
-                    InRoom = settings.DefaultSpawnRoom,
-                    Name = await GetUniqueBeingName("BEING #"),
-                    TradeInventory = new Inventory()
-                }
-            );
+            var newBeing = settings.DefaultBeing.Clone();
+            newBeing.CreatedByUser = user;
+            newBeing.InRoom = settings.DefaultSpawnRoom;
+            newBeing.Name = await GetUniqueBeingName(newBeing.Name);
+            user.CreatedBeings.Add(newBeing);
 
             await SaveChangesAsync();
 

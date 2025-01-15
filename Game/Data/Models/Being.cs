@@ -417,7 +417,7 @@ public class Being
     public CommandResult ShowRoom()
     {
         return new CommandResult(StatusCode.Success)
-        .AddMessage($"{this.Name} looks at the {this.InRoom.Name}.")
+        .AddMessage($"{this.Name} looks at {this.InRoom.Name}.")
         .AddMessages(this.InRoom.GetDetails());
     }
     
@@ -504,10 +504,18 @@ public class Being
                 $"{this.Name} can not access {destination.Name} from {InRoom.Name}."
             );
         }
-        else
+
+        if(!admin)
         {
-            return await SetInRoom(destination);
+            // Verify that the being has at least one feature defined in destination
+            var result = destination.BeingMeetsRequiredFeatures(being: this);
+            if(result.GetStatus() == StatusCode.Fail)
+            {
+                return result;
+            }
         }
+
+        return await SetInRoom(destination);
     }
 
     private async Task<CommandResult> BreakItem(CraftPlan craftPlan)

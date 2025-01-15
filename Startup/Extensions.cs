@@ -33,6 +33,7 @@ public static class Extensions
         services.AddScoped<ICommandPattern, BreakCommand>();
         services.AddScoped<ICommandPattern, CraftCommand>();
         services.AddScoped<ICommandPattern, CuriosityIsCommand>();
+        services.AddScoped<ICommandPattern, DefaultBeingIsCommand>();
         services.AddScoped<ICommandPattern, DeleteBeingCommand>();
         services.AddScoped<ICommandPattern, DeleteFeatureCommand>();
         services.AddScoped<ICommandPattern, DeleteItemCommand>();

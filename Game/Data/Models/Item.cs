@@ -52,19 +52,24 @@ public class Item
         if(DeploymentPrototype is null)
         {
             return new CommandResult(StatusCode.Fail)
-            .AddMessage($"{Name} is not a deployable item.");
+            .AddMessage($"{this.Name} is not a deployable item.");
         }
-        else
+
+        // Verify that the prototype being meets the requirements in the current room
+        var result = being.InRoom.BeingMeetsRequiredFeatures(being: DeploymentPrototype);
+        if(result.GetStatus() == StatusCode.Fail)
         {
-            var clone = await being.CreateDeployedBeing(DeploymentPrototype);
-
-            await being.RemoveItems(1, this);
-
-            await _context.SaveChangesAsync();
-
-            return new CommandResult(StatusCode.Success)
-            .AddMessage($"{being.Name} deployed {Name} to {clone.Name}.");
+            return result;
         }
+
+        var clone = await being.CreateDeployedBeing(DeploymentPrototype);
+
+        await being.RemoveItems(1, this);
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage($"{being.Name} deployed {this.Name} to {clone.Name}.");
     }
 
     public List<string> GetDetails()
