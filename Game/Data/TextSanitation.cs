@@ -46,7 +46,12 @@ public static class TextSanitation
     ALPHABET_UPPERCASE +
     HASH +
     NUMERICS +
-    WHITE_SPACE;
+    WHITE_SPACE +
+    // The hyphen must be listed first or last because it is part
+    // of a character group in a regular expression.
+    // Hyphen in the middle of a character group
+    // would instead define a range of allowed characters.
+    HYPHEN;
 
     public static string GetCleanDescription(string description)
     {

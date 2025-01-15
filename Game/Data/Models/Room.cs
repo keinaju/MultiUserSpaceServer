@@ -152,15 +152,11 @@ public class Room
             Curiosity = this.Curiosity,
             Description = this.Description,
             GlobalAccess = this.GlobalAccess,
+            InBeing = null,
             Inventory = this.Inventory.Clone(),
             Name = this.Name,
-            InBeing = null
+            RequiredFeatures = this.RequiredFeatures
         };
-
-        foreach(var feature in this.RequiredFeatures)
-        {
-            clone.RequiredFeatures.Add(feature);
-        }
 
         return clone;
     }
