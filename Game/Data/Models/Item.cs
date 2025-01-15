@@ -56,8 +56,7 @@ public class Item
         }
         else
         {
-            var clone = await being
-            .CreateDeployedBeing(DeploymentPrototype);
+            var clone = await being.CreateDeployedBeing(DeploymentPrototype);
 
             await being.RemoveItems(1, this);
 

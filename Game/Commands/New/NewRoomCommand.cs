@@ -60,6 +60,7 @@ public class NewRoomCommand : ICommandPattern
         EntityEntry<Room> entry = await _context.Rooms.AddAsync(
             new Room()
             {
+                ConnectionLimit = 4,
                 GlobalAccess = false,
                 InBeing = null,
                 Inventory = new Inventory(),

@@ -10,15 +10,22 @@ public static class TextSanitation
 {
     private const string ALPHABET_LOWERCASE =
     "abcdefghijklmnopqrstuvwxyz";
+
     private const string ALPHABET_UPPERCASE =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-    private const string NUMERICS =
-    "0123456789";
-    private const string WHITE_SPACE = " ";
+
+    private const string HASH = "#";
+
     private const string HYPHEN = "-";
 
+    private const string NUMERICS = "0123456789";
+
+    private const string WHITE_SPACE = " ";
+
     private const int DESCRIPTION_MINIMUM_LENGTH = 2;
+
     private const int DESCRIPTION_MAXIMUM_LENGTH = 1000;
+
     private const string DESCRIPTION_ALLOWED_CHARACTERS =
     ALPHABET_LOWERCASE +
     ALPHABET_UPPERCASE +
@@ -32,9 +39,12 @@ public static class TextSanitation
     HYPHEN;
     
     private const int NAME_MINIMUM_LENGTH = 2;
+
     private const int NAME_MAXIMUM_LENGTH = 20;
+
     private const string NAME_ALLOWED_CHARACTERS =
     ALPHABET_UPPERCASE +
+    HASH +
     NUMERICS +
     WHITE_SPACE;
 

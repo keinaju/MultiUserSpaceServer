@@ -58,6 +58,7 @@ public static class Extensions
         services.AddScoped<ICommandPattern, NewRoomCommand>();
         services.AddScoped<ICommandPattern, NewRoomPoolCommand>();
         services.AddScoped<ICommandPattern, PingCommand>();
+        services.AddScoped<ICommandPattern, RoomConnectionLimitIsCommand>();
         services.AddScoped<ICommandPattern, RoomDescriptionIsCommand>();
         services.AddScoped<ICommandPattern, RoomHasRequirementCommand>();
         services.AddScoped<ICommandPattern, RoomIsGlobalCommand>();

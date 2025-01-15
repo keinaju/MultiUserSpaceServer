@@ -9,11 +9,13 @@ public class RoomIsInsideCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 
-    public string HelpText => "Sets the inside room of the current being.";
+    public string HelpText => "Sets the inside room of a being.";
 
-    public Regex Pattern => new("^room (.+) is inside this$");
+    public Regex Pattern => new("^room (.+) is in being (.+)$");
 
     private string RoomNameInInput => _input.GetGroup(this.Pattern, 1);
+
+    private string BeingNameInInput => _input.GetGroup(this.Pattern, 2);
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
@@ -35,11 +37,12 @@ public class RoomIsInsideCommand : ICommandPattern
             return CommandResult.RoomDoesNotExist(RoomNameInInput);
         }
 
-        if(user.SelectedBeing is null)
+        var being = await _context.FindBeing(BeingNameInInput);
+        if(being is null)
         {
-            return user.NoSelectedBeingResult();
+            return CommandResult.BeingDoesNotExist(BeingNameInInput);
         }
 
-        return await user.SelectedBeing.SetInsideRoom(room);
+        return await being.SetInsideRoom(room);
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using MUS.Game.Commands;
@@ -141,6 +140,7 @@ public class Being
         var clone = new Being(_context, _lazyLoader)
         {
             CreatedByUser = this.CreatedByUser,
+            Features = new List<Feature>(),
             FreeInventory = this.FreeInventory.Clone(),
             InRoom = this.InRoom,
             Name = this.Name,
@@ -161,15 +161,14 @@ public class Being
         var clone = prototype.Clone();
         clone.InRoom = this.InRoom;
         clone.CreatedByUser = this.CreatedByUser;
-        clone.Name = await _context.GetUniqueBeingName(Name);
+        clone.Name = await _context.GetUniqueBeingName(prototype.Name);
 
         await _context.Beings.AddAsync(clone);
 
         var insideRoom = clone.RoomInside;
         if(insideRoom is not null)
         {
-            insideRoom.Name = await _context
-            .GetUniqueRoomName(insideRoom.Name);
+            insideRoom.Name = await _context.GetUniqueRoomName(insideRoom.Name);
         }
 
         await _context.SaveChangesAsync();

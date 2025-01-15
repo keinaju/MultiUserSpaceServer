@@ -116,6 +116,13 @@ public class RoomPool
 
             var expansion = await GenerateExpansion(from);
 
+            // Disable further exploring, if connection limit is reached
+            if(from.ConnectedToRooms.Count >= from.ConnectionLimit)
+            {
+                from.Curiosity = null;
+                await _context.SaveChangesAsync();
+            }
+
             return new CommandResult(StatusCode.Success)
             .AddMessage($"{expansion.Name} has been found.");
         }

@@ -32,7 +32,7 @@ public class RoomIsGlobalCommand : ICommandPattern
         }
         else
         {
-            return await user.SelectedBeing.InRoom.RoomIsGlobal(NewValue);
+            return await user.SelectedBeing.InRoom.SetGlobalAccess(NewValue);
         }
     }
 }

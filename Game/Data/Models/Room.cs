@@ -43,6 +43,12 @@ public class Room
     }
 
     /// <summary>
+    /// Limits exploring by defining a number of static connections 
+    /// from this room to other rooms.
+    /// </summary>
+    public required int ConnectionLimit { get; set; }
+
+    /// <summary>
     /// Room pool to use for extending this room.
     /// </summary>
     public int? CuriosityPrimaryKey { get; set; }
@@ -142,6 +148,7 @@ public class Room
     {
         var clone = new Room()
         {
+            ConnectionLimit = this.ConnectionLimit,
             Curiosity = this.Curiosity,
             Description = this.Description,
             GlobalAccess = this.GlobalAccess,
@@ -340,18 +347,15 @@ public class Room
         }
     }
 
-    public async Task<CommandResult> RoomIsGlobal(bool newValue)
+    public async Task<CommandResult> SetConnectionLimit(int limit)
     {
-        GlobalAccess = newValue;
+        this.ConnectionLimit = limit;
 
         await _context.SaveChangesAsync();
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(
-            Message.Set(
-                $"{Name}'s global access",
-                newValue.ToString().ToUpper()
-            )
+            Message.Set($"{this.Name}'s connection limit", limit.ToString())
         );
     }
 
@@ -363,7 +367,7 @@ public class Room
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(
-            Message.Set($"{Name}'s curiosity", pool.Name)
+            Message.Set($"{this.Name}'s curiosity", pool.Name)
         );
     }
     
@@ -390,6 +394,21 @@ public class Room
                 Message.Set($"{Name}'s description", cleanDescription)
             );
         }
+    }
+    
+    public async Task<CommandResult> SetGlobalAccess(bool newValue)
+    {
+        GlobalAccess = newValue;
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            Message.Set(
+                $"{Name}'s global access",
+                newValue.ToString().ToUpper()
+            )
+        );
     }
     
     public async Task<CommandResult> SetName(string newName)

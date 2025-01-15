@@ -9,12 +9,13 @@ public class DeploymentIsCommand : ICommandPattern
 {
     public bool AdminOnly => true;
 
-    public string HelpText =>
-    "Sets the deployment of an item to the current being.";
+    public string HelpText => "Sets the deployment of an item to a being.";
 
     private string ItemNameInInput => _input.GetGroup(this.Pattern, 1);
 
-    public Regex Pattern => new("^item (.+) deploy is this$");
+    private string BeingNameInInput => _input.GetGroup(this.Pattern, 2);
+
+    public Regex Pattern => new("^item (.+) deploy is being (.+)$");
 
     private readonly GameContext _context;
     private readonly IInputCommand _input;
@@ -35,13 +36,13 @@ public class DeploymentIsCommand : ICommandPattern
         {
             return CommandResult.ItemDoesNotExist(ItemNameInInput);
         }
-        if(user.SelectedBeing is null)
+
+        var being = await _context.FindBeing(BeingNameInInput);
+        if(being is null)
         {
-            return user.NoSelectedBeingResult();
+            return CommandResult.BeingDoesNotExist(BeingNameInInput);
         }
-        else
-        {
-            return await item.SetDeployment(user.SelectedBeing);
-        }
+
+        return await item.SetDeployment(being);
     }
 }

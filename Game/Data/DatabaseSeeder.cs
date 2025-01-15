@@ -67,6 +67,7 @@ public class DatabaseSeeder
             await _context.Rooms.AddAsync(
                 new Room()
                 {
+                    ConnectionLimit = 4,
                     Name = "MAIN",
                     Description = "This is the default room of the application.",
                     GlobalAccess = false,
