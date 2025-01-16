@@ -14,7 +14,7 @@ public static class TextSanitation
     private const string ALPHABET_UPPERCASE =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 
-    private const string HASH = "#";
+    private const string ASTERISK = "*";
 
     private const string HYPHEN = "-";
 
@@ -44,7 +44,7 @@ public static class TextSanitation
 
     private const string NAME_ALLOWED_CHARACTERS =
     ALPHABET_UPPERCASE +
-    HASH +
+    ASTERISK +
     NUMERICS +
     WHITE_SPACE +
     // The hyphen must be listed first or last because it is part
