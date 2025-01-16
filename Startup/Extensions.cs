@@ -44,6 +44,7 @@ public static class Extensions
         services.AddScoped<ICommandPattern, ExploreCommand>();
         services.AddScoped<ICommandPattern, FeatureNameIsCommand>();
         services.AddScoped<ICommandPattern, GameNameIsCommand>();
+        services.AddScoped<ICommandPattern, GiveCommand>();
         services.AddScoped<ICommandPattern, GoCommand>();
         services.AddScoped<ICommandPattern, HelpCommand>();
         services.AddScoped<ICommandPattern, ItemDescriptionIsCommand>();

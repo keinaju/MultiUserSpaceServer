@@ -202,9 +202,43 @@ public class Being
         }
     }
 
+    public async Task<CommandResult> GiveItems(Item item, int quantity, Being receiver)
+    {
+        if(this.FreeInventory.Contains(item, quantity))
+        {
+            if(this.InRoom.BeingsHere.Contains(receiver))
+            {
+                await this.FreeInventory.TransferTo(
+                    receiver.FreeInventory,
+                    item,
+                    quantity
+                );
+
+                return new CommandResult(StatusCode.Success)
+                .AddMessage(
+                    $"{this.Name} gave {Message.Quantity(item.Name, quantity)} to {receiver.Name}."
+                );
+            }
+            else
+            {
+                return new CommandResult(StatusCode.Fail)
+                .AddMessage($"{receiver.Name} is not in {this.InRoom.Name}.");
+            }
+        }
+        else
+        {
+            return new CommandResult(StatusCode.Fail)
+            .AddMessage(
+                Message.DoesNotHave(
+                    this.Name, Message.Quantity(item.Name, quantity)
+                )
+            );
+        }
+    }
+
     public bool HasFeature(Feature feature)
     {
-        if(Features.Contains(feature))
+        if(this.Features.Contains(feature))
         {
             return true;
         }
