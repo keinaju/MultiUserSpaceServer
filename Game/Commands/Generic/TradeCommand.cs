@@ -78,7 +78,8 @@ public class TradeCommand : ICommandPattern
             sellQuantity: sellQuantity,
             buyQuantity: buyQuantity,
             sellItem: sellItem,
-            buyItem: buyItem
+            buyItem: buyItem,
+            repeatMode: false
         );
     }
 }

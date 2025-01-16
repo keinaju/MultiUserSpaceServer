@@ -300,12 +300,12 @@ public class Being
         return texts;
     }
 
-
     public async Task<CommandResult> Offer(
         int sellQuantity,
         int buyQuantity,
         Item sellItem,
-        Item buyItem
+        Item buyItem,
+        bool repeatMode
     )
     {
         if(!this.FreeInventory.Contains(sellItem, sellQuantity))
@@ -322,7 +322,8 @@ public class Being
             ItemToBuy = buyItem,
             ItemToSell = sellItem,
             QuantityToBuy = buyQuantity,
-            QuantityToSell = sellQuantity
+            QuantityToSell = sellQuantity,
+            Repeat = repeatMode
         };
         await _context.Offers.AddAsync(newOffer);
         await _context.SaveChangesAsync();
@@ -350,6 +351,21 @@ public class Being
             // Trade items between matching offers
             return await newOffer.TradeItems(matchingOffer);
         }
+    }
+
+    public async Task<CommandResult> RepeatOffers()
+    {
+        foreach(var offer in this.CreatedOffers)
+        {
+            offer.Repeat = true;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return new CommandResult(StatusCode.Success)
+        .AddMessage(
+            $"{this.CreatedOffers.Count} offers have been set to repeat mode."
+        );
     }
 
     public async Task<CommandResult> SetInRoom(Room destination)

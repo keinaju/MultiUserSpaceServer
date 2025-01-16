@@ -36,6 +36,11 @@ public class Offer
 
     public required int QuantityToBuy { get; set; }
 
+    /// <summary>
+    /// Automatically creates an identical offer when this instance is resolved.
+    /// </summary>
+    public required bool Repeat { get; set; }
+
     private readonly GameContext _context;
     private readonly ILazyLoader _lazyLoader;
     private Item _itemToBuy;
@@ -115,6 +120,19 @@ public class Offer
         sentences.Add(
             $"A transaction has been resolved: {this.GetDetails()} with {earlierOffer.CreatedByBeing.Name}."
         );
+
+        // If the earlier offer is to be sustained,
+        // try to create a new offer automatically
+        if(earlierOffer.Repeat)
+        {
+            await earlierOffer.CreatedByBeing.Offer(
+                sellQuantity: earlierOffer.QuantityToSell,
+                buyQuantity: earlierOffer.QuantityToBuy,
+                sellItem: earlierOffer.ItemToSell,
+                buyItem: earlierOffer.ItemToBuy,
+                repeatMode: true
+            );
+        }
 
         return new CommandResult(StatusCode.Success)
         .AddMessage(string.Join(" ", sentences));
