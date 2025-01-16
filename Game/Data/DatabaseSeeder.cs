@@ -93,7 +93,7 @@ public class DatabaseSeeder
                 {
                     DefaultBeing = await _context.Beings.FirstAsync(),
                     DefaultSpawnRoom = firstRoom,
-                    GameName = "TEX Online -application",
+                    GameName = "MUS Online -application",
                     GameDescription = null,
                     TickIntervalSeconds = 10
                 }
