@@ -2,6 +2,14 @@
 
 namespace MUS.Game.Clock;
 
+/// <summary>
+/// A background service that generates an event on a tick interval specified
+/// in application settings. Tick interval can be changed at run-time and will 
+/// take effect in next tick.
+/// 
+/// Listener services can be included in service container 
+/// and will be called on each tick.
+/// </summary>
 public class GameClock : BackgroundService
 {
     private readonly IServiceProvider _services;
@@ -26,11 +34,11 @@ public class GameClock : BackgroundService
             {
                 while (await timer.WaitForNextTickAsync(stoppingToken))
                 {
-                    if(_tickCount == 0)
+                    if (_tickCount == 0)
                     {
-                        _tickCount =  await RetrieveTickCountFromDatabase();
+                        _tickCount = await RetrieveTickCountFromDatabase();
                     }
-                    
+
                     await OnTick(
                         new TickEventArgs()
                         { TickCount = _tickCount }
@@ -38,7 +46,7 @@ public class GameClock : BackgroundService
 
                     // Update timer interval
                     timer.Period = await RetrieveTickIntervalFromDatabase();
-                    
+
                     _tickCount++;
                 }
             }
@@ -73,7 +81,7 @@ public class GameClock : BackgroundService
 
         var context = scope.ServiceProvider.GetRequiredService<GameContext>();
         var settings = await context.GetGameSettings();
-        if(settings is not null)
+        if (settings is not null)
         {
             return TimeSpan.FromSeconds(settings.TickIntervalSeconds);
         }
